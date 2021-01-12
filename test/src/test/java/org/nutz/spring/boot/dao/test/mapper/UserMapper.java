@@ -1,0 +1,117 @@
+package org.nutz.spring.boot.dao.test.mapper;
+
+import org.nutz.dao.Condition;
+import org.nutz.dao.entity.Record;
+import org.nutz.dao.pager.Pager;
+import org.nutz.spring.boot.dao.annotation.*;
+import org.nutz.spring.boot.dao.execute.BaseMapper;
+import org.nutz.spring.boot.dao.pagination.PageData;
+import org.nutz.spring.boot.dao.test.entity.UserDO;
+import org.springframework.stereotype.Component;
+
+import java.util.List;
+import java.util.Map;
+
+/**
+ * @author 黄川 huchuc@vip.qq.com
+ * @date: 2020/7/30
+ */
+@Mapper
+@Component
+public interface UserMapper extends BaseMapper<UserDO> {
+
+    /**
+     * 返回当前实体类
+     *
+     * @param id
+     * @return
+     */
+    @QuerySql("select * from user where id=@id")
+    UserDO fetchEntityOne(int id);
+
+    /**
+     * 根据 condition 条件返回
+     *
+     * @param condition
+     * @return
+     */
+    @QuerySql("select * from user $condition")
+    List<UserDO> listUser(Condition condition);
+
+    /**
+     * 查询返回一个map
+     *
+     * @param id
+     * @return
+     */
+    @QuerySql("select * from user where id=@id")
+    Map fetchMapOne(int id);
+
+    /**
+     * 查询返回一个 Record
+     *
+     * @param id
+     * @return
+     */
+    @QuerySql("select * from user where id=@id")
+    Record fetchRecordOne(int id);
+
+    /**
+     * 只会返回第一条记录，且不会像mybaits那样会提示too many result
+     *
+     * @return
+     */
+    @QuerySql("select * from user")
+    UserDO fetchOne();
+
+    /**
+     * 分页查询
+     *
+     * @param pager
+     * @return
+     */
+    @QuerySql("select * from user")
+    PageData listUserPage(Pager pager);
+
+    /**
+     * 插入获取自增ID
+     *
+     * @param name
+     * @param age
+     * @param create
+     * @return
+     */
+    @InsertSql("INSERT INTO user(`name`, `age`,`gmt_create`,`create_by`) VALUES (@name,@age, now(),@create)")
+    int insert(String name, int age, String create);
+
+    /**
+     * 插入
+     *
+     * @param name
+     * @param age
+     * @param create
+     */
+    @InsertSql("INSERT INTO user(`name`, `age`,`gmt_create`,`create_by`) VALUES (@name,@age, now(),@create)")
+    void insertVoid(String name, int age, String create);
+
+    /**
+     * 更新数据
+     *
+     * @param age
+     * @param id
+     * @return
+     */
+    @UpdateSql("UPDATE user SET age = @age WHERE id = @id")
+    int updateAgeById(int age, int id);
+
+    /**
+     * 删除数据
+     *
+     * @param id
+     * @return
+     */
+    @DelectSql("DELETE FROM user WHERE id=@id")
+    int delectById(int id);
+
+
+}
