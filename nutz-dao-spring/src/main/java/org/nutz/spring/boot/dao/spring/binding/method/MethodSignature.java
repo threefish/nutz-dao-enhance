@@ -115,7 +115,7 @@ public class MethodSignature {
         }
         this.initSqlCallback();
         // 是否是返回多条记录
-        this.multipleRecords = ValueTypeUtil.isMultipleRecords(this.returnType);
+        this.multipleRecords = ValueTypeUtil.isCollection(this.returnType);
         this.conditionParameterInedx = MethodSignatureUtil.getConditionParameterInedx(method.getParameterTypes());
     }
 
@@ -158,7 +158,7 @@ public class MethodSignature {
         }
         this.sqlCallback = ValueTypeUtil.getSqlCallback(this.returnType);
         if (Objects.isNull(this.sqlCallback)) {
-            if (ValueTypeUtil.isList(this.returnType) && Objects.nonNull(this.returnEntityClass)) {
+            if (ValueTypeUtil.isCollection(this.returnType) && Objects.nonNull(this.returnEntityClass)) {
                 // 返回类型是list，且返回的是实体对象
                 this.sqlCallback = Sqls.callback.entities();
                 return;

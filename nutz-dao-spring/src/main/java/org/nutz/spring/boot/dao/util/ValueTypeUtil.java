@@ -7,7 +7,6 @@
 
 package org.nutz.spring.boot.dao.util;
 
-import org.nutz.spring.boot.dao.pagination.PageData;
 import org.nutz.dao.Sqls;
 import org.nutz.dao.entity.Record;
 import org.nutz.dao.sql.SqlCallback;
@@ -50,18 +49,10 @@ public class ValueTypeUtil {
     };
 
 
-    private static final HashSet<Class<?>> LIST_ENTITY_CALLBACK_HASH_MAP = new HashSet<>(Arrays.asList(
-            List.class, ArrayList.class, LinkedList.class, PageData.class
-    ));
-
     private static final HashSet<Class<?>> NUMBER_HASH_MAP = new HashSet<>(Arrays.asList(
-            int.class, Integer.class, long.class, Long.class, Float.class, float.class
+            int.class, Integer.class, long.class, Long.class, Float.class, float.class, Short.class, short.class
     ));
 
-
-    public static boolean isMultipleRecords(Class<?> clazz) {
-        return LIST_ENTITY_CALLBACK_HASH_MAP.contains(clazz);
-    }
 
     /**
      * 是多记录查询
@@ -69,8 +60,8 @@ public class ValueTypeUtil {
      * @param clazz
      * @return
      */
-    public static boolean isList(Class<?> clazz) {
-        return LIST_ENTITY_CALLBACK_HASH_MAP.contains(clazz);
+    public static boolean isCollection(Class<?> clazz) {
+        return Collection.class.isAssignableFrom(clazz);
     }
 
     /**
