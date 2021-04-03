@@ -1,7 +1,8 @@
 package org.nutz.spring.boot.dao.spring.binding;
 
-import org.nutz.spring.boot.dao.factory.DaoFactory;
 import lombok.Data;
+import lombok.RequiredArgsConstructor;
+import org.nutz.spring.boot.dao.factory.DaoFactory;
 import org.springframework.beans.factory.FactoryBean;
 
 import java.lang.reflect.Method;
@@ -15,19 +16,19 @@ import java.util.concurrent.ConcurrentHashMap;
  * @date: 2020/7/31
  */
 @Data
+@RequiredArgsConstructor
 public class MapperProxyFactory<T> implements FactoryBean<T> {
 
     private final Map<Method, MapperMethodInvoker> methodCache = new ConcurrentHashMap<>();
-    private Class<T> mapperInterface;
-    private DaoFactory daoFactory;
-
-    public MapperProxyFactory(Class<T> mapperInterface) {
-        this.mapperInterface = mapperInterface;
-    }
+    private final Class<T> mapperInterface;
+    private final DaoFactory daoFactory;
 
     @SuppressWarnings("unchecked")
     protected T newInstance(MapperProxy<T> mapperProxy) {
-        return (T) Proxy.newProxyInstance(mapperInterface.getClassLoader(), new Class[]{mapperInterface}, mapperProxy);
+        return (T) Proxy.newProxyInstance(mapperInterface.getClassLoader(),
+                new Class[]{mapperInterface},
+                mapperProxy
+        );
     }
 
     public T newInstance(DaoFactory daoFactory) {

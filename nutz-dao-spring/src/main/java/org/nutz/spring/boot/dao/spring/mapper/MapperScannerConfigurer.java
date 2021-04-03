@@ -37,8 +37,6 @@ public class MapperScannerConfigurer implements BeanDefinitionRegistryPostProces
 
     private BeanNameGenerator beanNameGenerator = new DefaultBeanNameGenerator();
 
-    private String daoFactoryBeanName = "daoFactory";
-
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.applicationContext = applicationContext;
@@ -55,7 +53,6 @@ public class MapperScannerConfigurer implements BeanDefinitionRegistryPostProces
         ClassPathMapperScanner scanner = new ClassPathMapperScanner(registry);
         scanner.setResourceLoader(this.applicationContext);
         scanner.setBeanNameGenerator(this.beanNameGenerator);
-        scanner.setDaoFactoryBeanName(this.daoFactoryBeanName);
         scanner.registerFilters();
         scanner.scan(packages);
     }
@@ -65,5 +62,3 @@ public class MapperScannerConfigurer implements BeanDefinitionRegistryPostProces
         System.out.println(beanFactory);
     }
 }
-
-

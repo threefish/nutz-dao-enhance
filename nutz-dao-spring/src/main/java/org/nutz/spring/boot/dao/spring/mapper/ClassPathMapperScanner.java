@@ -1,5 +1,8 @@
 package org.nutz.spring.boot.dao.spring.mapper;
 
+import lombok.extern.slf4j.Slf4j;
+import org.nutz.spring.boot.dao.annotation.Mapper;
+import org.nutz.spring.boot.dao.factory.DaoFactory;
 import org.nutz.spring.boot.dao.spring.binding.MapperProxyFactory;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
@@ -9,6 +12,7 @@ import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
 import org.springframework.context.annotation.ClassPathBeanDefinitionScanner;
+import org.springframework.core.type.filter.AnnotationTypeFilter;
 import org.springframework.core.type.filter.AssignableTypeFilter;
 
 import java.util.Set;
@@ -17,16 +21,8 @@ import java.util.Set;
  * @author 黄川 huchuc@vip.qq.com
  * @date: 2020/7/31
  */
+@Slf4j
 public class ClassPathMapperScanner<T> extends ClassPathBeanDefinitionScanner {
-
-    @Setter
-    private Class<T> mapperInterface;
-
-    /**
-     * 使用Spring Bean机制自动创建
-     */
-    @Setter
-    private String daoFactoryBeanName;
 
     public ClassPathMapperScanner(BeanDefinitionRegistry registry) {
         super(registry);
@@ -38,16 +34,11 @@ public class ClassPathMapperScanner<T> extends ClassPathBeanDefinitionScanner {
         for (BeanDefinitionHolder definitionHolder : beanDefinitions) {
             GenericBeanDefinition beanDefinition = (GenericBeanDefinition) definitionHolder.getBeanDefinition();
             String beanClassName = beanDefinition.getBeanClassName();
-            // 必须在这里加入泛型限定，要不然在spring下会有循环引用的问题
-            beanDefinition.getConstructorArgumentValues().addGenericArgumentValue(beanClassName);
-            // 供spring实例化代理对象使用
             beanDefinition.setBeanClass(MapperProxyFactory.class);
-            beanDefinition.getPropertyValues().add("mapperInterface", beanClassName);
-            beanDefinition.getPropertyValues().add("daoFactory", new RuntimeBeanReference(this.daoFactoryBeanName));
-            // 设置Mapper按照接口组装
-            beanDefinition.setAutowireMode(AbstractBeanDefinition.AUTOWIRE_BY_TYPE);
-            if (logger.isDebugEnabled()) {
-                logger.debug("已开启Dao自动按照类型注入 '" + definitionHolder.getBeanName() + "'.");
+            beanDefinition.getConstructorArgumentValues().addGenericArgumentValue(beanClassName);
+            beanDefinition.getConstructorArgumentValues().addGenericArgumentValue(new RuntimeBeanReference(DaoFactory.class));
+            if (log.isDebugEnabled()) {
+                log.debug("自动生成'{}'代理类 beanName:{}", beanClassName, definitionHolder.getBeanName());
             }
         }
         return beanDefinitions;
@@ -63,23 +54,7 @@ public class ClassPathMapperScanner<T> extends ClassPathBeanDefinitionScanner {
     }
 
     public void registerFilters() {
-        boolean acceptAllInterfaces = true;
-        // override AssignableTypeFilter to ignore matches on the actual marker interface
-        if (this.mapperInterface != null) {
-            addIncludeFilter(new AssignableTypeFilter(this.mapperInterface) {
-                @Override
-                protected boolean matchClassName(String className) {
-                    return false;
-                }
-            });
-            acceptAllInterfaces = false;
-        }
-
-        if (acceptAllInterfaces) {
-            // default include filter that accepts all classes
-            addIncludeFilter((metadataReader, metadataReaderFactory) -> true);
-        }
-
+        addIncludeFilter(new AnnotationTypeFilter(Mapper.class));
         // exclude package-info.java
         addExcludeFilter((metadataReader, metadataReaderFactory) -> {
             String className = metadataReader.getClassMetadata().getClassName();
