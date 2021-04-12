@@ -21,6 +21,7 @@ public class MapperMethod {
     static {
         Method[] methods = BaseMapper.class.getMethods();
         for (Method method : methods) {
+            method.setAccessible(true);
             CACHE.put(method.toGenericString(), method);
         }
     }
@@ -51,7 +52,6 @@ public class MapperMethod {
         BaseMapper baseMapper = new BaseMapperExecute(dao, this.methodSignature.getReturnEntityClass());
         Method method = CACHE.get(this.methodGenericString);
         try {
-            method.setAccessible(true);
             return method.invoke(baseMapper, args);
         } catch (Exception e) {
             throw new RuntimeException("BaseMapper执行出错", e);

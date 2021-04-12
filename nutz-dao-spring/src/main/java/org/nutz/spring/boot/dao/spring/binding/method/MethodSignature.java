@@ -7,26 +7,25 @@
 
 package org.nutz.spring.boot.dao.spring.binding.method;
 
-import org.nutz.spring.boot.dao.annotation.DelectSql;
-import org.nutz.spring.boot.dao.annotation.InsertSql;
-import org.nutz.spring.boot.dao.annotation.QuerySql;
-import org.nutz.spring.boot.dao.annotation.UpdateSql;
-import org.nutz.spring.boot.dao.pagination.PageData;
-import org.nutz.spring.boot.dao.reflection.TypeParameterResolver;
-import org.nutz.spring.boot.dao.util.MethodSignatureUtil;
-import org.nutz.spring.boot.dao.util.ValueTypeUtil;
 import lombok.Getter;
 import org.nutz.dao.Sqls;
 import org.nutz.dao.sql.SqlCallback;
+import org.nutz.spring.boot.dao.annotation.Delete;
+import org.nutz.spring.boot.dao.annotation.Insert;
+import org.nutz.spring.boot.dao.annotation.Query;
+import org.nutz.spring.boot.dao.annotation.Update;
+import org.nutz.spring.boot.dao.pagination.PageData;
+import org.nutz.spring.boot.dao.reflection.TypeParameterResolver;
+import org.nutz.spring.boot.dao.util.MethodSignatureUtil;
+import org.nutz.spring.boot.dao.util.SqlCallbackUtil;
+import org.nutz.spring.boot.dao.util.ValueTypeUtil;
 import org.springframework.util.Assert;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.HashMap;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * @author 黄川 huchuc@vip.qq.com
@@ -34,8 +33,6 @@ import java.util.Optional;
  */
 @Getter
 public class MethodSignature {
-
-
     /**
      * 无返回值的
      */
@@ -85,8 +82,11 @@ public class MethodSignature {
      */
     private int conditionParameterInedx;
 
+    private String methodName;
+
     public MethodSignature(Class<?> mapperInterface, Method method) {
         String name = String.format("%s.%s", mapperInterface.getName(), MethodSignatureUtil.getMethodName(method));
+        this.methodName = method.getName();
         this.initCustomizeSql(name, method);
         Type resolvedReturnType = TypeParameterResolver.resolveReturnType(method, mapperInterface);
         if (resolvedReturnType instanceof Class<?>) {
@@ -124,10 +124,10 @@ public class MethodSignature {
         if (this.customizeSql) {
             this.sqlCommandType = SqlCommandType.SELECT;
             // 需要Sql注解，则必须要获取自定义sql
-            QuerySql querySql = method.getAnnotation(QuerySql.class);
-            UpdateSql updateSql = method.getAnnotation(UpdateSql.class);
-            InsertSql insertSql = method.getAnnotation(InsertSql.class);
-            DelectSql delectSql = method.getAnnotation(DelectSql.class);
+            Query querySql = method.getAnnotation(Query.class);
+            Update updateSql = method.getAnnotation(Update.class);
+            Insert insertSql = method.getAnnotation(Insert.class);
+            Delete delectSql = method.getAnnotation(Delete.class);
             if (Objects.nonNull(querySql)) {
                 this.sql = querySql.value();
             } else if (Objects.nonNull(updateSql)) {
@@ -156,7 +156,7 @@ public class MethodSignature {
             this.sqlCallback = Sqls.callback.entity();
             return;
         }
-        this.sqlCallback = ValueTypeUtil.getSqlCallback(this.returnType);
+        this.sqlCallback = SqlCallbackUtil.getSqlCallback(this.returnType);
         if (Objects.isNull(this.sqlCallback)) {
             if (ValueTypeUtil.isCollection(this.returnType) && Objects.nonNull(this.returnEntityClass)) {
                 // 返回类型是list，且返回的是实体对象
@@ -164,8 +164,12 @@ public class MethodSignature {
                 return;
             }
         }
+        List<String> methodNames = Arrays.asList("getEntity", "getDao", "getEntityClass");
         if (this.returnType != void.class) {
-            Assert.notNull(this.sqlCallback, String.format("不支持的返回类型[%s]", this.returnType));
+            // 有返回值且方法名不是内部的
+            if (!methodNames.contains(this.methodName)) {
+                Assert.notNull(this.sqlCallback, String.format("方法[%s]不支持的返回类型[%s]",this.methodName, this.returnType));
+            }
         }
     }
 

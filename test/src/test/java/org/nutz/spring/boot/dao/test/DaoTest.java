@@ -7,6 +7,7 @@ import org.junit.runner.RunWith;
 import org.nutz.dao.Cnd;
 import org.nutz.dao.entity.Record;
 import org.nutz.dao.pager.Pager;
+import org.nutz.dao.util.Daos;
 import org.nutz.spring.boot.dao.annotation.MapperScan;
 import org.nutz.spring.boot.dao.pagination.PageData;
 import org.nutz.spring.boot.dao.test.entity.UserDO;
@@ -46,6 +47,8 @@ public class DaoTest {
 
     @Test
     public void testCustomizeSql() {
+        Daos.FORCE_HUMP_COLUMN_NAME = true;
+        Daos.createTablesInPackage(userMapper.getDao(), UserDO.class, true);
         List<UserDO> list = userMapper.listUser(Cnd.where("id", "=", 8));
         PageData<UserDO> pageData = userMapper.listUserPage(new Pager(1, 10));
         UserDO uset = userMapper.fetchEntityOne(8);

@@ -26,7 +26,7 @@ public interface UserMapper extends BaseMapper<UserDO> {
      * @param id
      * @return
      */
-    @QuerySql("select * from user where id=@id")
+    @Query("select * from user where id=@id")
     UserDO fetchEntityOne(int id);
 
     /**
@@ -35,7 +35,7 @@ public interface UserMapper extends BaseMapper<UserDO> {
      * @param condition
      * @return
      */
-    @QuerySql("select * from user $condition")
+    @Query("select * from user $condition")
     List<UserDO> listUser(Condition condition);
 
     /**
@@ -44,7 +44,7 @@ public interface UserMapper extends BaseMapper<UserDO> {
      * @param id
      * @return
      */
-    @QuerySql("select * from user where id=@id")
+    @Query("select * from user where id=@id")
     Map fetchMapOne(int id);
 
     /**
@@ -53,7 +53,7 @@ public interface UserMapper extends BaseMapper<UserDO> {
      * @param id
      * @return
      */
-    @QuerySql("select * from user where id=@id")
+    @Query("select * from user where id=@id")
     Record fetchRecordOne(int id);
 
     /**
@@ -61,7 +61,7 @@ public interface UserMapper extends BaseMapper<UserDO> {
      *
      * @return
      */
-    @QuerySql("select * from user")
+    @Query("select * from user")
     UserDO fetchOne();
 
     /**
@@ -70,7 +70,7 @@ public interface UserMapper extends BaseMapper<UserDO> {
      * @param pager
      * @return
      */
-    @QuerySql("select * from user")
+    @Query("select * from user")
     PageData listUserPage(Pager pager);
 
     /**
@@ -81,7 +81,7 @@ public interface UserMapper extends BaseMapper<UserDO> {
      * @param create
      * @return
      */
-    @InsertSql("INSERT INTO user(`name`, `age`,`gmt_create`,`create_by`) VALUES (@name,@age, now(),@create)")
+    @Insert("INSERT INTO user(`name`, `age`,`gmt_create`,`create_by`) VALUES (@name,@age, now(),@create)")
     int insert(String name, int age, String create);
 
     /**
@@ -91,7 +91,7 @@ public interface UserMapper extends BaseMapper<UserDO> {
      * @param age
      * @param create
      */
-    @InsertSql("INSERT INTO user(`name`, `age`,`gmt_create`,`create_by`) VALUES (@name,@age, now(),@create)")
+    @Insert("INSERT INTO user(`name`, `age`,`gmt_create`,`create_by`) VALUES (@name,@age, now(),@create)")
     void insertVoid(String name, int age, String create);
 
     /**
@@ -101,7 +101,7 @@ public interface UserMapper extends BaseMapper<UserDO> {
      * @param id
      * @return
      */
-    @UpdateSql("UPDATE user SET age = @age WHERE id = @id")
+    @Update("UPDATE user SET age = @age WHERE id = @id")
     int updateAgeById(int age, int id);
 
     /**
@@ -110,7 +110,7 @@ public interface UserMapper extends BaseMapper<UserDO> {
      * @param id
      * @return
      */
-    @DelectSql("DELETE FROM user WHERE id=@id")
+    @Delete("DELETE FROM user WHERE id=@id")
     int delectById(int id);
 
 
