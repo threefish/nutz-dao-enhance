@@ -54,9 +54,9 @@ public class MethodSignature {
      */
     private final boolean multipleRecords;
     /**
-     * sql语句
+     * sql模板语句
      */
-    private String sql;
+    private String sqlTemplate;
     /**
      * 是否分页查询
      */
@@ -129,20 +129,20 @@ public class MethodSignature {
             Insert insertSql = method.getAnnotation(Insert.class);
             Delete delectSql = method.getAnnotation(Delete.class);
             if (Objects.nonNull(querySql)) {
-                this.sql = querySql.value();
+                this.sqlTemplate = querySql.value();
             } else if (Objects.nonNull(updateSql)) {
-                this.sql = updateSql.value();
+                this.sqlTemplate = updateSql.value();
                 this.sqlCommandType = SqlCommandType.UPDATE;
             } else if (Objects.nonNull(insertSql)) {
-                this.sql = insertSql.value();
+                this.sqlTemplate = insertSql.value();
                 this.sqlCommandType = SqlCommandType.INSERT;
             } else if (Objects.nonNull(delectSql)) {
-                this.sql = delectSql.value();
+                this.sqlTemplate = delectSql.value();
                 this.sqlCommandType = SqlCommandType.DELETE;
             } else {
                 throw new RuntimeException(String.format("[%s] 缺失 QuerySql、UpdateSql、InsertSql 等任意注解", name));
             }
-            Assert.hasText(this.sql, String.format("自定义sql不能为空", name));
+            Assert.hasText(this.sqlTemplate, String.format("自定义sql不能为空", name));
         }
     }
 

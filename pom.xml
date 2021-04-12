@@ -24,6 +24,15 @@
         <maven.compiler.target>8</maven.compiler.target>
     </properties>
 
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.nutz</groupId>
+                <artifactId>nutz</artifactId>
+                <version>1.r.68.v20201205</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
 
 </project>

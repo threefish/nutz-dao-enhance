@@ -22,8 +22,8 @@ public class PaginationQueryExecute extends AbstractExecute {
      */
     private final Pager pager;
 
-    public PaginationQueryExecute(Dao dao, MethodSignature methodSignature, Object[] args) {
-        super(dao, methodSignature, args);
+    public PaginationQueryExecute(Dao dao, String executeSql, MethodSignature methodSignature, Object[] args) {
+        super(dao, executeSql, methodSignature, args);
         // 第一位必须是分页对象
         this.pager = (Pager) args[0];
     }
@@ -38,7 +38,7 @@ public class PaginationQueryExecute extends AbstractExecute {
         PageData pageData = new PageData();
         pageData.setPager(this.pager);
         List listData = new ArrayList();
-        Sql sql = Sqls.create(methodSignature.getSql()).setParams(this.params);
+        Sql sql = Sqls.create(executeSql).setParams(this.params);
         this.setCondition(sql);
         pageData.setTotal(Daos.queryCount(dao, sql));
         if (pageData.getTotal() > 0) {

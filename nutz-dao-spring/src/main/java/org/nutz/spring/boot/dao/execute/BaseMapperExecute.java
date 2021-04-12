@@ -24,10 +24,10 @@ public class BaseMapperExecute<T> implements BaseMapper<T> {
 
     private final Entity entity;
 
-    public BaseMapperExecute(Dao dao, Class<T> entityClass) {
+    public BaseMapperExecute(Dao dao, Class<T> entityClass, Entity entity) {
         this.dao = dao;
         this.entityClass = entityClass;
-        this.entity = dao.getEntity(entityClass);
+        this.entity = entity;
     }
 
     @Override

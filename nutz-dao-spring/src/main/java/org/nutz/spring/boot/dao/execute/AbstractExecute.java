@@ -25,12 +25,17 @@ public abstract class AbstractExecute implements Execute {
      * 参数
      */
     protected Object[] args;
+    /**
+     * 真正执行的sql
+     */
+    protected String executeSql;
 
 
-    public AbstractExecute(Dao dao, MethodSignature methodSignature, Object[] args) {
+    public AbstractExecute(Dao dao, String executeSql, MethodSignature methodSignature, Object[] args) {
         this.dao = dao;
         this.methodSignature = methodSignature;
         this.args = args;
+        this.executeSql = executeSql;
         this.initParams();
     }
 

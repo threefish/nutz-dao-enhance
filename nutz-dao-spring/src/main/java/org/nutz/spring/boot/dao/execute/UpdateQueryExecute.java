@@ -11,13 +11,13 @@ import org.nutz.spring.boot.dao.spring.binding.method.MethodSignature;
  */
 public class UpdateQueryExecute extends AbstractExecute {
 
-    public UpdateQueryExecute(Dao dao, MethodSignature methodSignature, Object[] args) {
-        super(dao, methodSignature, args);
+    public UpdateQueryExecute(Dao dao, String executeSql, MethodSignature methodSignature, Object[] args) {
+        super(dao, executeSql, methodSignature, args);
     }
 
     @Override
     public Object invoke() {
-        Sql sql = Sqls.create(methodSignature.getSql()).setParams(this.params);
+        Sql sql = Sqls.create(executeSql).setParams(this.params);
         this.setCondition(sql);
         sql.setEntity(dao.getEntity(this.methodSignature.getReturnEntityClass()));
         sql.setCallback(methodSignature.getSqlCallback());

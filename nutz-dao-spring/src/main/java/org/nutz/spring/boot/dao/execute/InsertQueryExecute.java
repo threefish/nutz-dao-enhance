@@ -19,13 +19,13 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 public class InsertQueryExecute extends AbstractExecute {
 
-    public InsertQueryExecute(Dao dao, MethodSignature methodSignature, Object[] args) {
-        super(dao, methodSignature, args);
+    public InsertQueryExecute(Dao dao, String executeSql, MethodSignature methodSignature, Object[] args) {
+        super(dao, executeSql, methodSignature, args);
     }
 
     @Override
     public Object invoke() {
-        Sql sql = Sqls.create(methodSignature.getSql()).setParams(this.params);
+        Sql sql = Sqls.create(executeSql).setParams(this.params);
         this.setCondition(sql);
         if (this.methodSignature.getReturnType() == void.class) {
             dao.execute(sql);

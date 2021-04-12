@@ -61,10 +61,19 @@ public class DaoTest {
 
     @Test
     public void testBaseMapper() {
-        UserDO insert = userMapper.insert(UserDO.builder().age(15).name("测试11").build());
+        UserDO insert = userMapper.insert(UserDO.builder().age(15).realName("测试11").build());
         UserDO fetch = userMapper.fetch(insert.getId());
         int updateCount = userMapper.delete(insert.getId());
         System.out.println(updateCount);
+    }
+
+
+    @Test
+    public void testHql() {
+        userMapper.insert(UserDO.builder().age(15).realName("测试11").build());
+        UserDO fetch = userMapper.queryByHql("测试11");
+        System.out.println(fetch);
+
     }
 
 }

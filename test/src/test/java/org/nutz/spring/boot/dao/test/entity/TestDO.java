@@ -18,12 +18,12 @@ import java.util.Date;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Table("user")
-public class UserDO implements java.io.Serializable {
+@Table("test")
+public class TestDO implements java.io.Serializable {
     @Id
     Integer id;
     @Column
-    String realName;
+    String name;
     @Column
     Integer age;
     @Column

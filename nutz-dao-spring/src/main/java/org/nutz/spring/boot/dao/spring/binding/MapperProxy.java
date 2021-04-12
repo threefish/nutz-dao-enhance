@@ -96,7 +96,7 @@ public class MapperProxy<T> implements InvocationHandler, Serializable {
                         throw new RuntimeException(e);
                     }
                 } else {
-                    return new PlainMethodInvoker(new MapperMethod(daoFactory, mapperInterface, method));
+                    return new PlainMethodInvoker(new MapperMethod(daoFactory, dataSource, mapperInterface, method));
                 }
             });
         } catch (RuntimeException re) {
