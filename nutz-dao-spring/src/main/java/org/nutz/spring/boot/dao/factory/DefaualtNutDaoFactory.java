@@ -70,7 +70,7 @@ public class DefaualtNutDaoFactory implements DaoFactory, InitializingBean, Appl
         }
     }
 
-    private Dao createDao(@Autowired DataSource dataSource) {
+    private Dao createDao(DataSource dataSource) {
         NutDao nutDao = new NutDao(dataSource);
         // 将事务交给spring管理
         nutDao.setRunner(new SpringDaoRunner());

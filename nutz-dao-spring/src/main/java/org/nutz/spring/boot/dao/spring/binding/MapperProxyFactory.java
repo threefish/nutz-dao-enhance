@@ -22,6 +22,7 @@ public class MapperProxyFactory<T> implements FactoryBean<T> {
     private final Map<Method, MapperMethodInvoker> methodCache = new ConcurrentHashMap<>();
     private final Class<T> mapperInterface;
     private final DaoFactory daoFactory;
+    private final String dataSource;
 
     @SuppressWarnings("unchecked")
     protected T newInstance(MapperProxy<T> mapperProxy) {
@@ -32,7 +33,7 @@ public class MapperProxyFactory<T> implements FactoryBean<T> {
     }
 
     public T newInstance(DaoFactory daoFactory) {
-        return newInstance(new MapperProxy<>(daoFactory, mapperInterface, methodCache));
+        return newInstance(new MapperProxy<>(daoFactory,dataSource, mapperInterface, methodCache));
     }
 
 

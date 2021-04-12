@@ -24,19 +24,27 @@ import java.util.Set;
 @Slf4j
 public class ClassPathMapperScanner extends ClassPathBeanDefinitionScanner {
 
+    private String dataSource;
+
+    public void setDataSource(String dataSource) {
+        this.dataSource = dataSource;
+    }
+
     public ClassPathMapperScanner(BeanDefinitionRegistry registry) {
         super(registry);
     }
 
     @Override
     public Set<BeanDefinitionHolder> doScan(String... basePackages) {
+        final RuntimeBeanReference runtimeBeanReference = new RuntimeBeanReference(DaoFactory.class);
         Set<BeanDefinitionHolder> beanDefinitions = super.doScan(basePackages);
         for (BeanDefinitionHolder definitionHolder : beanDefinitions) {
             GenericBeanDefinition beanDefinition = (GenericBeanDefinition) definitionHolder.getBeanDefinition();
             String beanClassName = beanDefinition.getBeanClassName();
             beanDefinition.setBeanClass(MapperProxyFactory.class);
             beanDefinition.getConstructorArgumentValues().addGenericArgumentValue(beanClassName);
-            beanDefinition.getConstructorArgumentValues().addGenericArgumentValue(new RuntimeBeanReference(DaoFactory.class));
+            beanDefinition.getConstructorArgumentValues().addGenericArgumentValue(dataSource);
+            beanDefinition.getConstructorArgumentValues().addGenericArgumentValue(runtimeBeanReference);
             if (log.isDebugEnabled()) {
                 log.debug("自动生成'{}'代理类 beanName:{}", beanClassName, definitionHolder.getBeanName());
             }

@@ -48,7 +48,6 @@ public class DaoTest {
     @Test
     public void testCustomizeSql() {
         Daos.FORCE_HUMP_COLUMN_NAME = true;
-        Daos.createTablesInPackage(userMapper.getDao(), UserDO.class, true);
         List<UserDO> list = userMapper.listUser(Cnd.where("id", "=", 8));
         PageData<UserDO> pageData = userMapper.listUserPage(new Pager(1, 10));
         UserDO uset = userMapper.fetchEntityOne(8);

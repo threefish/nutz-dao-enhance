@@ -51,9 +51,11 @@ public class MapperProxy<T> implements InvocationHandler, Serializable {
     private final Class<T> mapperInterface;
     private final Map<Method, MapperMethodInvoker> methodCache;
     private final DaoFactory daoFactory;
+    private final String dataSource;
 
-    public MapperProxy(DaoFactory daoFactory, Class<T> mapperInterface, Map<Method, MapperMethodInvoker> methodCache) {
+    public MapperProxy(DaoFactory daoFactory, String dataSource, Class<T> mapperInterface, Map<Method, MapperMethodInvoker> methodCache) {
         this.mapperInterface = mapperInterface;
+        this.dataSource = dataSource;
         this.methodCache = methodCache;
         this.daoFactory = daoFactory;
     }
@@ -64,7 +66,7 @@ public class MapperProxy<T> implements InvocationHandler, Serializable {
             if (Object.class.equals(method.getDeclaringClass())) {
                 return method.invoke(this, args);
             } else {
-                return cachedInvoker(method).invoke(proxy, method, args, daoFactory);
+                return cachedInvoker(method).invoke(proxy, method, args, dataSource);
             }
         } catch (Throwable t) {
             throw t;
@@ -94,7 +96,7 @@ public class MapperProxy<T> implements InvocationHandler, Serializable {
                         throw new RuntimeException(e);
                     }
                 } else {
-                    return new PlainMethodInvoker(new MapperMethod(mapperInterface, method));
+                    return new PlainMethodInvoker(new MapperMethod(daoFactory, mapperInterface, method));
                 }
             });
         } catch (RuntimeException re) {
@@ -126,8 +128,8 @@ public class MapperProxy<T> implements InvocationHandler, Serializable {
         }
 
         @Override
-        public Object invoke(Object proxy, Method method, Object[] args, DaoFactory daoFactory) throws Throwable {
-            return mapperMethod.execute(daoFactory, args);
+        public Object invoke(Object proxy, Method method, Object[] args, String dataSource) throws Throwable {
+            return mapperMethod.execute(dataSource, args);
         }
     }
 
@@ -140,7 +142,7 @@ public class MapperProxy<T> implements InvocationHandler, Serializable {
         }
 
         @Override
-        public Object invoke(Object proxy, Method method, Object[] args, DaoFactory daoFactory) throws Throwable {
+        public Object invoke(Object proxy, Method method, Object[] args, String dataSource) throws Throwable {
             return methodHandle.bindTo(proxy).invokeWithArguments(args);
         }
     }

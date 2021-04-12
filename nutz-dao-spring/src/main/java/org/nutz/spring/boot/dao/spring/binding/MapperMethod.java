@@ -30,6 +30,7 @@ public class MapperMethod {
      * 方法信息
      */
     private final MethodSignature methodSignature;
+    private final DaoFactory daoFactory;
     private String methodGenericString;
 
     /**
@@ -38,14 +39,15 @@ public class MapperMethod {
      * @param mapperInterface
      * @param method
      */
-    public MapperMethod(Class<?> mapperInterface, Method method) {
+    public MapperMethod(DaoFactory daoFactory, Class<?> mapperInterface, Method method) {
+        this.daoFactory = daoFactory;
         this.methodGenericString = method.toGenericString();
         this.methodSignature = new MethodSignature(mapperInterface, method);
     }
 
 
-    public Object execute(DaoFactory daoFactory, Object[] args) {
-        Dao dao = daoFactory.getDao();
+    public Object execute(String dataSource, Object[] args) {
+        Dao dao = daoFactory.getDao(dataSource);
         if (this.methodSignature.isCustomizeSql()) {
             return this.getCustomizeSqlExecute(dao, args).invoke();
         }
