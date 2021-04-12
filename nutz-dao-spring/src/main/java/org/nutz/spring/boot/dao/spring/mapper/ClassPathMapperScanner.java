@@ -22,7 +22,7 @@ import java.util.Set;
  * @date: 2020/7/31
  */
 @Slf4j
-public class ClassPathMapperScanner<T> extends ClassPathBeanDefinitionScanner {
+public class ClassPathMapperScanner extends ClassPathBeanDefinitionScanner {
 
     public ClassPathMapperScanner(BeanDefinitionRegistry registry) {
         super(registry);

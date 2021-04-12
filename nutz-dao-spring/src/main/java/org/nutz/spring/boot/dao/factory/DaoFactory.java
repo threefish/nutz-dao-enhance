@@ -27,6 +27,6 @@ public interface DaoFactory {
      *
      * @return
      */
-    Dao getDao(String name);
+    Dao getDao(String dataSource);
 
 }

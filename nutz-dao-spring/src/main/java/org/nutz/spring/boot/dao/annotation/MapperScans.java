@@ -1,5 +1,6 @@
 package org.nutz.spring.boot.dao.annotation;
 
+import org.nutz.spring.boot.dao.spring.MapperScannerRegistrar;
 import org.springframework.context.annotation.Import;
 
 import java.lang.annotation.*;

@@ -2,12 +2,10 @@ package org.nutz.spring.boot.dao.spring.mapper;
 
 import lombok.Data;
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.BeanNameAware;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
-import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.beans.factory.support.DefaultBeanNameGenerator;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -23,7 +21,7 @@ import static org.springframework.util.Assert.notNull;
  * @date: 2020/7/30
  */
 @Data
-public class MapperScannerConfigurer implements BeanDefinitionRegistryPostProcessor, InitializingBean, ApplicationContextAware, BeanNameAware {
+public class MapperScannerConfigurer implements BeanDefinitionRegistryPostProcessor, InitializingBean, ApplicationContextAware {
 
     private String basePackage;
 
@@ -31,11 +29,7 @@ public class MapperScannerConfigurer implements BeanDefinitionRegistryPostProces
 
     private ApplicationContext applicationContext;
 
-    private String beanName;
-
-    private boolean processPropertyPlaceHolders;
-
-    private BeanNameGenerator beanNameGenerator = new DefaultBeanNameGenerator();
+    private String dataSource;
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
@@ -52,7 +46,7 @@ public class MapperScannerConfigurer implements BeanDefinitionRegistryPostProces
         String[] packages = StringUtils.tokenizeToStringArray(this.basePackage, ConfigurableApplicationContext.CONFIG_LOCATION_DELIMITERS);
         ClassPathMapperScanner scanner = new ClassPathMapperScanner(registry);
         scanner.setResourceLoader(this.applicationContext);
-        scanner.setBeanNameGenerator(this.beanNameGenerator);
+        scanner.setBeanNameGenerator(new DefaultBeanNameGenerator());
         scanner.registerFilters();
         scanner.scan(packages);
     }

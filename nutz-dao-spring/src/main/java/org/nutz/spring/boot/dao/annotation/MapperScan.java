@@ -1,5 +1,7 @@
 package org.nutz.spring.boot.dao.annotation;
 
+import org.nutz.spring.boot.dao.config.DataSourceConstant;
+import org.nutz.spring.boot.dao.spring.MapperScannerRegistrar;
 import org.springframework.context.annotation.Import;
 
 import java.lang.annotation.*;
@@ -40,4 +42,9 @@ public @interface MapperScan {
      * @return classes that indicate base package for scanning mapper interface
      */
     Class<?>[] basePackageClasses() default {};
+
+    /**
+     * 数据源,采用默认数据源
+     */
+    String dataSource() default DataSourceConstant.DEFAUALT_DATASOURCE_KEY;
 }
