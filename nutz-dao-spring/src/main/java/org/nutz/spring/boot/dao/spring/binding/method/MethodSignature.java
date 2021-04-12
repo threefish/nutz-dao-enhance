@@ -52,7 +52,7 @@ public class MethodSignature {
     /**
      * 是否返回多条记录
      */
-    private boolean multipleRecords;
+    private final boolean multipleRecords;
     /**
      * sql语句
      */
@@ -60,11 +60,11 @@ public class MethodSignature {
     /**
      * 是否分页查询
      */
-    private boolean paginationQuery;
+    private final boolean paginationQuery;
     /**
      * 参数名列表
      */
-    private HashMap<Integer, String> parameterNames = new HashMap<>();
+    private final HashMap<Integer, String> parameterNames = new HashMap<>();
     /**
      * 返回实体类
      */
@@ -80,9 +80,9 @@ public class MethodSignature {
     /**
      * Cnd 参数位置，-1 代表没有
      */
-    private int conditionParameterInedx;
+    private final int conditionParameterInedx;
 
-    private String methodName;
+    private final String methodName;
 
     public MethodSignature(Class<?> mapperInterface, Method method) {
         String name = String.format("%s.%s", mapperInterface.getName(), MethodSignatureUtil.getMethodName(method));
@@ -168,7 +168,7 @@ public class MethodSignature {
         if (this.returnType != void.class) {
             // 有返回值且方法名不是内部的
             if (!methodNames.contains(this.methodName)) {
-                Assert.notNull(this.sqlCallback, String.format("方法[%s]不支持的返回类型[%s]",this.methodName, this.returnType));
+                Assert.notNull(this.sqlCallback, String.format("方法[%s]不支持的返回类型[%s]", this.methodName, this.returnType));
             }
         }
     }

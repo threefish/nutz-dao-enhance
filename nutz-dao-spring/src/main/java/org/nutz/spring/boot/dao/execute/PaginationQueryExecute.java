@@ -1,12 +1,12 @@
 package org.nutz.spring.boot.dao.execute;
 
-import org.nutz.spring.boot.dao.pagination.PageData;
-import org.nutz.spring.boot.dao.spring.binding.method.MethodSignature;
 import org.nutz.dao.Dao;
 import org.nutz.dao.Sqls;
 import org.nutz.dao.pager.Pager;
 import org.nutz.dao.sql.Sql;
 import org.nutz.dao.util.Daos;
+import org.nutz.spring.boot.dao.pagination.PageData;
+import org.nutz.spring.boot.dao.spring.binding.method.MethodSignature;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +20,7 @@ public class PaginationQueryExecute extends AbstractExecute {
     /**
      * 分页数据信息
      */
-    private Pager pager;
+    private final Pager pager;
 
     public PaginationQueryExecute(Dao dao, MethodSignature methodSignature, Object[] args) {
         super(dao, methodSignature, args);

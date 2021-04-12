@@ -1,19 +1,17 @@
 package org.nutz.spring.boot.dao.spring.mapper;
 
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.nutz.spring.boot.dao.annotation.Mapper;
 import org.nutz.spring.boot.dao.factory.DaoFactory;
 import org.nutz.spring.boot.dao.spring.binding.MapperProxyFactory;
-import lombok.Setter;
 import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
-import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
 import org.springframework.context.annotation.ClassPathBeanDefinitionScanner;
 import org.springframework.core.type.filter.AnnotationTypeFilter;
-import org.springframework.core.type.filter.AssignableTypeFilter;
 
 import java.util.Set;
 
@@ -24,11 +22,9 @@ import java.util.Set;
 @Slf4j
 public class ClassPathMapperScanner extends ClassPathBeanDefinitionScanner {
 
+    @Setter
     private String dataSource;
 
-    public void setDataSource(String dataSource) {
-        this.dataSource = dataSource;
-    }
 
     public ClassPathMapperScanner(BeanDefinitionRegistry registry) {
         super(registry);

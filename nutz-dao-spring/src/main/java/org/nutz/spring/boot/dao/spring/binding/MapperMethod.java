@@ -16,7 +16,7 @@ import java.util.HashMap;
  */
 public class MapperMethod {
 
-    private static HashMap<String, Method> CACHE = new HashMap<>();
+    private static final HashMap<String, Method> CACHE = new HashMap<>();
 
     static {
         Method[] methods = BaseMapper.class.getMethods();
@@ -31,7 +31,7 @@ public class MapperMethod {
      */
     private final MethodSignature methodSignature;
     private final DaoFactory daoFactory;
-    private String methodGenericString;
+    private final String methodGenericString;
 
     /**
      * 这里对mapper进行解析，每个mapper只会解析1次

@@ -1,4 +1,4 @@
-package org.nutz.spring.boot.dao.config;
+package org.nutz.spring.boot.dao.config.properties;
 
 /**
  * @author 黄川 huchuc@vip.qq.com

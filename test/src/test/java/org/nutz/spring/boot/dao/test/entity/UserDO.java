@@ -19,7 +19,7 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table("user")
-public class UserDO implements java.io.Serializable{
+public class UserDO implements java.io.Serializable {
     @Id
     Integer id;
     @Column

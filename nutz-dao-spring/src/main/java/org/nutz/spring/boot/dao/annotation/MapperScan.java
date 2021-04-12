@@ -1,6 +1,6 @@
 package org.nutz.spring.boot.dao.annotation;
 
-import org.nutz.spring.boot.dao.config.DataSourceConstant;
+import org.nutz.spring.boot.dao.config.properties.DataSourceConstant;
 import org.nutz.spring.boot.dao.spring.MapperScannerRegistrar;
 import org.springframework.context.annotation.Import;
 

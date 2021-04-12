@@ -33,7 +33,7 @@ public class MapperProxyFactory<T> implements FactoryBean<T> {
     }
 
     public T newInstance(DaoFactory daoFactory) {
-        return newInstance(new MapperProxy<>(daoFactory,dataSource, mapperInterface, methodCache));
+        return newInstance(new MapperProxy<>(daoFactory, dataSource, mapperInterface, methodCache));
     }
 
 

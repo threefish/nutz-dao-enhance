@@ -1,10 +1,10 @@
 package org.nutz.spring.boot.dao.util;
 
-import org.nutz.spring.boot.dao.annotation.Entity;
-import org.nutz.spring.boot.dao.execute.BaseMapper;
 import org.nutz.dao.Condition;
 import org.nutz.dao.pager.Pager;
 import org.nutz.lang.Lang;
+import org.nutz.spring.boot.dao.annotation.Entity;
+import org.nutz.spring.boot.dao.execute.BaseMapper;
 import sun.reflect.generics.reflectiveObjects.ParameterizedTypeImpl;
 
 import java.lang.reflect.Method;
@@ -51,7 +51,7 @@ public class MethodSignatureUtil {
         for (Parameter parameter : parameters) {
             joiner.add(parameter.getType().toString());
         }
-        return String.format("%s(%s)", name, joiner.toString());
+        return String.format("%s(%s)", name, joiner);
     }
 
     /**

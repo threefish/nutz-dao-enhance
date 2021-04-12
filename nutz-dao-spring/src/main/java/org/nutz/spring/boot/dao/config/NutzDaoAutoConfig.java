@@ -1,4 +1,4 @@
-package org.nutz.spring.boot.dao;
+package org.nutz.spring.boot.dao.config;
 
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;

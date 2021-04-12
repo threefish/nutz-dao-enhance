@@ -18,11 +18,11 @@ import java.util.Map;
  */
 public class BaseMapperExecute<T> implements BaseMapper<T> {
 
-    private Dao dao;
+    private final Dao dao;
 
-    private Class<T> entityClass;
+    private final Class<T> entityClass;
 
-    private Entity entity;
+    private final Entity entity;
 
     public BaseMapperExecute(Dao dao, Class<T> entityClass) {
         this.dao = dao;

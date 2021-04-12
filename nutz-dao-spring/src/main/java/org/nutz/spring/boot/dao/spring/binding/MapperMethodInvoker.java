@@ -1,7 +1,5 @@
 package org.nutz.spring.boot.dao.spring.binding;
 
-import org.nutz.spring.boot.dao.factory.DaoFactory;
-
 import java.lang.reflect.Method;
 
 /**
