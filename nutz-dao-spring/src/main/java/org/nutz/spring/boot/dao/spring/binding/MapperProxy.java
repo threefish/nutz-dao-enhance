@@ -129,7 +129,7 @@ public class MapperProxy<T> implements InvocationHandler, Serializable {
 
         @Override
         public Object invoke(Object proxy, Method method, Object[] args, String dataSource) throws Throwable {
-            return mapperMethod.execute(dataSource, args);
+            return mapperMethod.execute(dataSource, method, args);
         }
     }
 

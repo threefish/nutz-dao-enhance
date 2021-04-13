@@ -8,7 +8,6 @@ import org.nutz.spring.boot.dao.spring.binding.method.MethodSignature;
 import org.springframework.util.Assert;
 
 import java.lang.reflect.Method;
-import java.util.HashMap;
 
 /**
  * @author 黄川 huchuc@vip.qq.com
@@ -16,22 +15,11 @@ import java.util.HashMap;
  */
 public class MapperMethod {
 
-    private static final HashMap<String, Method> CACHE = new HashMap<>();
-
-    static {
-        Method[] methods = BaseMapper.class.getMethods();
-        for (Method method : methods) {
-            method.setAccessible(true);
-            CACHE.put(method.toGenericString(), method);
-        }
-    }
-
     /**
      * 方法信息
      */
     private final MethodSignature methodSignature;
     private final DaoFactory daoFactory;
-    private final String methodGenericString;
 
     /**
      * 这里对mapper进行解析，每个mapper只会解析1次
@@ -41,20 +29,18 @@ public class MapperMethod {
      */
     public MapperMethod(DaoFactory daoFactory, Class<?> mapperInterface, Method method) {
         this.daoFactory = daoFactory;
-        this.methodGenericString = method.toGenericString();
         this.methodSignature = new MethodSignature(mapperInterface, method);
     }
 
 
-    public Object execute(String dataSource, Object[] args) {
+    public Object execute(String dataSource, Method methodTraget, Object[] args) {
         Dao dao = daoFactory.getDao(dataSource);
         if (this.methodSignature.isCustomizeSql()) {
             return this.getCustomizeSqlExecute(dao, args).invoke();
         }
         BaseMapper baseMapper = new BaseMapperExecute(dao, this.methodSignature.getReturnEntityClass());
-        Method method = CACHE.get(this.methodGenericString);
         try {
-            return method.invoke(baseMapper, args);
+            return methodTraget.invoke(baseMapper, args);
         } catch (Exception e) {
             throw new RuntimeException("BaseMapper执行出错", e);
         }
