@@ -1,4 +1,4 @@
-package org.nutz.spring.boot.dao.spring.binding.helper;
+package org.nutz.spring.boot.dao.spring.binding.parser;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -6,6 +6,7 @@ import org.nutz.dao.entity.Entity;
 import org.nutz.dao.entity.MappingField;
 import org.nutz.spring.boot.dao.spring.binding.EntityClassInfoHolder;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import java.util.*;
 import java.util.regex.Matcher;
@@ -21,19 +22,20 @@ public class SimpleSqlParser {
     public static final String ALL_COLUMN_KEY = "*";
     private final static Pattern CONDITION_PATTERN = Pattern.compile("#\\[.*?]");
     private final static Pattern CONDITION_PARAMETER_PATTERN = Pattern.compile("@[a-zA-Z0-9-.]+");
+    private final static Pattern CONDITION_PARAMETER_PATTERN2 = Pattern.compile("@\\{[a-zA-Z0-9-.]+}");
     /**
      * 原始sql
      */
     @Getter
     private final String originalSql;
     @Getter
+    private final Set<ColumnMapping> columns = new HashSet<>();
+    @Getter
     private String sql;
     @Getter
     private Set<TableMapping> tables = new HashSet<>();
     @Getter
     private List<ConditionMapping> conditions = Collections.EMPTY_LIST;
-    @Getter
-    private Set<ColumnMapping> columns = new HashSet<>();
 
     public SimpleSqlParser(String originalSql) {
         this.originalSql = originalSql;
@@ -44,8 +46,16 @@ public class SimpleSqlParser {
             // 增加字段映射
             this.columns.addAll(conditionMapping.getColumns());
         }
-        // 用占位符替换后的sql来再次分析字段
-        this.columns.addAll(getColumnMapping(getTokens(this.sql)));
+        if (!StringUtils.hasText(this.sql)) {
+            // sql 是空的，一定是未找到需要进行增强翻译的sql,直接返回原始sql
+            this.sql = this.originalSql;
+        } else {
+            // 用占位符替换后的sql来再次分析字段
+            final Set<ColumnMapping> columnMapping = getColumnMapping(getTokens(this.sql));
+            if (!CollectionUtils.isEmpty(columnMapping)) {
+                this.columns.addAll(columnMapping);
+            }
+        }
     }
 
 
@@ -119,7 +129,7 @@ public class SimpleSqlParser {
             if (Objects.nonNull(field)) {
                 final String realColumnName = String.format("%s.%s", table.getAliasName(), field.getColumnName());
                 if (!columnMapping.getName().equals(realColumnName)) {
-                    return tempSql.replaceAll(columnMapping.getName(), realColumnName);
+                    return tempSql.replace(columnMapping.getName(), realColumnName);
                 }
             }
         }
@@ -166,6 +176,12 @@ public class SimpleSqlParser {
             int start = matcher.start();
             int end = matcher.end();
             strings.add(part.substring(start + 1, end));
+        }
+        Matcher matcher2 = CONDITION_PARAMETER_PATTERN2.matcher(part);
+        while (matcher2.find()) {
+            int start = matcher2.start();
+            int end = matcher2.end();
+            strings.add(part.substring(start + 2, end - 1));
         }
         return strings;
     }

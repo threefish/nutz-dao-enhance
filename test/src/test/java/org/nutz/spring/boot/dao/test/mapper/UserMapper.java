@@ -21,6 +21,26 @@ import java.util.Map;
 public interface UserMapper extends BaseMapper<UserDO> {
 
     /**
+     * gmtCreate 入参不存在，所以当前#[]中的全部条件不生效
+     * 输出SQL：select u.id,u.real_name,u.age,u.gmt_create,u.create_by from user as u where 1=1   and u.real_name='测试11'
+     * @param name
+     * @return
+     */
+    @Query("select u.* from UserDO as u where 1=1" +
+            "#[ and u.realName=@name and u.gmtCreate=@gmtCreate ] " +
+            "#[ and u.realName=@name ] ")
+    UserDO queryByHql(String name);
+
+    /**
+     * 查询2
+     * 输出SQL： select u.id,u.real_name,u.age,u.gmt_create,u.create_by from user as u where 1=1  and u.real_name='测试11'
+     * @param user
+     */
+    @Query("select u.* from UserDO as u where 1=1 " +
+            "#[ and u.realName=@{user.realName} ] ")
+    UserDO queryByHql2(UserDO user);
+
+    /**
      * 返回当前实体类
      *
      * @param id
@@ -81,7 +101,7 @@ public interface UserMapper extends BaseMapper<UserDO> {
      * @param create
      * @return
      */
-    @Insert("INSERT INTO user(`name`, `age`,`gmt_create`,`create_by`) VALUES (@name,@age, now(),@create)")
+    @Insert("INSERT INTO user(`real_name`, `age`,`gmt_create`,`create_by`) VALUES (@name,@age, now(),@create)")
     int insert(String name, int age, String create);
 
     /**
@@ -91,7 +111,7 @@ public interface UserMapper extends BaseMapper<UserDO> {
      * @param age
      * @param create
      */
-    @Insert("INSERT INTO user(`name`, `age`,`gmt_create`,`create_by`) VALUES (@name,@age, now(),@create)")
+    @Insert("INSERT INTO user(`real_name`, `age`,`gmt_create`,`create_by`) VALUES (@name,@age, now(),@create)")
     void insertVoid(String name, int age, String create);
 
     /**
@@ -114,8 +134,4 @@ public interface UserMapper extends BaseMapper<UserDO> {
     int delectById(int id);
 
 
-    @Query("select u.* from UserDO as u where 1=1" +
-            "#[ and u.realName=@name and u.gmtCreate=@gmtCreate ] " +
-            "#[ and u.realName=@name ] ")
-    UserDO queryByHql(String name);
 }

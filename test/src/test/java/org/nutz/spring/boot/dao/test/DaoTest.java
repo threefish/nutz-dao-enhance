@@ -70,9 +70,11 @@ public class DaoTest {
 
     @Test
     public void testHql() {
-        userMapper.insert(UserDO.builder().age(15).realName("测试11").build());
+        final UserDO userDO = UserDO.builder().age(15).realName("测试11").build();
+        userMapper.insert(userDO);
         UserDO fetch = userMapper.queryByHql("测试11");
-        System.out.println(fetch);
+        UserDO fetch2 = userMapper.queryByHql2(userDO);
+        System.out.println(fetch2);
 
     }
 

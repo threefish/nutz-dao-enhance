@@ -1,4 +1,4 @@
-package org.nutz.spring.boot.dao.spring.binding.helper;
+package org.nutz.spring.boot.dao.spring.binding.parser;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

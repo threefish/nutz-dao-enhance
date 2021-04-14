@@ -9,10 +9,11 @@ import org.nutz.lang.Lang;
 import org.nutz.lang.util.Context;
 import org.nutz.spring.boot.dao.execute.*;
 import org.nutz.spring.boot.dao.factory.DaoFactory;
-import org.nutz.spring.boot.dao.spring.binding.helper.ConditionMapping;
-import org.nutz.spring.boot.dao.spring.binding.helper.SimpleSqlParser;
 import org.nutz.spring.boot.dao.spring.binding.method.MethodSignature;
+import org.nutz.spring.boot.dao.spring.binding.parser.ConditionMapping;
+import org.nutz.spring.boot.dao.spring.binding.parser.SimpleSqlParser;
 import org.springframework.util.Assert;
+import org.springframework.util.StopWatch;
 import org.springframework.util.StringUtils;
 
 import java.lang.reflect.Method;
@@ -66,17 +67,24 @@ public class MapperMethod {
      * @return
      */
     public Object execute(String dataSource, Method methodTraget, Object[] args) {
-        Dao dao = daoFactory.getDao(dataSource);
-        if (this.methodSignature.isCustomizeSql()) {
-            this.parseAndTranslationSql();
-            return this.getCustomizeSqlExecute(dao, args).invoke();
-        }
-        // 每次都new一个对象是方便动态传递dao进去，实现多数据源动态切换
-        BaseMapper baseMapper = new BaseMapperExecute(dao, this.methodSignature.getReturnEntityClass(), this.entity);
+        StopWatch stopWatch = new StopWatch();
         try {
-            return methodTraget.invoke(baseMapper, args);
-        } catch (Exception e) {
-            throw new RuntimeException("BaseMapper执行出错", e);
+            stopWatch.start();
+            Dao dao = daoFactory.getDao(dataSource);
+            if (this.methodSignature.isCustomizeSql()) {
+                this.parseAndTranslationSql();
+                return this.getCustomizeSqlExecute(dao, args).invoke();
+            }
+            // 每次都new一个对象是方便动态传递dao进去，实现多数据源动态切换
+            BaseMapper baseMapper = new BaseMapperExecute(dao, this.methodSignature.getReturnEntityClass(), this.entity);
+            try {
+                return methodTraget.invoke(baseMapper, args);
+            } catch (Exception e) {
+                throw new RuntimeException("BaseMapper执行出错", e);
+            }
+        } finally {
+            stopWatch.stop();
+            log.debug("SQL执行耗时:{}ms", stopWatch.getTotalTimeMillis());
         }
     }
 
@@ -108,7 +116,8 @@ public class MapperMethod {
         }
         for (ConditionMapping condition : this.conditions) {
             final Set<String> conditionParameter = condition.getConditionParameter();
-            boolean status = true;
+            // 有参数的情况下，默认加入条件，在看是否满足条件
+            boolean status = conditionParameter.size() > 0;
             for (String param : conditionParameter) {
                 Object val = El.eval(context, param);
                 if (Objects.isNull(val)) {
@@ -126,11 +135,16 @@ public class MapperMethod {
                     status = false;
                     continue;
                 }
+                if (val.getClass().isArray() && ((Object[]) val).length == 0) {
+                    // 是空数组
+                    status = false;
+                    continue;
+                }
             }
             if (status) {
                 // 有值，可以加入sql条件中
                 sql = sql.replace(condition.getKey(), condition.getConditionSql());
-            }else{
+            } else {
                 sql = sql.replace(condition.getKey(), " ");
             }
         }
@@ -146,6 +160,7 @@ public class MapperMethod {
      */
     private Execute getCustomizeSqlExecute(Dao dao, Object[] args) {
         String executeSql = replaceConditionSql(args);
+        log.debug("执行SQL:{}", executeSql);
         Execute execute = null;
         switch (this.methodSignature.getSqlCommandType()) {
             case SELECT:

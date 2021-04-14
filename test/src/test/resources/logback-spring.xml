@@ -49,28 +49,13 @@
     <!-- 该监听器将在StatusManager中打印状态到控制台 -->
     <statusListener class="ch.qos.logback.core.status.OnConsoleStatusListener"/>
 
-    <!-- 个性化配置（仅spring-boot工程有效，且文件名必须为logback-spring.xml） -->
-    <springProfile name="dev">
-        <root level="INFO" additivity="false">
-            <appender-ref ref="STDOUT"/>
-        </root>
-        <logger name="com.threefish.war" level="DEBUG" additivity="false">
-            <appender-ref ref="STDOUT"/>
-        </logger>
-        <logger name="org.nutz.dao" level="DEBUG" additivity="false">
-            <appender-ref ref="STDOUT"/>
-        </logger>
-    </springProfile>
-
-    <!--  生产环境  -->
-    <springProfile name="prod">
-        <root level="INFO" additivity="false">
-            <appender-ref ref="ASYNC_FILE"/>
-        </root>
-    </springProfile>
-    <springProfile name="production">
-        <root level="INFO" additivity="false">
-            <appender-ref ref="ASYNC_FILE"/>
-        </root>
-    </springProfile>
+    <root level="INFO" additivity="false">
+        <appender-ref ref="STDOUT"/>
+    </root>
+    <logger name="org.nutz.spring.boot.dao" level="DEBUG" additivity="false">
+        <appender-ref ref="STDOUT"/>
+    </logger>
+    <logger name="org.nutz.dao" level="DEBUG" additivity="false">
+        <appender-ref ref="STDOUT"/>
+    </logger>
 </configuration>

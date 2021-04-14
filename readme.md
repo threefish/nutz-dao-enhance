@@ -1,7 +1,7 @@
 # nutz-dao-spring-boot-starter
 
 
-通过动态代理实现，不需要实现类就可以操作数据库，看起来有点像mybaits
+通过动态代理实现，不需要实现类就可以操作数据库，参考Jpa
 
 #### 测试类
 ```java
@@ -10,16 +10,6 @@
  * @author 黄川 huchuc@vip.qq.com
  * @date: 2020/7/31
  */
-@PropertySource(value = {"classpath:application.yml"}, encoding = "utf-8", factory = YamlPropertySourceFactory.class)
-@Slf4j
-@RunWith(SpringRunner.class)
-@SpringBootTest(classes = DaoTest.class)
-@SpringBootApplication
-@EnableConfigurationProperties
-@EnableScheduling
-@EnableAspectJAutoProxy(proxyTargetClass = true)
-@MapperScan("org.nutz.spring.boot.dao.test.mapper")
-@Transactional
 public class DaoTest {
 
     @Autowired
@@ -42,10 +32,21 @@ public class DaoTest {
 
     @Test
     public void testBaseMapper() {
-        UserDO insert = userMapper.insert(UserDO.builder().age(15).name("测试11").build());
+        UserDO insert = userMapper.insert(UserDO.builder().age(15).realName("测试11").build());
         UserDO fetch = userMapper.fetch(insert.getId());
         int updateCount = userMapper.delete(insert.getId());
         System.out.println(updateCount);
+    }
+
+
+    @Test
+    public void testHql() {
+        final UserDO userDO = UserDO.builder().age(15).realName("测试11").build();
+        userMapper.insert(userDO);
+        UserDO fetch = userMapper.queryByHql("测试11");
+        UserDO fetch2 = userMapper.queryByHql2(userDO);
+        System.out.println(fetch2);
+
     }
 
 }
@@ -94,12 +95,32 @@ import java.util.Map;
 public interface UserMapper extends BaseMapper<UserDO> {
 
     /**
+     * gmtCreate 入参不存在，所以当前#[]中的全部条件不生效
+     * 输出SQL：select u.id,u.real_name,u.age,u.gmt_create,u.create_by from user as u where 1=1   and u.real_name='测试11'
+     * @param name
+     * @return
+     */
+    @Query("select u.* from UserDO as u where 1=1" +
+            "#[ and u.realName=@name and u.gmtCreate=@gmtCreate ] " +
+            "#[ and u.realName=@name ] ")
+    UserDO queryByHql(String name);
+
+    /**
+     * 查询2
+     * 输出SQL： select u.id,u.real_name,u.age,u.gmt_create,u.create_by from user as u where 1=1  and u.real_name='测试11'
+     * @param user
+     */
+    @Query("select u.* from UserDO as u where 1=1 " +
+            "#[ and u.realName=@{user.realName} ] ")
+    UserDO queryByHql2(UserDO user);
+
+    /**
      * 返回当前实体类
      *
      * @param id
      * @return
      */
-    @QuerySql("select * from user where id=@id")
+    @Query("select * from user where id=@id")
     UserDO fetchEntityOne(int id);
 
     /**
@@ -108,7 +129,7 @@ public interface UserMapper extends BaseMapper<UserDO> {
      * @param condition
      * @return
      */
-    @QuerySql("select * from user $condition")
+    @Query("select * from user $condition")
     List<UserDO> listUser(Condition condition);
 
     /**
@@ -117,7 +138,7 @@ public interface UserMapper extends BaseMapper<UserDO> {
      * @param id
      * @return
      */
-    @QuerySql("select * from user where id=@id")
+    @Query("select * from user where id=@id")
     Map fetchMapOne(int id);
 
     /**
@@ -126,7 +147,7 @@ public interface UserMapper extends BaseMapper<UserDO> {
      * @param id
      * @return
      */
-    @QuerySql("select * from user where id=@id")
+    @Query("select * from user where id=@id")
     Record fetchRecordOne(int id);
 
     /**
@@ -134,7 +155,7 @@ public interface UserMapper extends BaseMapper<UserDO> {
      *
      * @return
      */
-    @QuerySql("select * from user")
+    @Query("select * from user")
     UserDO fetchOne();
 
     /**
@@ -143,7 +164,7 @@ public interface UserMapper extends BaseMapper<UserDO> {
      * @param pager
      * @return
      */
-    @QuerySql("select * from user")
+    @Query("select * from user")
     PageData listUserPage(Pager pager);
 
     /**
@@ -154,7 +175,7 @@ public interface UserMapper extends BaseMapper<UserDO> {
      * @param create
      * @return
      */
-    @InsertSql("INSERT INTO user(`name`, `age`,`gmt_create`,`create_by`) VALUES (@name,@age, now(),@create)")
+    @Insert("INSERT INTO user(`real_name`, `age`,`gmt_create`,`create_by`) VALUES (@name,@age, now(),@create)")
     int insert(String name, int age, String create);
 
     /**
@@ -164,7 +185,7 @@ public interface UserMapper extends BaseMapper<UserDO> {
      * @param age
      * @param create
      */
-    @InsertSql("INSERT INTO user(`name`, `age`,`gmt_create`,`create_by`) VALUES (@name,@age, now(),@create)")
+    @Insert("INSERT INTO user(`real_name`, `age`,`gmt_create`,`create_by`) VALUES (@name,@age, now(),@create)")
     void insertVoid(String name, int age, String create);
 
     /**
@@ -174,7 +195,7 @@ public interface UserMapper extends BaseMapper<UserDO> {
      * @param id
      * @return
      */
-    @UpdateSql("UPDATE user SET age = @age WHERE id = @id")
+    @Update("UPDATE user SET age = @age WHERE id = @id")
     int updateAgeById(int age, int id);
 
     /**
@@ -183,10 +204,11 @@ public interface UserMapper extends BaseMapper<UserDO> {
      * @param id
      * @return
      */
-    @DelectSql("DELETE FROM user WHERE id=@id")
+    @Delete("DELETE FROM user WHERE id=@id")
     int delectById(int id);
+
 
 }
 
-```
 
+```

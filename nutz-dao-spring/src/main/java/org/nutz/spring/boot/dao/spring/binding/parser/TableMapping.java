@@ -1,4 +1,4 @@
-package org.nutz.spring.boot.dao.spring.binding.helper;
+package org.nutz.spring.boot.dao.spring.binding.parser;
 
 import lombok.Data;
 import lombok.NonNull;
@@ -20,6 +20,6 @@ public class TableMapping {
     public TableMapping(@NonNull String name, @NonNull String aliasName) {
         this.name = name;
         this.aliasName = aliasName;
-        this.pattern = Pattern.compile("(\\b|\\^=)" + aliasName + "[.A-Za-z0-9*]+");
+        this.pattern = Pattern.compile("(\\b|\\^=)" + aliasName + "\\.[A-Za-z0-9*]+");
     }
 }
