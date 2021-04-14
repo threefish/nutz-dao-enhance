@@ -15,8 +15,8 @@ import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 import java.lang.reflect.Method;
-import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * @author 黄川 huchuc@vip.qq.com
@@ -82,7 +82,7 @@ public class MapperMethod {
     private void parseAndTranslationSql() {
         if (!StringUtils.hasText(this.sourceSql)) {
             String sql = this.methodSignature.getSqlTemplate();
-            final List<ColumnMapping> columnMappings = SqlSimpleParserHelper.parserSql(this.methodSignature.getSqlTemplate());
+            final Set<ColumnMapping> columnMappings = SqlSimpleParserHelper.parseSql(this.methodSignature.getSqlTemplate());
             for (ColumnMapping columnMapping : columnMappings) {
                 final TableMapping table = columnMapping.getTable();
                 final Entity<?> entity = EntityClassInfoHolder.getEntity(table.getName());

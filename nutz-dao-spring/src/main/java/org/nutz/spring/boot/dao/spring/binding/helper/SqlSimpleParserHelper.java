@@ -1,8 +1,6 @@
 package org.nutz.spring.boot.dao.spring.binding.helper;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.StringTokenizer;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -20,13 +18,17 @@ public class SqlSimpleParserHelper {
      * @param sql
      * @return
      */
-    public static List<ColumnMapping> parserSql(String sql) {
-        String[] strings = parseTokens(sql);
-        List<TableMapping> mappings = getTableMapping(strings);
-        return getColumnMapping(strings, mappings);
+    public static Set<ColumnMapping> parseSql(String sql) {
+        String[] strings = analyzeTokens(sql);
+        return getColumnMapping(strings, getTableMapping(strings));
     }
 
-    private static String[] parseTokens(String str) {
+    /**
+     * 分析sql字符串
+     * @param str
+     * @return
+     */
+    private static String[] analyzeTokens(String str) {
         String[] tokens = split(WHITESPACE + "(),", str, true);
         List<String> allTokens = new ArrayList<>();
         boolean inQuote = false;
@@ -53,8 +55,14 @@ public class SqlSimpleParserHelper {
         return allTokens.toArray(new String[0]);
     }
 
-    private static List<ColumnMapping> getColumnMapping(String[] allTokens, List<TableMapping> mappings) {
-        List<ColumnMapping> columnMappings = new ArrayList<>();
+    /**
+     * 获取字段信息
+     * @param allTokens
+     * @param mappings
+     * @return
+     */
+    private static Set<ColumnMapping> getColumnMapping(String[] allTokens, Set<TableMapping> mappings) {
+        Set<ColumnMapping> columnMappings = new HashSet<>();
         for (TableMapping tableMapping : mappings) {
             for (String token : allTokens) {
                 Pattern pattern = tableMapping.getPattern();
@@ -71,8 +79,13 @@ public class SqlSimpleParserHelper {
         return columnMappings;
     }
 
-    private static List<TableMapping> getTableMapping(String[] tokens) {
-        List<TableMapping> mappings = new ArrayList<>();
+    /**
+     * 获取表信息
+     * @param tokens
+     * @return
+     */
+    private static Set<TableMapping> getTableMapping(String[] tokens) {
+        Set<TableMapping> mappings = new HashSet<>();
         for (int i = 0, l = tokens.length; i < l; i++) {
             String token = tokens[i];
             if (isEntityJavaIdentifier(token)) {
@@ -89,6 +102,12 @@ public class SqlSimpleParserHelper {
         return mappings;
     }
 
+    /**
+     * 获取下一个不为空的token
+     * @param tokens
+     * @param start
+     * @return
+     */
     private static String nextNonWhite(String[] tokens, int start) {
         for (int i = start + 1; i < tokens.length; i++) {
             if (!isWhitespace(tokens[i])) {
@@ -110,6 +129,11 @@ public class SqlSimpleParserHelper {
         return token.endsWith("'") || token.endsWith("\"");
     }
 
+    /**
+     * 是java实体字段
+     * @param token
+     * @return
+     */
     private static boolean isEntityJavaIdentifier(String token) {
         // 字符串长度大于1
         return token.length() >= 2

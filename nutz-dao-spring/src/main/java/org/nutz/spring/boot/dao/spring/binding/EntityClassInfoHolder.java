@@ -4,6 +4,7 @@ import org.nutz.dao.entity.Entity;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.Objects;
 
 /**
  * @author 黄川 huchuc@vip.qq.com
@@ -46,7 +47,8 @@ public class EntityClassInfoHolder {
      * @return
      */
     public static Entity<?> getEntity(String name) {
-        return ENTITY_HASH_MAP.get(getClass(name));
+        Class<?> aClass = getClass(name);
+        return Objects.isNull(aClass) ? null : ENTITY_HASH_MAP.get(aClass);
     }
 
     /**
