@@ -4,19 +4,19 @@ package org.nutz.spring.boot.dao.spring.binding;
 import lombok.extern.slf4j.Slf4j;
 import org.nutz.dao.Dao;
 import org.nutz.dao.entity.Entity;
-import org.nutz.dao.entity.MappingField;
+import org.nutz.el.El;
+import org.nutz.lang.Lang;
+import org.nutz.lang.util.Context;
 import org.nutz.spring.boot.dao.execute.*;
 import org.nutz.spring.boot.dao.factory.DaoFactory;
-import org.nutz.spring.boot.dao.spring.binding.helper.ColumnMapping;
-import org.nutz.spring.boot.dao.spring.binding.helper.SqlSimpleParserHelper;
-import org.nutz.spring.boot.dao.spring.binding.helper.TableMapping;
+import org.nutz.spring.boot.dao.spring.binding.helper.ConditionMapping;
+import org.nutz.spring.boot.dao.spring.binding.helper.SimpleSqlParser;
 import org.nutz.spring.boot.dao.spring.binding.method.MethodSignature;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 import java.lang.reflect.Method;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author 黄川 huchuc@vip.qq.com
@@ -36,6 +36,10 @@ public class MapperMethod {
      * 源sql信息
      */
     private String sourceSql;
+    /**
+     * 动态条件信息，若入参为空或者null或个数为0则不参与sql执行
+     */
+    private List<ConditionMapping> conditions = Collections.EMPTY_LIST;
 
     /**
      * 这里对mapper进行解析，每个mapper只会解析1次
@@ -81,31 +85,57 @@ public class MapperMethod {
      */
     private void parseAndTranslationSql() {
         if (!StringUtils.hasText(this.sourceSql)) {
-            String sql = this.methodSignature.getSqlTemplate();
-            final Set<ColumnMapping> columnMappings = SqlSimpleParserHelper.parseSql(this.methodSignature.getSqlTemplate());
-            for (ColumnMapping columnMapping : columnMappings) {
-                final TableMapping table = columnMapping.getTable();
-                final Entity<?> entity = EntityClassInfoHolder.getEntity(table.getName());
-                if (Objects.nonNull(entity)) {
-                    sql = sql.replaceAll(table.getName(), entity.getTableName());
-                    final MappingField field = entity.getField(columnMapping.getFieldName());
-                    if (Objects.nonNull(field)) {
-                        final String realColumnName = table.getAliasName() + "." + field.getColumnName();
-                        if (!columnMapping.getName().equals(realColumnName)) {
-                            // 不相等
-                            log.debug("替换 {} =>> {}", columnMapping.getName(), realColumnName);
-                            sql = sql.replaceAll(columnMapping.getName(), realColumnName);
-                        }
-                    }
-                }
-            }
-            this.sourceSql = sql;
-            if (!sql.equals(this.methodSignature.getSqlTemplate())) {
-                log.debug("替换 {} =>> {}", sql, sourceSql);
-            }
+            SimpleSqlParser simpleSqlParserHelper = new SimpleSqlParser(this.methodSignature.getSqlTemplate());
+            simpleSqlParserHelper.parse();
+            this.sourceSql = simpleSqlParserHelper.getSql();
+            this.conditions = simpleSqlParserHelper.getConditions();
         }
     }
 
+    /**
+     * 替换条件sql
+     *
+     * @param args
+     * @return
+     */
+    private String replaceConditionSql(Object[] args) {
+        String sql = this.sourceSql;
+        final Context context = Lang.context();
+        if (Lang.isNotEmpty(args)) {
+            for (int i = 0; i < args.length; i++) {
+                context.set(methodSignature.getParameterNames().get(i), args[i]);
+            }
+        }
+        for (ConditionMapping condition : this.conditions) {
+            final Set<String> conditionParameter = condition.getConditionParameter();
+            boolean status = true;
+            for (String param : conditionParameter) {
+                Object val = El.eval(context, param);
+                if (Objects.isNull(val)) {
+                    // 值是Null，放弃加入sql
+                    status = false;
+                    continue;
+                }
+                if (val instanceof String && !StringUtils.hasLength((String) val)) {
+                    // 值是字符串，且没有长度,则放弃加入sql
+                    status = false;
+                    continue;
+                }
+                if (Collection.class.isAssignableFrom(val.getClass()) && ((Collection) val).isEmpty()) {
+                    // 是空集合
+                    status = false;
+                    continue;
+                }
+            }
+            if (status) {
+                // 有值，可以加入sql条件中
+                sql = sql.replace(condition.getKey(), condition.getConditionSql());
+            }else{
+                sql = sql.replace(condition.getKey(), " ");
+            }
+        }
+        return sql;
+    }
 
     /**
      * 是自定义sql
@@ -115,7 +145,7 @@ public class MapperMethod {
      * @return
      */
     private Execute getCustomizeSqlExecute(Dao dao, Object[] args) {
-        String executeSql = this.sourceSql;
+        String executeSql = replaceConditionSql(args);
         Execute execute = null;
         switch (this.methodSignature.getSqlCommandType()) {
             case SELECT:

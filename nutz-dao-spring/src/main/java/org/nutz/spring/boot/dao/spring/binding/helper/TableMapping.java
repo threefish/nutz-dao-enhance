@@ -20,6 +20,6 @@ public class TableMapping {
     public TableMapping(@NonNull String name, @NonNull String aliasName) {
         this.name = name;
         this.aliasName = aliasName;
-        this.pattern = Pattern.compile("(\\b|\\^=)" + aliasName + ".[A-Za-z0-9]+");
+        this.pattern = Pattern.compile("(\\b|\\^=)" + aliasName + "[.A-Za-z0-9*]+");
     }
 }

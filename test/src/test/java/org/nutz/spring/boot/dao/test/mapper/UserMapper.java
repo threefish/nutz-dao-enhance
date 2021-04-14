@@ -114,6 +114,8 @@ public interface UserMapper extends BaseMapper<UserDO> {
     int delectById(int id);
 
 
-    @Query("select * from UserDO as u where u.realName=@name")
+    @Query("select u.* from UserDO as u where 1=1" +
+            "#[ and u.realName=@name and u.gmtCreate=@gmtCreate ] " +
+            "#[ and u.realName=@name ] ")
     UserDO queryByHql(String name);
 }
