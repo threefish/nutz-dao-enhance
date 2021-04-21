@@ -16,6 +16,7 @@ import org.springframework.util.Assert;
 import org.springframework.util.StopWatch;
 import org.springframework.util.StringUtils;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
 
@@ -66,7 +67,7 @@ public class MapperMethod {
      * @param args
      * @return
      */
-    public Object execute(String dataSource, Method methodTraget, Object[] args) {
+    public Object execute(String dataSource, Method methodTraget, Object[] args) throws InvocationTargetException, IllegalAccessException {
         StopWatch stopWatch = new StopWatch();
         try {
             stopWatch.start();
@@ -77,11 +78,7 @@ public class MapperMethod {
             }
             // 每次都new一个对象是方便动态传递dao进去，实现多数据源动态切换
             BaseMapper baseMapper = new BaseMapperExecute(dao, this.methodSignature.getReturnEntityClass(), this.entity);
-            try {
-                return methodTraget.invoke(baseMapper, args);
-            } catch (Exception e) {
-                throw new RuntimeException("BaseMapper执行出错", e);
-            }
+            return methodTraget.invoke(baseMapper, args);
         } finally {
             stopWatch.stop();
             log.debug("SQL执行耗时:{}ms", stopWatch.getTotalTimeMillis());

@@ -11,6 +11,7 @@ import org.nutz.spring.boot.dao.annotation.MapperScan;
 import org.nutz.spring.boot.dao.pagination.PageData;
 import org.nutz.spring.boot.dao.test.entity.UserDO;
 import org.nutz.spring.boot.dao.test.mapper.UserMapper;
+import org.nutz.spring.boot.dao.util.lambda.LambdaQueryUtils;
 import org.nutz.spring.boot.yaml.YamlPropertySourceFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -74,6 +75,12 @@ public class DaoTest {
         userMapper.insert(userDO);
         UserDO fetch = userMapper.queryByHql("测试11");
         UserDO fetch2 = userMapper.queryByHql2(userDO);
+        System.out.println(fetch2);
+    }
+
+    @Test
+    public void testCnd() {
+        UserDO fetch2 = userMapper.fetch(Cnd.where(LambdaQueryUtils.resolve(UserDO::getId), "=", 1));
         System.out.println(fetch2);
 
     }
