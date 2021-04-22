@@ -104,24 +104,37 @@ public class MethodSignatureUtil {
      * 获取实体class
      *
      * @param clazz
-     * @return 返回第一个类型
+     * @return
      */
     public static Class getClassEntityType(Class<?> clazz) {
-        Entity annotation = clazz.getAnnotation(Entity.class);
-        if (Objects.nonNull(annotation)) {
-            return annotation.value();
-        }
+        Class cl = null;
         Type[] genericInterfaces = clazz.getGenericInterfaces();
         if (Lang.isNotEmpty(genericInterfaces)) {
             Type genericInterface = genericInterfaces[0];
             if (genericInterface instanceof ParameterizedTypeImpl) {
                 ParameterizedTypeImpl parameterizedType = (ParameterizedTypeImpl) genericInterface;
-                Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
-                if (Lang.isNotEmpty(actualTypeArguments)) {
-                    Type actualTypeArgument = actualTypeArguments[0];
-                    return (Class) actualTypeArgument;
-                }
+                cl = getActualTypeClass(parameterizedType.getActualTypeArguments());
             }
+        }
+        if (Objects.isNull(cl)) {
+            Entity annotation = clazz.getAnnotation(Entity.class);
+            if (Objects.nonNull(annotation)) {
+                cl = annotation.value();
+            }
+        }
+        return cl;
+    }
+
+    /**
+     * 获取第一个泛型类
+     *
+     * @param actualTypeArguments
+     * @return
+     */
+    public static Class getActualTypeClass(Type[] actualTypeArguments) {
+        if (Lang.isNotEmpty(actualTypeArguments)) {
+            Type actualTypeArgument = actualTypeArguments[0];
+            return (Class) actualTypeArgument;
         }
         return null;
     }

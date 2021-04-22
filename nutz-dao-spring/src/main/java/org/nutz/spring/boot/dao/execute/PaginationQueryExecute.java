@@ -36,11 +36,11 @@ public class PaginationQueryExecute extends AbstractExecute {
     @Override
     public Object invoke() {
         PageData pageData = new PageData();
-        pageData.setPager(this.pager);
         List listData = new ArrayList();
         Sql sql = Sqls.create(executeSql).setParams(this.params);
         this.setCondition(sql);
         pageData.setTotal(Daos.queryCount(dao, sql));
+        this.pager.setRecordCount(Math.toIntExact(pageData.getTotal()));
         if (pageData.getTotal() > 0) {
             sql.setPager(this.pager);
             sql.setEntity(dao.getEntity(this.methodSignature.getReturnEntityClass()));
@@ -49,6 +49,7 @@ public class PaginationQueryExecute extends AbstractExecute {
             listData = sql.getList(methodSignature.getReturnEntityClass());
         }
         pageData.setRecords(listData);
+        pageData.setPager(this.pager);
         return pageData;
     }
 

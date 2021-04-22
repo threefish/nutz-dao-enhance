@@ -9,6 +9,7 @@ package org.nutz.spring.boot.dao.spring.binding.method;
 
 import lombok.Getter;
 import org.nutz.dao.Sqls;
+import org.nutz.dao.entity.Record;
 import org.nutz.dao.sql.SqlCallback;
 import org.nutz.spring.boot.dao.annotation.Delete;
 import org.nutz.spring.boot.dao.annotation.Insert;
@@ -45,18 +46,10 @@ public class MethodSignature {
      * 返回类型
      */
     private final Class<?> returnType;
-    /***
-     * 是自定义sql
-     */
-    private boolean customizeSql;
     /**
      * 是否返回多条记录
      */
     private final boolean multipleRecords;
-    /**
-     * sql模板语句
-     */
-    private String sqlTemplate;
     /**
      * 是否分页查询
      */
@@ -65,6 +58,23 @@ public class MethodSignature {
      * 参数名列表
      */
     private final HashMap<Integer, String> parameterNames = new HashMap<>();
+    /**
+     * Cnd 参数位置，-1 代表没有
+     */
+    private final int conditionParameterInedx;
+    private final String methodName;
+    /**
+     * 返回类型的泛型
+     */
+    private Class<?> returnGenericType;
+    /***
+     * 是自定义sql
+     */
+    private boolean customizeSql;
+    /**
+     * sql模板语句
+     */
+    private String sqlTemplate;
     /**
      * 返回实体类
      */
@@ -77,22 +87,24 @@ public class MethodSignature {
      * 是否是更新语句
      */
     private SqlCommandType sqlCommandType;
-    /**
-     * Cnd 参数位置，-1 代表没有
-     */
-    private final int conditionParameterInedx;
-
-    private final String methodName;
 
     public MethodSignature(Class<?> mapperInterface, Method method) {
         String name = String.format("%s.%s", mapperInterface.getName(), MethodSignatureUtil.getMethodName(method));
         this.methodName = method.getName();
         this.initCustomizeSql(name, method);
+        // 类上直接获取实体类型
+        this.returnEntityClass = MethodSignatureUtil.getClassEntityType(mapperInterface);
         Type resolvedReturnType = TypeParameterResolver.resolveReturnType(method, mapperInterface);
         if (resolvedReturnType instanceof Class<?>) {
             this.returnType = (Class<?>) resolvedReturnType;
         } else if (resolvedReturnType instanceof ParameterizedType) {
-            this.returnType = (Class<?>) ((ParameterizedType) resolvedReturnType).getRawType();
+            // 是泛型
+            final ParameterizedType parameterizedType = (ParameterizedType) resolvedReturnType;
+            this.returnType = (Class<?>) parameterizedType.getRawType();
+            if (ValueTypeUtil.isCollection(this.returnType)) {
+                // 如果是集合，获取下泛型
+                this.returnGenericType = MethodSignatureUtil.getActualTypeClass(parameterizedType.getActualTypeArguments());
+            }
         } else {
             this.returnType = method.getReturnType();
         }
@@ -107,11 +119,10 @@ public class MethodSignature {
         for (int i = 0; i < parameters.length; i++) {
             parameterNames.put(i, parameters[i].getName());
         }
-        // 先获取方法上的注解返回类型
-        this.returnEntityClass = MethodSignatureUtil.getMethodEntityType(method);
-        if (Objects.isNull(this.returnEntityClass)) {
-            // 到类上获取泛型实体类型
-            this.returnEntityClass = MethodSignatureUtil.getClassEntityType(mapperInterface);
+        // 方法上标了 @Entity 注解，优先使用
+        final Class methodEntityType = MethodSignatureUtil.getMethodEntityType(method);
+        if (Objects.nonNull(methodEntityType)) {
+            this.returnEntityClass = methodEntityType;
         }
         this.initSqlCallback();
         // 是否是返回多条记录
@@ -146,11 +157,11 @@ public class MethodSignature {
         }
     }
 
+
     /**
      * 设置sql回调类型
      */
     private void initSqlCallback() {
-        // 未找到
         if (this.returnType == this.returnEntityClass) {
             // 是返回的单独实体类
             this.sqlCallback = Sqls.callback.entity();
@@ -158,17 +169,57 @@ public class MethodSignature {
         }
         this.sqlCallback = SqlCallbackUtil.getSqlCallback(this.returnType);
         if (Objects.isNull(this.sqlCallback)) {
-            if (ValueTypeUtil.isCollection(this.returnType) && Objects.nonNull(this.returnEntityClass)) {
-                // 返回类型是list，且返回的是实体对象
-                this.sqlCallback = Sqls.callback.entities();
-                return;
+            if (ValueTypeUtil.isCollection(this.returnType)) {
+                // 在返回集合的时候有几种情况，1 有泛型返回类型（具体在细分） 2无泛型返回类型（默认为实体类）
+                if (Objects.nonNull(this.returnGenericType)) {
+                    // 有泛型返回类型
+                    if (this.returnEntityClass == this.returnGenericType) {
+                        // 返回的是实体类
+                        this.sqlCallback = Sqls.callback.entities();
+                        return;
+                    }else if (Record.class == this.returnGenericType) {
+                        // 返回的是Records
+                        this.sqlCallback = Sqls.callback.records();
+                        return;
+                    } else if (Map.class.isAssignableFrom(this.returnGenericType)) {
+                        // 返回的是map
+                        this.sqlCallback = Sqls.callback.maps();
+                        return;
+                    } else if (String.class == this.returnGenericType) {
+                        // 返回的是String
+                        this.sqlCallback = Sqls.callback.strList();
+                        return;
+                    } else if (String[].class == this.returnGenericType) {
+                        // 返回的是String
+                        this.sqlCallback = Sqls.callback.strs();
+                        return;
+                    } else if (Integer.class == this.returnGenericType) {
+                        // 返回的是Integer
+                        this.sqlCallback = Sqls.callback.ints();
+                        return;
+                    } else if (Long.class == this.returnGenericType) {
+                        // 返回的是Integer
+                        this.sqlCallback = Sqls.callback.longs();
+                        return;
+                    } else if (Boolean.class == this.returnGenericType) {
+                        // 返回的是Integer
+                        this.sqlCallback = Sqls.callback.bools();
+                        return;
+                    }
+                    throw new RuntimeException("未识别的返回类型");
+                }
+                if (Objects.nonNull(this.returnEntityClass)) {
+                    // 没有泛型，那就返回实体类型吧
+                    this.sqlCallback = Sqls.callback.entities();
+                    return;
+                }
             }
         }
         List<String> methodNames = Arrays.asList("getEntity", "getDao", "getEntityClass");
         if (this.returnType != void.class) {
             // 有返回值且方法名不是内部的
             if (!methodNames.contains(this.methodName)) {
-                Assert.notNull(this.sqlCallback, String.format("方法[%s]不支持的返回类型[%s]", this.methodName, this.returnType));
+                Assert.notNull(this.sqlCallback, String.format("方法[%s]无法获取设置Callback!!!请发ISSUSE", this.methodName));
             }
         }
     }

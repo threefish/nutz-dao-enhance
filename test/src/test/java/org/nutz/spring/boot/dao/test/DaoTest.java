@@ -46,7 +46,9 @@ public class DaoTest {
 
     @Test
     public void testCustomizeSql() {
-        List<UserDO> list = userMapper.listUser(Cnd.where("id", "=", 8));
+        UserDO insert = userMapper.insert(UserDO.builder().age(15).realName("测试11").build());
+        List<UserDO> list = userMapper.listUser(Cnd.where(UserDO::getAge, "=", 15));
+        List<Map> maps = userMapper.listMap();
         PageData<UserDO> pageData = userMapper.listUserPage(new Pager(1, 10));
         UserDO uset = userMapper.fetchEntityOne(8);
         Map map = userMapper.fetchMapOne(8);

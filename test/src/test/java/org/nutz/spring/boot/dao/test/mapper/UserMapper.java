@@ -56,6 +56,7 @@ public interface UserMapper extends BaseDao<UserDO> {
      * @return
      */
     @Query("select * from user $condition")
+    @Entity(UserDO.class)
     List<UserDO> listUser(Condition condition);
 
     /**
@@ -66,6 +67,14 @@ public interface UserMapper extends BaseDao<UserDO> {
      */
     @Query("select * from user where id=@id")
     Map fetchMapOne(int id);
+
+    /**
+     * 查询返回一个map
+     *
+     * @return
+     */
+    @Query("select * from user")
+    List<Map> listMap();
 
     /**
      * 查询返回一个 Record
