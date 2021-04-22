@@ -7,11 +7,10 @@ import org.junit.runner.RunWith;
 import org.nutz.dao.Cnd;
 import org.nutz.dao.entity.Record;
 import org.nutz.dao.pager.Pager;
-import org.nutz.spring.boot.dao.annotation.MapperScan;
+import org.nutz.spring.boot.dao.annotation.DaoScan;
 import org.nutz.spring.boot.dao.pagination.PageData;
 import org.nutz.spring.boot.dao.test.entity.UserDO;
 import org.nutz.spring.boot.dao.test.mapper.UserMapper;
-import org.nutz.spring.boot.dao.util.lambda.LambdaQueryUtils;
 import org.nutz.spring.boot.yaml.YamlPropertySourceFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -38,7 +37,7 @@ import java.util.Map;
 @EnableConfigurationProperties
 @EnableScheduling
 @EnableAspectJAutoProxy(proxyTargetClass = true)
-@MapperScan("org.nutz.spring.boot.dao.test.mapper")
+@DaoScan("org.nutz.spring.boot.dao.test.mapper")
 @Transactional
 public class DaoTest {
 
@@ -80,7 +79,7 @@ public class DaoTest {
 
     @Test
     public void testCnd() {
-        UserDO fetch2 = userMapper.fetch(Cnd.where(LambdaQueryUtils.resolve(UserDO::getId), "=", 1));
+        UserDO fetch2 = userMapper.fetch(Cnd.where(UserDO::getId, "=", 1));
         System.out.println(fetch2);
 
     }

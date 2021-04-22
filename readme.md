@@ -78,7 +78,7 @@ import org.nutz.dao.Condition;
 import org.nutz.dao.entity.Record;
 import org.nutz.dao.pager.Pager;
 import org.nutz.spring.boot.dao.annotation.*;
-import org.nutz.spring.boot.dao.execute.BaseMapper;
+import org.nutz.spring.boot.dao.execute.BaseDao;
 import org.nutz.spring.boot.dao.pagination.PageData;
 import org.nutz.spring.boot.dao.test.entity.UserDO;
 import org.springframework.stereotype.Component;

@@ -6,7 +6,7 @@ import java.lang.reflect.Method;
  * @author 黄川 huchuc@vip.qq.com
  * @date: 2020/7/31
  */
-interface MapperMethodInvoker {
+interface DaoMethodInvoker {
     /**
      * 执行
      *

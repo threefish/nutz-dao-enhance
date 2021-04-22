@@ -1,8 +1,8 @@
 package org.nutz.spring.boot.dao.spring;
 
 
-import org.nutz.spring.boot.dao.annotation.MapperScan;
-import org.nutz.spring.boot.dao.annotation.MapperScans;
+import org.nutz.spring.boot.dao.annotation.DaoScan;
+import org.nutz.spring.boot.dao.annotation.DaoScans;
 import org.nutz.spring.boot.dao.spring.mapper.MapperScannerConfigurer;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
@@ -21,11 +21,11 @@ import java.util.stream.Collectors;
  * @author 黄川 huchuc@vip.qq.com
  * @date: 2020/7/30
  */
-public class MapperScannerRegistrar implements ImportBeanDefinitionRegistrar {
+public class DaoScannerRegistrar implements ImportBeanDefinitionRegistrar {
 
 
     private static String generateBaseBeanName(AnnotationMetadata importingClassMetadata, int index) {
-        return importingClassMetadata.getClassName() + "#" + MapperScannerRegistrar.class.getSimpleName() + "#" + index;
+        return importingClassMetadata.getClassName() + "#" + DaoScannerRegistrar.class.getSimpleName() + "#" + index;
     }
 
     private static String getDefaultBasePackage(AnnotationMetadata importingClassMetadata) {
@@ -34,7 +34,7 @@ public class MapperScannerRegistrar implements ImportBeanDefinitionRegistrar {
 
     @Override
     public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {
-        AnnotationAttributes mapperScanAttrs = AnnotationAttributes.fromMap(importingClassMetadata.getAnnotationAttributes(MapperScan.class.getName()));
+        AnnotationAttributes mapperScanAttrs = AnnotationAttributes.fromMap(importingClassMetadata.getAnnotationAttributes(DaoScan.class.getName()));
         if (mapperScanAttrs != null) {
             registerBeanDefinitions(importingClassMetadata, mapperScanAttrs, registry, generateBaseBeanName(importingClassMetadata, 0));
         }
@@ -56,11 +56,11 @@ public class MapperScannerRegistrar implements ImportBeanDefinitionRegistrar {
 
     }
 
-    public static class RepeatingRegistrar extends MapperScannerRegistrar {
+    public static class RepeatingRegistrar extends DaoScannerRegistrar {
 
         @Override
         public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {
-            AnnotationAttributes mapperScansAttrs = AnnotationAttributes.fromMap(importingClassMetadata.getAnnotationAttributes(MapperScans.class.getName()));
+            AnnotationAttributes mapperScansAttrs = AnnotationAttributes.fromMap(importingClassMetadata.getAnnotationAttributes(DaoScans.class.getName()));
             if (mapperScansAttrs != null) {
                 AnnotationAttributes[] annotations = mapperScansAttrs.getAnnotationArray("value");
                 for (int i = 0; i < annotations.length; i++) {

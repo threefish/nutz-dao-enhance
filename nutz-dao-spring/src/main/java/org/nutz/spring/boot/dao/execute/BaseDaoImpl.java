@@ -16,7 +16,7 @@ import java.util.Map;
  * @author 黄川 huchuc@vip.qq.com
  * @date: 2020/7/31
  */
-public class BaseMapperExecute<T> implements BaseMapper<T> {
+public class BaseDaoImpl<T> implements BaseDao<T> {
 
     private final Dao dao;
 
@@ -24,7 +24,7 @@ public class BaseMapperExecute<T> implements BaseMapper<T> {
 
     private final Entity entity;
 
-    public BaseMapperExecute(Dao dao, Class<T> entityClass, Entity entity) {
+    public BaseDaoImpl(Dao dao, Class<T> entityClass, Entity entity) {
         this.dao = dao;
         this.entityClass = entityClass;
         this.entity = entity;

@@ -4,7 +4,7 @@ import org.nutz.dao.Condition;
 import org.nutz.dao.entity.Record;
 import org.nutz.dao.pager.Pager;
 import org.nutz.spring.boot.dao.annotation.*;
-import org.nutz.spring.boot.dao.execute.BaseMapper;
+import org.nutz.spring.boot.dao.execute.BaseDao;
 import org.nutz.spring.boot.dao.pagination.PageData;
 import org.nutz.spring.boot.dao.test.entity.UserDO;
 import org.springframework.stereotype.Component;
@@ -16,9 +16,9 @@ import java.util.Map;
  * @author 黄川 huchuc@vip.qq.com
  * @date: 2020/7/30
  */
-@Mapper
+@Dao
 @Component
-public interface UserMapper extends BaseMapper<UserDO> {
+public interface UserMapper extends BaseDao<UserDO> {
 
     /**
      * gmtCreate 入参不存在，所以当前#[]中的全部条件不生效

@@ -2,9 +2,9 @@ package org.nutz.spring.boot.dao.spring.mapper;
 
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.nutz.spring.boot.dao.annotation.Mapper;
+import org.nutz.spring.boot.dao.annotation.Dao;
 import org.nutz.spring.boot.dao.factory.DaoFactory;
-import org.nutz.spring.boot.dao.spring.binding.MapperProxyFactory;
+import org.nutz.spring.boot.dao.spring.binding.DaoProxyFactory;
 import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
@@ -37,7 +37,7 @@ public class ClassPathMapperScanner extends ClassPathBeanDefinitionScanner {
         for (BeanDefinitionHolder definitionHolder : beanDefinitions) {
             GenericBeanDefinition beanDefinition = (GenericBeanDefinition) definitionHolder.getBeanDefinition();
             String beanClassName = beanDefinition.getBeanClassName();
-            beanDefinition.setBeanClass(MapperProxyFactory.class);
+            beanDefinition.setBeanClass(DaoProxyFactory.class);
             beanDefinition.getConstructorArgumentValues().addGenericArgumentValue(beanClassName);
             beanDefinition.getConstructorArgumentValues().addGenericArgumentValue(dataSource);
             beanDefinition.getConstructorArgumentValues().addGenericArgumentValue(runtimeBeanReference);
@@ -58,7 +58,7 @@ public class ClassPathMapperScanner extends ClassPathBeanDefinitionScanner {
     }
 
     public void registerFilters() {
-        addIncludeFilter(new AnnotationTypeFilter(Mapper.class));
+        addIncludeFilter(new AnnotationTypeFilter(Dao.class));
         // exclude package-info.java
         addExcludeFilter((metadataReader, metadataReaderFactory) -> {
             String className = metadataReader.getClassMetadata().getClassName();

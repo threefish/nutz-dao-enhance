@@ -29,10 +29,22 @@
             <dependency>
                 <groupId>org.nutz</groupId>
                 <artifactId>nutz</artifactId>
-                <version>1.r.68.v20201205</version>
+                <version>1.r.69-SNAPSHOT</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
+
+    <distributionManagement>
+        <repository>
+            <id>xjbpm-maven-public</id>
+            <url>http://www.xjbpm.cn:8081/repository/maven-public/</url>
+            <uniqueVersion>true</uniqueVersion>
+        </repository>
+        <snapshotRepository>
+            <id>xjbpm-maven-public</id>
+            <url>http://www.xjbpm.cn:8081/repository/maven-public/</url>
+        </snapshotRepository>
+    </distributionManagement>
 
 
 </project>

@@ -4,7 +4,7 @@ import org.nutz.dao.Condition;
 import org.nutz.dao.pager.Pager;
 import org.nutz.lang.Lang;
 import org.nutz.spring.boot.dao.annotation.Entity;
-import org.nutz.spring.boot.dao.execute.BaseMapper;
+import org.nutz.spring.boot.dao.execute.BaseDao;
 import sun.reflect.generics.reflectiveObjects.ParameterizedTypeImpl;
 
 import java.lang.reflect.Method;
@@ -21,7 +21,7 @@ public class MethodSignatureUtil {
      */
     public final static List<String> BUILT_IN_METHOD = new ArrayList<String>() {
         {
-            this.addValueBygetDeclaredMethodVal(BaseMapper.class);
+            this.addValueBygetDeclaredMethodVal(BaseDao.class);
         }
 
         /**
@@ -38,7 +38,7 @@ public class MethodSignatureUtil {
      * 内置的crud baseMapper
      */
     private static final List<Class<?>> BASE_MAPPER_CLASS = Arrays.asList(
-            BaseMapper.class
+            BaseDao.class
     );
 
     /**

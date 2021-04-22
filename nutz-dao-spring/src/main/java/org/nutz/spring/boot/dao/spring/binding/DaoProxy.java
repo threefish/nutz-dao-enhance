@@ -13,7 +13,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Map;
 
-public class MapperProxy<T> implements InvocationHandler, Serializable {
+public class DaoProxy<T> implements InvocationHandler, Serializable {
 
 
     private static final int ALLOWED_MODES = MethodHandles.Lookup.PRIVATE | MethodHandles.Lookup.PROTECTED
@@ -49,11 +49,11 @@ public class MapperProxy<T> implements InvocationHandler, Serializable {
     }
 
     private final Class<T> mapperInterface;
-    private final Map<Method, MapperMethodInvoker> methodCache;
+    private final Map<Method, DaoMethodInvoker> methodCache;
     private final DaoFactory daoFactory;
     private final String dataSource;
 
-    public MapperProxy(DaoFactory daoFactory, String dataSource, Class<T> mapperInterface, Map<Method, MapperMethodInvoker> methodCache) {
+    public DaoProxy(DaoFactory daoFactory, String dataSource, Class<T> mapperInterface, Map<Method, DaoMethodInvoker> methodCache) {
         this.mapperInterface = mapperInterface;
         this.dataSource = dataSource;
         this.methodCache = methodCache;
@@ -73,12 +73,12 @@ public class MapperProxy<T> implements InvocationHandler, Serializable {
         }
     }
 
-    private MapperMethodInvoker cachedInvoker(Method method) throws Throwable {
+    private DaoMethodInvoker cachedInvoker(Method method) throws Throwable {
         try {
             // A workaround for https://bugs.openjdk.java.net/browse/JDK-8161372
             // It should be removed once the fix is backported to Java 8 or
             // MyBatis drops Java 8 support. See gh-1929
-            MapperMethodInvoker invoker = methodCache.get(method);
+            DaoMethodInvoker invoker = methodCache.get(method);
             if (invoker != null) {
                 return invoker;
             }
@@ -96,7 +96,7 @@ public class MapperProxy<T> implements InvocationHandler, Serializable {
                         throw new RuntimeException(e);
                     }
                 } else {
-                    return new PlainMethodInvoker(new MapperMethod(daoFactory, dataSource, mapperInterface, method));
+                    return new PlainMethodInvoker(new DaoMethod(daoFactory, dataSource, mapperInterface, method));
                 }
             });
         } catch (RuntimeException re) {
@@ -119,10 +119,10 @@ public class MapperProxy<T> implements InvocationHandler, Serializable {
         return lookupConstructor.newInstance(declaringClass, ALLOWED_MODES).unreflectSpecial(method, declaringClass);
     }
 
-    private static class PlainMethodInvoker implements MapperMethodInvoker {
-        private final MapperMethod mapperMethod;
+    private static class PlainMethodInvoker implements DaoMethodInvoker {
+        private final DaoMethod mapperMethod;
 
-        public PlainMethodInvoker(MapperMethod mapperMethod) {
+        public PlainMethodInvoker(DaoMethod mapperMethod) {
             super();
             this.mapperMethod = mapperMethod;
         }
@@ -133,7 +133,7 @@ public class MapperProxy<T> implements InvocationHandler, Serializable {
         }
     }
 
-    private static class DefaultMethodInvoker implements MapperMethodInvoker {
+    private static class DefaultMethodInvoker implements DaoMethodInvoker {
         private final MethodHandle methodHandle;
 
         public DefaultMethodInvoker(MethodHandle methodHandle) {

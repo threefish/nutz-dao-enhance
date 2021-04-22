@@ -1,6 +1,6 @@
 package org.nutz.spring.boot.dao.annotation;
 
-import org.nutz.spring.boot.dao.spring.MapperScannerRegistrar;
+import org.nutz.spring.boot.dao.spring.DaoScannerRegistrar;
 import org.springframework.context.annotation.Import;
 
 import java.lang.annotation.*;
@@ -12,7 +12,7 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 @Documented
-@Import(MapperScannerRegistrar.RepeatingRegistrar.class)
-public @interface MapperScans {
-    MapperScan[] value();
+@Import(DaoScannerRegistrar.RepeatingRegistrar.class)
+public @interface DaoScans {
+    DaoScan[] value();
 }

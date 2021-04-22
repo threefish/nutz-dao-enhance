@@ -25,7 +25,7 @@ import java.util.*;
  * @date: 2020/7/31
  */
 @Slf4j
-public class MapperMethod {
+public class DaoMethod {
 
     /**
      * 方法信息
@@ -49,7 +49,7 @@ public class MapperMethod {
      * @param mapperInterface
      * @param method
      */
-    public MapperMethod(DaoFactory daoFactory, String dataSource, Class<?> mapperInterface, Method method) {
+    public DaoMethod(DaoFactory daoFactory, String dataSource, Class<?> mapperInterface, Method method) {
         this.daoFactory = daoFactory;
         this.methodSignature = new MethodSignature(mapperInterface, method);
         this.entityClass = this.methodSignature.getReturnEntityClass();
@@ -77,7 +77,7 @@ public class MapperMethod {
                 return this.getCustomizeSqlExecute(dao, args).invoke();
             }
             // 每次都new一个对象是方便动态传递dao进去，实现多数据源动态切换
-            BaseMapper baseMapper = new BaseMapperExecute(dao, this.methodSignature.getReturnEntityClass(), this.entity);
+            BaseDao baseMapper = new BaseDaoImpl(dao, this.methodSignature.getReturnEntityClass(), this.entity);
             return methodTraget.invoke(baseMapper, args);
         } finally {
             stopWatch.stop();

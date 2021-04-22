@@ -17,15 +17,15 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 @Data
 @RequiredArgsConstructor
-public class MapperProxyFactory<T> implements FactoryBean<T> {
+public class DaoProxyFactory<T> implements FactoryBean<T> {
 
-    private final Map<Method, MapperMethodInvoker> methodCache = new ConcurrentHashMap<>();
+    private final Map<Method, DaoMethodInvoker> methodCache = new ConcurrentHashMap<>();
     private final Class<T> mapperInterface;
     private final DaoFactory daoFactory;
     private final String dataSource;
 
     @SuppressWarnings("unchecked")
-    protected T newInstance(MapperProxy<T> mapperProxy) {
+    protected T newInstance(DaoProxy<T> mapperProxy) {
         return (T) Proxy.newProxyInstance(mapperInterface.getClassLoader(),
                 new Class[]{mapperInterface},
                 mapperProxy
@@ -33,7 +33,7 @@ public class MapperProxyFactory<T> implements FactoryBean<T> {
     }
 
     public T newInstance(DaoFactory daoFactory) {
-        return newInstance(new MapperProxy<>(daoFactory, dataSource, mapperInterface, methodCache));
+        return newInstance(new DaoProxy<>(daoFactory, dataSource, mapperInterface, methodCache));
     }
 
 

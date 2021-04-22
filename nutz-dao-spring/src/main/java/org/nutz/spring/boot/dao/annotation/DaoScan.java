@@ -1,7 +1,7 @@
 package org.nutz.spring.boot.dao.annotation;
 
 import org.nutz.spring.boot.dao.config.properties.DataSourceConstant;
-import org.nutz.spring.boot.dao.spring.MapperScannerRegistrar;
+import org.nutz.spring.boot.dao.spring.DaoScannerRegistrar;
 import org.springframework.context.annotation.Import;
 
 import java.lang.annotation.*;
@@ -13,9 +13,9 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 @Documented
-@Import(MapperScannerRegistrar.class)
-@Repeatable(MapperScans.class)
-public @interface MapperScan {
+@Import(DaoScannerRegistrar.class)
+@Repeatable(DaoScans.class)
+public @interface DaoScan {
     /**
      * Alias for the {@link #basePackages()} attribute. Allows for more concise annotation declarations e.g.:
      * {@code @MapperScan("org.my.pkg")} instead of {@code @MapperScan(basePackages = "org.my.pkg"})}.

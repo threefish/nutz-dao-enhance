@@ -15,7 +15,7 @@ import java.util.Map;
  * @author 黄川 huchuc@vip.qq.com
  * @date: 2020/7/31
  */
-public interface BaseMapper<T> {
+public interface BaseDao<T> {
     /**
      * 将一个对象插入到一个数据源。
      * 声明了 '@Id'的字段会在插入数据库时被忽略，因为数据库会自动为其设值。如果想手动设置，请设置 '@Id(auto=false)'
