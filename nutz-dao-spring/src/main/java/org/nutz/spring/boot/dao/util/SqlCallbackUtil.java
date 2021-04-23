@@ -13,8 +13,10 @@ import java.util.Map;
  * @author 黄川 huchuc@vip.qq.com
  */
 public class SqlCallbackUtil {
-
-    private static final HashMap<Class<?>, SqlCallback> SQL_CALLBACK_HASH_MAP = new HashMap() {
+    /**
+     * 通用的
+     */
+    private static final HashMap<Class<?>, SqlCallback> COMMON_SQL_CALLBACK_HASH_MAP = new HashMap() {
         {
             put(Integer.class, Sqls.callback.integer());
             put(int.class, Sqls.callback.integer());
@@ -42,6 +44,26 @@ public class SqlCallbackUtil {
         }
     };
 
+    /**
+     * 对应的list返回类型
+     */
+    private static final HashMap<Class<?>, SqlCallback> LIST_SQL_CALLBACK_HASH_MAP = new HashMap() {
+        {
+            put(Integer.class, Sqls.callback.ints());
+            put(int.class, Sqls.callback.ints());
+            put(Long.class, Sqls.callback.longs());
+            put(long.class, Sqls.callback.longs());
+            put(String.class, Sqls.callback.strList());
+            put(String[].class, Sqls.callback.strs());
+            put(int[].class, Sqls.callback.ints());
+            put(Integer[].class, Sqls.callback.ints());
+            put(long[].class, Sqls.callback.longs());
+            put(Long[].class, Sqls.callback.longs());
+            put(Boolean.class, Sqls.callback.bools());
+            put(Record.class, Sqls.callback.records());
+        }
+    };
+
 
     /**
      * 获取callback类型
@@ -49,8 +71,18 @@ public class SqlCallbackUtil {
      * @param clazz
      * @return
      */
-    public static SqlCallback getSqlCallback(Class<?> clazz) {
-        return SQL_CALLBACK_HASH_MAP.get(clazz);
+    public static SqlCallback getCommonSqlCallback(Class<?> clazz) {
+        return COMMON_SQL_CALLBACK_HASH_MAP.get(clazz);
+    }
+
+    /**
+     * 获取callback类型
+     *
+     * @param clazz
+     * @return
+     */
+    public static SqlCallback getCollectionSqlCallback(Class<?> clazz) {
+        return LIST_SQL_CALLBACK_HASH_MAP.get(clazz);
     }
 
 }

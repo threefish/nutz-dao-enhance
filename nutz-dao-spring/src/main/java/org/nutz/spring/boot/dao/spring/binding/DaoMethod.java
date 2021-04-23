@@ -52,7 +52,7 @@ public class DaoMethod {
     public DaoMethod(DaoFactory daoFactory, String dataSource, Class<?> mapperInterface, Method method) {
         this.daoFactory = daoFactory;
         this.methodSignature = new MethodSignature(mapperInterface, method);
-        this.entityClass = this.methodSignature.getReturnEntityClass();
+        this.entityClass = this.methodSignature.getEntityClass();
         this.entity = Objects.isNull(this.entityClass) ? null : daoFactory.getDao(dataSource).getEntity(this.entityClass);
         if (Objects.nonNull(this.entity)) {
             EntityClassInfoHolder.setEntity(this.entityClass, this.entity);
@@ -77,7 +77,7 @@ public class DaoMethod {
                 return this.getCustomizeSqlExecute(dao, args).invoke();
             }
             // 每次都new一个对象是方便动态传递dao进去，实现多数据源动态切换
-            BaseDao baseMapper = new BaseDaoImpl(dao, this.methodSignature.getReturnEntityClass(), this.entity);
+            BaseDao baseMapper = new BaseDaoImpl(dao, this.methodSignature.getEntityClass(), this.entity);
             return methodTraget.invoke(baseMapper, args);
         } finally {
             stopWatch.stop();

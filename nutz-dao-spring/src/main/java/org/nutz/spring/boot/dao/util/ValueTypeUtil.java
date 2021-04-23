@@ -26,12 +26,22 @@ public class ValueTypeUtil {
 
     /**
      * 是多记录查询,或者分页
-     * TODO 没有判断是否是数组类型
+     *
      * @param clazz
      * @return
      */
     public static boolean isCollection(Class<?> clazz) {
         return Collection.class.isAssignableFrom(clazz) || PageData.class == clazz;
+    }
+
+    /**
+     * 是多记录查询,或者分页
+     *
+     * @param clazz
+     * @return
+     */
+    public static boolean isArray(Class<?> clazz) {
+        return clazz.isArray();
     }
 
 

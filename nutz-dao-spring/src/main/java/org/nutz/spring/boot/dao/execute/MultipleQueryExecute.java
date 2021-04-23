@@ -19,9 +19,9 @@ public class MultipleQueryExecute extends AbstractExecute {
     public Object invoke() {
         Sql sql = Sqls.create(executeSql).setParams(this.params);
         this.setCondition(sql);
-        sql.setEntity(dao.getEntity(this.methodSignature.getReturnEntityClass()));
+        sql.setEntity(dao.getEntity(this.methodSignature.getEntityClass()));
         sql.setCallback(methodSignature.getSqlCallback());
         dao.execute(sql);
-        return sql.getList(methodSignature.getReturnEntityClass());
+        return sql.getList(methodSignature.getEntityClass());
     }
 }

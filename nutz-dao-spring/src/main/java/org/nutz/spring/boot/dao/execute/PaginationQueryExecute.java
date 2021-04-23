@@ -43,10 +43,10 @@ public class PaginationQueryExecute extends AbstractExecute {
         this.pager.setRecordCount(Math.toIntExact(pageData.getTotal()));
         if (pageData.getTotal() > 0) {
             sql.setPager(this.pager);
-            sql.setEntity(dao.getEntity(this.methodSignature.getReturnEntityClass()));
+            sql.setEntity(dao.getEntity(this.methodSignature.getEntityClass()));
             sql.setCallback(methodSignature.getSqlCallback());
             dao.execute(sql);
-            listData = sql.getList(methodSignature.getReturnEntityClass());
+            listData = sql.getList(methodSignature.getEntityClass());
         }
         pageData.setRecords(listData);
         pageData.setPager(this.pager);

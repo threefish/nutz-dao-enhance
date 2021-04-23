@@ -9,7 +9,6 @@ package org.nutz.spring.boot.dao.spring.binding.method;
 
 import lombok.Getter;
 import org.nutz.dao.Sqls;
-import org.nutz.dao.entity.Record;
 import org.nutz.dao.sql.SqlCallback;
 import org.nutz.spring.boot.dao.annotation.Delete;
 import org.nutz.spring.boot.dao.annotation.Insert;
@@ -35,38 +34,38 @@ import java.util.*;
 @Getter
 public class MethodSignature {
     /**
-     * 无返回值的
-     */
-    private final boolean returnsVoid;
-    /**
-     * 可选返回
-     */
-    private final boolean returnsOptional;
-    /**
-     * 返回类型
-     */
-    private final Class<?> returnType;
-    /**
      * 是否返回多条记录
      */
     private final boolean multipleRecords;
     /**
-     * 是否分页查询
+     * Cnd 参数位置，-1 代表没有
      */
-    private final boolean paginationQuery;
+    private final int conditionParameterInedx;
+    /**
+     * 方法名
+     */
+    private final String methodName;
     /**
      * 参数名列表
      */
     private final HashMap<Integer, String> parameterNames = new HashMap<>();
+
     /**
-     * Cnd 参数位置，-1 代表没有
+     * 无返回值的
      */
-    private final int conditionParameterInedx;
-    private final String methodName;
+    private boolean returnsVoid;
     /**
-     * 返回类型的泛型
+     * 可选返回
      */
-    private Class<?> returnGenericType;
+    private boolean returnsOptional;
+    /**
+     * 是否分页查询
+     */
+    private boolean paginationQuery;
+    /**
+     * 返回类型
+     */
+    private Class<?> returnType;
     /***
      * 是自定义sql
      */
@@ -76,9 +75,13 @@ public class MethodSignature {
      */
     private String sqlTemplate;
     /**
-     * 返回实体类
+     * 当前类或者当前方法标注的实体类
      */
-    private Class<?> returnEntityClass;
+    private Class<?> entityClass;
+    /**
+     * 返回类型的泛型
+     */
+    private Class<?> returnGenericType;
     /**
      * sql回调类
      */
@@ -91,9 +94,65 @@ public class MethodSignature {
     public MethodSignature(Class<?> mapperInterface, Method method) {
         String name = String.format("%s.%s", mapperInterface.getName(), MethodSignatureUtil.getMethodName(method));
         this.methodName = method.getName();
-        this.initCustomizeSql(name, method);
+        // 获取条件参数位置
+        this.conditionParameterInedx = MethodSignatureUtil.getConditionParameterInedx(method.getParameterTypes());
         // 类上直接获取实体类型
-        this.returnEntityClass = MethodSignatureUtil.getClassEntityType(mapperInterface);
+        this.entityClass = MethodSignatureUtil.getClassEntityType(mapperInterface);
+        this.initParameterName(method);
+        this.initCustomizeSql(name, method);
+        this.initReturnType(mapperInterface, method);
+        this.initPager(method, name);
+        this.initEntityClass(method);
+        this.initSqlCallback();
+        // 是否是返回多条记录
+        this.multipleRecords = ValueTypeUtil.isCollection(this.returnType);
+
+    }
+
+    /**
+     * 方法上标了 @Entity 注解，优先使用 @Entity 注解
+     *
+     * @param method
+     */
+    private void initEntityClass(Method method) {
+        final Class methodEntityType = MethodSignatureUtil.getMethodEntityType(method);
+        if (Objects.nonNull(methodEntityType)) {
+            this.entityClass = methodEntityType;
+        }
+    }
+
+    /**
+     * 设置参数名
+     *
+     * @param method
+     */
+    private void initPager(Method method, String name) {
+        this.paginationQuery = PageData.class.equals(this.returnType);
+        if (this.paginationQuery) {
+            Assert.isTrue(MethodSignatureUtil.firstParameterIsPaginationInfo(method), String.format("[%s]的返回值是分页类型，第一个参数必须是 Pager", name));
+        }
+    }
+
+    /**
+     * 设置参数名
+     *
+     * @param method
+     */
+    private void initParameterName(Method method) {
+        // 设置参数名
+        Parameter[] parameters = method.getParameters();
+        for (int i = 0; i < parameters.length; i++) {
+            parameterNames.put(i, parameters[i].getName());
+        }
+    }
+
+    /**
+     * 设置返回类型
+     *
+     * @param mapperInterface
+     * @param method
+     */
+    private void initReturnType(Class<?> mapperInterface, Method method) {
         Type resolvedReturnType = TypeParameterResolver.resolveReturnType(method, mapperInterface);
         if (resolvedReturnType instanceof Class<?>) {
             this.returnType = (Class<?>) resolvedReturnType;
@@ -110,24 +169,6 @@ public class MethodSignature {
         }
         this.returnsVoid = void.class.equals(this.returnType);
         this.returnsOptional = Optional.class.equals(this.returnType);
-        this.paginationQuery = PageData.class.equals(this.returnType);
-        if (this.paginationQuery) {
-            Assert.isTrue(MethodSignatureUtil.firstParameterIsPaginationInfo(method), String.format("[%s]的返回值是分页类型，第一个参数必须是 Pager", name));
-        }
-        // 设置参数名
-        Parameter[] parameters = method.getParameters();
-        for (int i = 0; i < parameters.length; i++) {
-            parameterNames.put(i, parameters[i].getName());
-        }
-        // 方法上标了 @Entity 注解，优先使用
-        final Class methodEntityType = MethodSignatureUtil.getMethodEntityType(method);
-        if (Objects.nonNull(methodEntityType)) {
-            this.returnEntityClass = methodEntityType;
-        }
-        this.initSqlCallback();
-        // 是否是返回多条记录
-        this.multipleRecords = ValueTypeUtil.isCollection(this.returnType);
-        this.conditionParameterInedx = MethodSignatureUtil.getConditionParameterInedx(method.getParameterTypes());
     }
 
     private void initCustomizeSql(String name, Method method) {
@@ -162,57 +203,20 @@ public class MethodSignature {
      * 设置sql回调类型
      */
     private void initSqlCallback() {
-        if (this.returnType == this.returnEntityClass) {
+        if (this.returnType == this.entityClass) {
             // 是返回的单独实体类
             this.sqlCallback = Sqls.callback.entity();
             return;
         }
-        this.sqlCallback = SqlCallbackUtil.getSqlCallback(this.returnType);
+        this.sqlCallback = SqlCallbackUtil.getCommonSqlCallback(this.returnType);
         if (Objects.isNull(this.sqlCallback)) {
+            // 设置集合类型的回调
             if (ValueTypeUtil.isCollection(this.returnType)) {
-                // 在返回集合的时候有几种情况，1 有泛型返回类型（具体在细分） 2无泛型返回类型（默认为实体类）
-                if (Objects.nonNull(this.returnGenericType)) {
-                    // 有泛型返回类型
-                    if (this.returnEntityClass == this.returnGenericType) {
-                        // 返回的是实体类
-                        this.sqlCallback = Sqls.callback.entities();
-                        return;
-                    }else if (Record.class == this.returnGenericType) {
-                        // 返回的是Records
-                        this.sqlCallback = Sqls.callback.records();
-                        return;
-                    } else if (Map.class.isAssignableFrom(this.returnGenericType)) {
-                        // 返回的是map
-                        this.sqlCallback = Sqls.callback.maps();
-                        return;
-                    } else if (String.class == this.returnGenericType) {
-                        // 返回的是String
-                        this.sqlCallback = Sqls.callback.strList();
-                        return;
-                    } else if (String[].class == this.returnGenericType) {
-                        // 返回的是String
-                        this.sqlCallback = Sqls.callback.strs();
-                        return;
-                    } else if (Integer.class == this.returnGenericType) {
-                        // 返回的是Integer
-                        this.sqlCallback = Sqls.callback.ints();
-                        return;
-                    } else if (Long.class == this.returnGenericType) {
-                        // 返回的是Integer
-                        this.sqlCallback = Sqls.callback.longs();
-                        return;
-                    } else if (Boolean.class == this.returnGenericType) {
-                        // 返回的是Integer
-                        this.sqlCallback = Sqls.callback.bools();
-                        return;
-                    }
-                    throw new RuntimeException("未识别的返回类型");
-                }
-                if (Objects.nonNull(this.returnEntityClass)) {
-                    // 没有泛型，那就返回实体类型吧
-                    this.sqlCallback = Sqls.callback.entities();
-                    return;
-                }
+                this.setCollectionSqlCallback();
+            }
+            // 设置数组类型的回调
+            else if(ValueTypeUtil.isArray(this.returnType)){
+                System.out.println("xx");
             }
         }
         List<String> methodNames = Arrays.asList("getEntity", "getDao", "getEntityClass");
@@ -221,6 +225,37 @@ public class MethodSignature {
             if (!methodNames.contains(this.methodName)) {
                 Assert.notNull(this.sqlCallback, String.format("方法[%s]无法获取设置Callback!!!请发ISSUSE", this.methodName));
             }
+        }
+    }
+
+    /**
+     * 设置集合类型的回调
+     */
+    private void setCollectionSqlCallback(){
+        // 在返回集合的时候有几种情况，1 有泛型返回类型（具体在细分） 2无泛型返回类型（默认为实体类）
+        if (Objects.nonNull(this.returnGenericType)) {
+            // 有泛型返回类型
+            if (this.entityClass == this.returnGenericType) {
+                // 返回的是实体类
+                this.sqlCallback = Sqls.callback.entities();
+                return;
+            }
+            if (Map.class.isAssignableFrom(this.returnGenericType)) {
+                // 返回的是map
+                this.sqlCallback = Sqls.callback.maps();
+                return;
+            }
+            final SqlCallback collectionSqlCallback = SqlCallbackUtil.getCollectionSqlCallback(this.returnGenericType);
+            if (Objects.nonNull(collectionSqlCallback)) {
+                return;
+            }
+            // collectionSqlCallback 还是null，那就是未识别的类型
+            throw new RuntimeException("未识别的返回类型");
+        }
+        if (Objects.nonNull(this.entityClass)) {
+            // 没有泛型，那就返回实体类型吧
+            this.sqlCallback = Sqls.callback.entities();
+            return;
         }
     }
 

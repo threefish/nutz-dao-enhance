@@ -29,7 +29,7 @@ public interface UserMapper extends BaseDao<UserDO> {
     @Query("select u.* from UserDO as u where 1=1" +
             "#[ and u.realName=@name and u.gmtCreate=@gmtCreate ] " +
             "#[ and u.realName=@name ] ")
-    UserDO queryByHql(String name);
+    UserDO queryByCndHql(String name);
 
     /**
      * 查询2
@@ -38,7 +38,7 @@ public interface UserMapper extends BaseDao<UserDO> {
      */
     @Query("select u.* from UserDO as u where 1=1 " +
             "#[ and u.realName=@{user.realName} ] ")
-    UserDO queryByHql2(UserDO user);
+    UserDO queryByVoHql(UserDO user);
 
     /**
      * 返回当前实体类
@@ -47,7 +47,7 @@ public interface UserMapper extends BaseDao<UserDO> {
      * @return
      */
     @Query("select * from user where id=@id")
-    UserDO fetchEntityOne(int id);
+    UserDO queryUserById(int id);
 
     /**
      * 根据 condition 条件返回
@@ -66,7 +66,7 @@ public interface UserMapper extends BaseDao<UserDO> {
      * @return
      */
     @Query("select * from user where id=@id")
-    Map fetchMapOne(int id);
+    Map queryMapById(int id);
 
     /**
      * 查询返回一个map
@@ -83,7 +83,7 @@ public interface UserMapper extends BaseDao<UserDO> {
      * @return
      */
     @Query("select * from user where id=@id")
-    Record fetchRecordOne(int id);
+    Record queryRecordById(int id);
 
     /**
      * 只会返回第一条记录，且不会像mybaits那样会提示too many result
@@ -91,7 +91,7 @@ public interface UserMapper extends BaseDao<UserDO> {
      * @return
      */
     @Query("select * from user")
-    UserDO fetchOne();
+    UserDO queryAllAndGetFirst();
 
     /**
      * 分页查询
@@ -141,6 +141,33 @@ public interface UserMapper extends BaseDao<UserDO> {
      */
     @Delete("DELETE FROM user WHERE id=@id")
     int delectById(int id);
+
+
+    /**
+     *
+     *
+     * @return
+     */
+    @Query("select u.realName from UserDO as u")
+    String[] queryRealNames();
+
+    /**
+     *
+     *
+     * @return
+     */
+    @Query("select u.id from UserDO as u")
+    int[] queryIntIds();
+
+    /**
+     *
+     *
+     * @return
+     */
+    @Query("select u.id from UserDO as u")
+    Integer[] queryIntegerIds();
+
+
 
 
 }
