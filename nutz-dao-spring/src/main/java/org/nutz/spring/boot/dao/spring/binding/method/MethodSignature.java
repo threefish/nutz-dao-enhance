@@ -231,9 +231,9 @@ public class MethodSignature {
             if (ValueTypeUtil.isCollection(this.returnType)) {
                 this.setCollectionSqlCallback();
             }
-            // 设置数组类型的回调
+            //TODO 设置List数组类型的回调
             else if (ValueTypeUtil.isArray(this.returnType)) {
-                System.out.println("xx");
+                System.out.println("设置List数组类型的回调");
             }
         }
         List<String> methodNames = Arrays.asList("getEntity", "getDao", "getEntityClass");
