@@ -69,7 +69,7 @@ public abstract class AbstractExecute implements Execute {
      * @return
      */
     protected Object returnIsOptionalVal(Object val) {
-        return this.methodSignature.isReturnsOptional() ? Optional.of(val) : val;
+        return this.methodSignature.isReturnsOptional() ? Optional.ofNullable(val) : val;
     }
 
 }
