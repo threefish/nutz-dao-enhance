@@ -22,6 +22,6 @@ public class MultipleQueryExecute extends AbstractExecute {
         sql.setEntity(dao.getEntity(this.methodSignature.getEntityClass()));
         sql.setCallback(methodSignature.getSqlCallback());
         dao.execute(sql);
-        return sql.getList(methodSignature.getEntityClass());
+        return this.returnIsOptionalVal(sql.getList(methodSignature.getEntityClass()));
     }
 }

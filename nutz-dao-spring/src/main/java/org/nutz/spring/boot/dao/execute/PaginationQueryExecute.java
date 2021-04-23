@@ -50,7 +50,8 @@ public class PaginationQueryExecute extends AbstractExecute {
         }
         pageData.setRecords(listData);
         pageData.setPager(this.pager);
-        return pageData;
+        return this.returnIsOptionalVal(pageData);
+
     }
 
 

@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * @author 黄川 huchuc@vip.qq.com
@@ -23,6 +24,7 @@ public interface UserMapper extends BaseDao<UserDO> {
     /**
      * gmtCreate 入参不存在，所以当前#[]中的全部条件不生效
      * 输出SQL：select u.id,u.real_name,u.age,u.gmt_create,u.create_by from user as u where 1=1   and u.real_name='测试11'
+     *
      * @param name
      * @return
      */
@@ -34,6 +36,7 @@ public interface UserMapper extends BaseDao<UserDO> {
     /**
      * 查询2
      * 输出SQL： select u.id,u.real_name,u.age,u.gmt_create,u.create_by from user as u where 1=1  and u.real_name='测试11'
+     *
      * @param user
      */
     @Query("select u.* from UserDO as u where 1=1 " +
@@ -50,6 +53,15 @@ public interface UserMapper extends BaseDao<UserDO> {
     UserDO queryUserById(int id);
 
     /**
+     * 返回当前实体类
+     *
+     * @param id
+     * @return
+     */
+    @Query("select * from user where id=@id")
+    Optional<UserDO> queryOptionalUserById(int id);
+
+    /**
      * 根据 condition 条件返回
      *
      * @param condition
@@ -58,6 +70,17 @@ public interface UserMapper extends BaseDao<UserDO> {
     @Query("select * from user $condition")
     @Entity(UserDO.class)
     List<UserDO> listUser(Condition condition);
+
+
+    /**
+     * 根据 condition 条件返回
+     *
+     * @param condition
+     * @return
+     */
+    @Query("select * from user $condition")
+    @Entity(UserDO.class)
+    Optional<List<UserDO>> listOptionalUser(Condition condition);
 
     /**
      * 查询返回一个map
@@ -144,30 +167,28 @@ public interface UserMapper extends BaseDao<UserDO> {
 
 
     /**
-     *
-     *
      * @return
      */
     @Query("select u.realName from UserDO as u")
     String[] queryRealNames();
 
     /**
-     *
-     *
+     * @return
+     */
+    @Query("select u.realName from UserDO as u")
+    Optional<String[]> queryOptionalRealNames();
+
+    /**
      * @return
      */
     @Query("select u.id from UserDO as u")
     int[] queryIntIds();
 
     /**
-     *
-     *
      * @return
      */
     @Query("select u.id from UserDO as u")
     Integer[] queryIntegerIds();
-
-
 
 
 }

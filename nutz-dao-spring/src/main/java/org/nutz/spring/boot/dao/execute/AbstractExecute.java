@@ -8,6 +8,7 @@ import org.nutz.spring.boot.dao.spring.binding.method.MethodSignature;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * @author 黄川 2020/12/16
@@ -60,6 +61,15 @@ public abstract class AbstractExecute implements Execute {
         if (this.methodSignature.getConditionParameterInedx() > -1) {
             sql.setCondition((Condition) this.args[this.methodSignature.getConditionParameterInedx()]);
         }
+    }
+
+    /**
+     * 包裹可选返回值
+     *
+     * @return
+     */
+    protected Object returnIsOptionalVal(Object val) {
+        return this.methodSignature.isReturnsOptional() ? Optional.of(val) : val;
     }
 
 }

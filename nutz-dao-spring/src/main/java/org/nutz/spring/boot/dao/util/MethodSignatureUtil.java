@@ -113,7 +113,7 @@ public class MethodSignatureUtil {
             Type genericInterface = genericInterfaces[0];
             if (genericInterface instanceof ParameterizedTypeImpl) {
                 ParameterizedTypeImpl parameterizedType = (ParameterizedTypeImpl) genericInterface;
-                cl = getActualTypeClass(parameterizedType.getActualTypeArguments());
+                cl = getActualTypeClassFirst(parameterizedType.getActualTypeArguments());
             }
         }
         if (Objects.isNull(cl)) {
@@ -131,13 +131,38 @@ public class MethodSignatureUtil {
      * @param actualTypeArguments
      * @return
      */
-    public static Class getActualTypeClass(Type[] actualTypeArguments) {
+    public static Type getActualTypeFirst(Type[] actualTypeArguments) {
         if (Lang.isNotEmpty(actualTypeArguments)) {
             Type actualTypeArgument = actualTypeArguments[0];
-            return (Class) actualTypeArgument;
+            return actualTypeArgument;
         }
         return null;
     }
+
+    /**
+     * 如果泛型是class就直接返回否则返回null
+     *
+     * @param actualType
+     * @return
+     */
+    public static Class getActualTypeClass(Type actualType) {
+        if (Objects.nonNull(actualType) && actualType instanceof Class) {
+            return (Class) actualType;
+        }
+        return null;
+    }
+
+    /**
+     * 如果泛型是class就直接返回否则返回null
+     *
+     * @param actualTypeArguments
+     * @return
+     */
+    public static Class getActualTypeClassFirst(Type[] actualTypeArguments) {
+        return getActualTypeClass(getActualTypeFirst(actualTypeArguments));
+    }
+
+
 
     /**
      * 获取实体class
@@ -155,6 +180,7 @@ public class MethodSignatureUtil {
 
     /**
      * 获取 Condition 条件参数
+     *
      * @param parameterTypes
      * @return
      */

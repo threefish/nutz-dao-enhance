@@ -22,6 +22,7 @@ public class SingleQueryExecute extends AbstractExecute {
         sql.setEntity(dao.getEntity(this.methodSignature.getEntityClass()));
         sql.setCallback(methodSignature.getSqlCallback());
         dao.execute(sql);
-        return sql.getObject(methodSignature.getReturnType());
+        return this.returnIsOptionalVal(sql.getObject(methodSignature.getReturnType()));
+
     }
 }

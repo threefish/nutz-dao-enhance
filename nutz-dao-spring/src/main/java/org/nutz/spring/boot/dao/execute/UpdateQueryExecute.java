@@ -22,6 +22,6 @@ public class UpdateQueryExecute extends AbstractExecute {
         sql.setEntity(dao.getEntity(this.methodSignature.getEntityClass()));
         sql.setCallback(methodSignature.getSqlCallback());
         dao.execute(sql);
-        return sql.getUpdateCount();
+        return this.returnIsOptionalVal(sql.getUpdateCount());
     }
 }

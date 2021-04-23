@@ -11,6 +11,7 @@ import org.nutz.spring.boot.dao.util.ValueTypeUtil;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -29,7 +30,7 @@ public class InsertQueryExecute extends AbstractExecute {
         this.setCondition(sql);
         if (this.methodSignature.getReturnType() == void.class) {
             dao.execute(sql);
-            return sql.getUpdateCount();
+            return this.returnIsOptionalVal(sql.getUpdateCount());
         } else {
             String originalSql = sql.toPreparedStatement();
             ValueAdaptor[] adaptors = sql.getAdaptors();
@@ -55,7 +56,7 @@ public class InsertQueryExecute extends AbstractExecute {
                     Daos.safeClose(preparedStatement, rs);
                 }
             });
-            return idGeneratedKey.get();
+            return this.returnIsOptionalVal(idGeneratedKey.get());
         }
     }
 }

@@ -153,22 +153,39 @@ public class MethodSignature {
      * @param method
      */
     private void initReturnType(Class<?> mapperInterface, Method method) {
+        this.returnType = method.getReturnType();
+        this.returnsOptional = Optional.class.equals(method.getReturnType());
+        this.returnsVoid = void.class.equals(method.getReturnType());
         Type resolvedReturnType = TypeParameterResolver.resolveReturnType(method, mapperInterface);
-        if (resolvedReturnType instanceof Class<?>) {
-            this.returnType = (Class<?>) resolvedReturnType;
-        } else if (resolvedReturnType instanceof ParameterizedType) {
-            // 是泛型
+        if (this.returnsOptional && !(resolvedReturnType instanceof ParameterizedType)) {
+            throw new RuntimeException("是可选返回值，必须要有泛型");
+        }
+        if (this.returnsOptional) {
             final ParameterizedType parameterizedType = (ParameterizedType) resolvedReturnType;
-            this.returnType = (Class<?>) parameterizedType.getRawType();
+            // 返回类型就是第一个泛型
+            final Type actualTypeFirst = MethodSignatureUtil.getActualTypeFirst(parameterizedType.getActualTypeArguments());
+            this.setReturnTypeAndReturnGenericType(actualTypeFirst);
+            return;
+        }
+        this.setReturnTypeAndReturnGenericType(resolvedReturnType);
+    }
+
+    /**
+     * 通过泛型获取返回类型和返回类型泛型
+     */
+    private void setReturnTypeAndReturnGenericType(Type actualTypeFirst){
+        if (actualTypeFirst instanceof Class) {
+            // 第一个泛型类是class，很好，直接设置即可
+            this.returnType = (Class) actualTypeFirst;
+        }else if(actualTypeFirst instanceof ParameterizedType){
+            // 第一个泛型类还是带泛型的，很好，直接设置原始类型
+            final ParameterizedType actualTypeFirstParameterizedType = (ParameterizedType) actualTypeFirst;
+            this.returnType= (Class<?>) actualTypeFirstParameterizedType.getRawType();
             if (ValueTypeUtil.isCollection(this.returnType)) {
                 // 如果是集合，获取下泛型
-                this.returnGenericType = MethodSignatureUtil.getActualTypeClass(parameterizedType.getActualTypeArguments());
+                this.returnGenericType = MethodSignatureUtil.getActualTypeClassFirst(actualTypeFirstParameterizedType.getActualTypeArguments());
             }
-        } else {
-            this.returnType = method.getReturnType();
         }
-        this.returnsVoid = void.class.equals(this.returnType);
-        this.returnsOptional = Optional.class.equals(this.returnType);
     }
 
     private void initCustomizeSql(String name, Method method) {
@@ -215,7 +232,7 @@ public class MethodSignature {
                 this.setCollectionSqlCallback();
             }
             // 设置数组类型的回调
-            else if(ValueTypeUtil.isArray(this.returnType)){
+            else if (ValueTypeUtil.isArray(this.returnType)) {
                 System.out.println("xx");
             }
         }
@@ -231,7 +248,7 @@ public class MethodSignature {
     /**
      * 设置集合类型的回调
      */
-    private void setCollectionSqlCallback(){
+    private void setCollectionSqlCallback() {
         // 在返回集合的时候有几种情况，1 有泛型返回类型（具体在细分） 2无泛型返回类型（默认为实体类）
         if (Objects.nonNull(this.returnGenericType)) {
             // 有泛型返回类型

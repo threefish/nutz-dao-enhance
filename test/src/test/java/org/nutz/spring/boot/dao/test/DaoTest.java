@@ -26,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * @author 黄川 huchuc@vip.qq.com
@@ -65,6 +66,13 @@ public class DaoTest {
 
 
     @Test
+    public void list_optional_user_condition() {
+        Optional<List<UserDO>> optional = userMapper.listOptionalUser(Cnd.where(UserDO::getAge, "=", 15));
+        assert optional.isPresent() && optional.get().size() == 1;
+    }
+
+
+    @Test
     public void test_list_map() {
         List<Map> maps = userMapper.listMap();
         assert maps.size() == 3;
@@ -80,23 +88,26 @@ public class DaoTest {
 
     @Test
     public void test_query_user_by_id() {
-        UserDO insert = userMapper.insert(UserDO.builder().age(15).realName("测试11").build());
-        UserDO uset = userMapper.queryUserById(insert.getId());
+        UserDO uset = userMapper.queryUserById(u1.getId());
         assert uset != null;
     }
 
     @Test
+    public void test_query_optional_user_by_id() {
+        final Optional<UserDO> userDO = userMapper.queryOptionalUserById(u1.getId());
+        assert userDO != null && userDO.isPresent();
+    }
+
+    @Test
     public void test_query_map_by_id() {
-        UserDO insert = userMapper.insert(UserDO.builder().age(15).realName("测试11").build());
-        Map map = userMapper.queryMapById(insert.getId());
+        Map map = userMapper.queryMapById(u1.getId());
         assert map != null;
 
     }
 
     @Test
     public void test_query_record_by_id() {
-        UserDO insert = userMapper.insert(UserDO.builder().age(15).realName("测试11").build());
-        Record record = userMapper.queryRecordById(insert.getId());
+        Record record = userMapper.queryRecordById(u1.getId());
         assert record != null;
     }
 
@@ -174,6 +185,12 @@ public class DaoTest {
     public void test_query_realnames() {
         String[] strings = userMapper.queryRealNames();
         assert Arrays.equals(strings, new String[]{u1.getRealName(), u2.getRealName(), u3.getRealName()});
+    }
+
+    @Test
+    public void test_query_optional_realnames() {
+        final Optional<String[]> strings = userMapper.queryOptionalRealNames();
+        assert strings.isPresent() && Arrays.equals(strings.get(), new String[]{u1.getRealName(), u2.getRealName(), u3.getRealName()});
     }
 
     @Test
