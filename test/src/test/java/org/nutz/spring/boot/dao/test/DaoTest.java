@@ -9,7 +9,7 @@ import org.nutz.dao.Cnd;
 import org.nutz.dao.entity.Record;
 import org.nutz.dao.pager.Pager;
 import org.nutz.spring.boot.dao.annotation.DaoScan;
-import org.nutz.spring.boot.dao.pagination.PageData;
+import org.nutz.spring.boot.dao.pagination.PageRecord;
 import org.nutz.spring.boot.dao.test.entity.UserDO;
 import org.nutz.spring.boot.dao.test.mapper.UserMapper;
 import org.nutz.spring.boot.yaml.YamlPropertySourceFactory;
@@ -81,9 +81,9 @@ public class DaoTest {
 
     @Test
     public void test_list_pagedata() {
-        PageData<UserDO> pageData = userMapper.listUserPage(new Pager(1, 10));
-        assert pageData.getTotal() == 3;
-        assert pageData.getRecords().size() == 3;
+        PageRecord<UserDO> pageRecord = userMapper.listUserPage(new Pager(1, 10));
+        assert pageRecord.getTotal() == 3;
+        assert pageRecord.getRecords().size() == 3;
     }
 
     @Test

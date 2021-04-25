@@ -4,6 +4,7 @@ import org.nutz.dao.Condition;
 import org.nutz.dao.pager.Pager;
 import org.nutz.lang.Lang;
 import org.nutz.spring.boot.dao.annotation.Entity;
+import org.nutz.spring.boot.dao.annotation.Param;
 import org.nutz.spring.boot.dao.execute.BaseDao;
 import sun.reflect.generics.reflectiveObjects.ParameterizedTypeImpl;
 
@@ -52,6 +53,15 @@ public class MethodSignatureUtil {
             joiner.add(parameter.getType().toString());
         }
         return String.format("%s(%s)", name, joiner);
+    }
+
+
+    /**
+     * 获取参数名
+     */
+    public static String getParamName(Parameter parameter) {
+        Param param = parameter.getAnnotation(Param.class);
+        return Objects.nonNull(param) ? param.value() : parameter.getName();
     }
 
     /**
@@ -161,7 +171,6 @@ public class MethodSignatureUtil {
     public static Class getActualTypeClassFirst(Type[] actualTypeArguments) {
         return getActualTypeClass(getActualTypeFirst(actualTypeArguments));
     }
-
 
 
     /**

@@ -5,7 +5,7 @@ import org.nutz.dao.Sqls;
 import org.nutz.dao.pager.Pager;
 import org.nutz.dao.sql.Sql;
 import org.nutz.dao.util.Daos;
-import org.nutz.spring.boot.dao.pagination.PageData;
+import org.nutz.spring.boot.dao.pagination.PageRecord;
 import org.nutz.spring.boot.dao.spring.binding.method.MethodSignature;
 
 import java.util.ArrayList;
@@ -35,22 +35,22 @@ public class PaginationQueryExecute extends AbstractExecute {
      */
     @Override
     public Object invoke() {
-        PageData pageData = new PageData();
+        PageRecord pageRecord = new PageRecord();
         List listData = new ArrayList();
         Sql sql = Sqls.create(executeSql).setParams(this.params);
         this.setCondition(sql);
-        pageData.setTotal(Daos.queryCount(dao, sql));
-        this.pager.setRecordCount(Math.toIntExact(pageData.getTotal()));
-        if (pageData.getTotal() > 0) {
+        pageRecord.setTotal(Daos.queryCount(dao, sql));
+        this.pager.setRecordCount(Math.toIntExact(pageRecord.getTotal()));
+        if (pageRecord.getTotal() > 0) {
             sql.setPager(this.pager);
             sql.setEntity(dao.getEntity(this.methodSignature.getEntityClass()));
             sql.setCallback(methodSignature.getSqlCallback());
             dao.execute(sql);
             listData = sql.getList(methodSignature.getEntityClass());
         }
-        pageData.setRecords(listData);
-        pageData.setPager(this.pager);
-        return this.returnIsOptionalVal(pageData);
+        pageRecord.setRecords(listData);
+        pageRecord.setPager(this.pager);
+        return this.returnIsOptionalVal(pageRecord);
 
     }
 

@@ -9,7 +9,7 @@ import java.util.List;
  * @author 黄川 2020/12/16
  */
 @Data
-public class PageData<T> implements java.io.Serializable {
+public class PageRecord<T> implements java.io.Serializable {
     /**
      * 数据
      */

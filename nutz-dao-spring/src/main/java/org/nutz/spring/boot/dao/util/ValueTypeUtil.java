@@ -7,7 +7,7 @@
 
 package org.nutz.spring.boot.dao.util;
 
-import org.nutz.spring.boot.dao.pagination.PageData;
+import org.nutz.spring.boot.dao.pagination.PageRecord;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -31,7 +31,7 @@ public class ValueTypeUtil {
      * @return
      */
     public static boolean isCollection(Class<?> clazz) {
-        return Collection.class.isAssignableFrom(clazz) || PageData.class == clazz;
+        return Collection.class.isAssignableFrom(clazz) || PageRecord.class == clazz;
     }
 
     /**

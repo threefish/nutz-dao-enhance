@@ -5,7 +5,7 @@ import org.nutz.dao.entity.Record;
 import org.nutz.dao.pager.Pager;
 import org.nutz.spring.boot.dao.annotation.*;
 import org.nutz.spring.boot.dao.execute.BaseDao;
-import org.nutz.spring.boot.dao.pagination.PageData;
+import org.nutz.spring.boot.dao.pagination.PageRecord;
 import org.nutz.spring.boot.dao.test.entity.UserDO;
 import org.springframework.stereotype.Component;
 
@@ -123,7 +123,7 @@ public interface UserMapper extends BaseDao<UserDO> {
      * @return
      */
     @Query("select * from user")
-    PageData listUserPage(Pager pager);
+    PageRecord listUserPage(Pager pager);
 
     /**
      * 插入获取自增ID

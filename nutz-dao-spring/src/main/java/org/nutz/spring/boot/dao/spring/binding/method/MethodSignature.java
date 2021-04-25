@@ -14,7 +14,7 @@ import org.nutz.spring.boot.dao.annotation.Delete;
 import org.nutz.spring.boot.dao.annotation.Insert;
 import org.nutz.spring.boot.dao.annotation.Query;
 import org.nutz.spring.boot.dao.annotation.Update;
-import org.nutz.spring.boot.dao.pagination.PageData;
+import org.nutz.spring.boot.dao.pagination.PageRecord;
 import org.nutz.spring.boot.dao.reflection.TypeParameterResolver;
 import org.nutz.spring.boot.dao.util.MethodSignatureUtil;
 import org.nutz.spring.boot.dao.util.SqlCallbackUtil;
@@ -92,6 +92,7 @@ public class MethodSignature {
     private SqlCommandType sqlCommandType;
 
     public MethodSignature(Class<?> mapperInterface, Method method) {
+        // 代码顺序不能调整
         String name = String.format("%s.%s", mapperInterface.getName(), MethodSignatureUtil.getMethodName(method));
         this.methodName = method.getName();
         // 获取条件参数位置
@@ -106,7 +107,6 @@ public class MethodSignature {
         this.initSqlCallback();
         // 是否是返回多条记录
         this.multipleRecords = ValueTypeUtil.isCollection(this.returnType);
-
     }
 
     /**
@@ -122,12 +122,12 @@ public class MethodSignature {
     }
 
     /**
-     * 设置参数名
+     * 设置分页信息
      *
      * @param method
      */
     private void initPager(Method method, String name) {
-        this.paginationQuery = PageData.class.equals(this.returnType);
+        this.paginationQuery = PageRecord.class.equals(this.returnType);
         if (this.paginationQuery) {
             Assert.isTrue(MethodSignatureUtil.firstParameterIsPaginationInfo(method), String.format("[%s]的返回值是分页类型，第一个参数必须是 Pager", name));
         }
@@ -142,7 +142,7 @@ public class MethodSignature {
         // 设置参数名
         Parameter[] parameters = method.getParameters();
         for (int i = 0; i < parameters.length; i++) {
-            parameterNames.put(i, parameters[i].getName());
+            parameterNames.put(i, MethodSignatureUtil.getParamName(parameters[i]));
         }
     }
 
@@ -173,14 +173,14 @@ public class MethodSignature {
     /**
      * 通过泛型获取返回类型和返回类型泛型
      */
-    private void setReturnTypeAndReturnGenericType(Type actualTypeFirst){
+    private void setReturnTypeAndReturnGenericType(Type actualTypeFirst) {
         if (actualTypeFirst instanceof Class) {
             // 第一个泛型类是class，很好，直接设置即可
             this.returnType = (Class) actualTypeFirst;
-        }else if(actualTypeFirst instanceof ParameterizedType){
+        } else if (actualTypeFirst instanceof ParameterizedType) {
             // 第一个泛型类还是带泛型的，很好，直接设置原始类型
             final ParameterizedType actualTypeFirstParameterizedType = (ParameterizedType) actualTypeFirst;
-            this.returnType= (Class<?>) actualTypeFirstParameterizedType.getRawType();
+            this.returnType = (Class<?>) actualTypeFirstParameterizedType.getRawType();
             if (ValueTypeUtil.isCollection(this.returnType)) {
                 // 如果是集合，获取下泛型
                 this.returnGenericType = MethodSignatureUtil.getActualTypeClassFirst(actualTypeFirstParameterizedType.getActualTypeArguments());
@@ -188,6 +188,11 @@ public class MethodSignature {
         }
     }
 
+    /**
+     * 设置自定义sql
+     * @param name
+     * @param method
+     */
     private void initCustomizeSql(String name, Method method) {
         this.customizeSql = MethodSignatureUtil.isNeedSqlAnnotation(method);
         if (this.customizeSql) {
@@ -231,9 +236,9 @@ public class MethodSignature {
             if (ValueTypeUtil.isCollection(this.returnType)) {
                 this.setCollectionSqlCallback();
             }
-            //TODO 设置List数组类型的回调
+            //设置List数组类型的回调
             else if (ValueTypeUtil.isArray(this.returnType)) {
-                System.out.println("设置List数组类型的回调");
+                throw new RuntimeException("不支持设置List数组类型的回调！");
             }
         }
         List<String> methodNames = Arrays.asList("getEntity", "getDao", "getEntityClass");
@@ -267,7 +272,7 @@ public class MethodSignature {
                 return;
             }
             // collectionSqlCallback 还是null，那就是未识别的类型
-            throw new RuntimeException("未识别的返回类型");
+            throw new RuntimeException("未识别的返回类型，请提交ISSUSE");
         }
         if (Objects.nonNull(this.entityClass)) {
             // 没有泛型，那就返回实体类型吧
