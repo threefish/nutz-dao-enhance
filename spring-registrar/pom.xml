@@ -3,8 +3,8 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>nutz-dao-spring-boot-starter</artifactId>
-        <groupId>org.nutz</groupId>
+        <groupId>org.nutz.dao</groupId>
+        <artifactId>enhance</artifactId>
         <version>1.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -21,14 +21,12 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.nutz</groupId>
-            <artifactId>annotation</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <groupId>org.nutz.dao</groupId>
+            <artifactId>core</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.nutz</groupId>
-            <artifactId>core</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <groupId>org.nutz.dao</groupId>
+            <artifactId>annotation</artifactId>
         </dependency>
         <dependency>
             <groupId>org.nutz</groupId>
@@ -64,29 +62,5 @@
             <version>${spring.boot}</version>
         </dependency>
     </dependencies>
-
-    <build>
-        <plugins>
-            <plugin>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.0</version>
-                <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
-                    <encoding>utf8</encoding>
-                    <compilerArgs>
-                        <!--  在编译时指定-parameters选项，将方法的参数名记入class文件，并在运行时通过反射机制获取相关信息-->
-                        <arg>-parameters</arg>
-                    </compilerArgs>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-                <version>2.4.3</version>
-            </plugin>
-        </plugins>
-    </build>
-
 
 </project>
