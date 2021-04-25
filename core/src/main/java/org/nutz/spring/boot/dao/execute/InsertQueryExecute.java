@@ -11,7 +11,6 @@ import org.nutz.spring.boot.dao.util.ValueTypeUtil;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
-import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**

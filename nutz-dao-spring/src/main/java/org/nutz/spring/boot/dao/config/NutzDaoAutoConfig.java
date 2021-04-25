@@ -1,7 +1,8 @@
 package org.nutz.spring.boot.dao.config;
 
-import org.nutz.dao.Sqls;
-import org.nutz.spring.boot.dao.enhance.NutSqlEnhance;
+import org.nutz.spring.boot.dao.config.properties.DaoProperties;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
@@ -12,8 +13,4 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @ComponentScan("org.nutz.spring.boot.dao")
 public class NutzDaoAutoConfig {
-    static {
-        // 增强sql查询器
-        Sqls.setSqlBorning(NutSqlEnhance.class);
-    }
 }

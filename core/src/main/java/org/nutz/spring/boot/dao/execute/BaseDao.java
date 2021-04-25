@@ -138,7 +138,7 @@ public interface BaseDao<T> {
      *
      * @param obj
      * @return 返回实际被更新的记录条数，一般的情况下，如果更新成功，返回 1，否则，返回 0
-     * @see org.nutz.dao.FieldFilter
+     * @see FieldFilter
      */
     int update(T obj);
 
@@ -380,7 +380,7 @@ public interface BaseDao<T> {
      *
      * @param cnd WHERE 条件
      * @return 对象本身
-     * @see org.nutz.dao.Condition
+     * @see Condition
      * @see org.nutz.dao.entity.annotation.Name
      */
     T fetch(Condition cnd);

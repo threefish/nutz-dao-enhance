@@ -6,15 +6,14 @@ import org.nutz.dao.Dao;
 import org.nutz.dao.entity.Entity;
 import org.nutz.el.El;
 import org.nutz.lang.Lang;
+import org.nutz.lang.Stopwatch;
+import org.nutz.lang.Strings;
 import org.nutz.lang.util.Context;
 import org.nutz.spring.boot.dao.execute.*;
 import org.nutz.spring.boot.dao.factory.DaoFactory;
 import org.nutz.spring.boot.dao.spring.binding.method.MethodSignature;
 import org.nutz.spring.boot.dao.spring.binding.parser.ConditionMapping;
 import org.nutz.spring.boot.dao.spring.binding.parser.SimpleSqlParser;
-import org.springframework.util.Assert;
-import org.springframework.util.StopWatch;
-import org.springframework.util.StringUtils;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -68,7 +67,7 @@ public class DaoMethod {
      * @return
      */
     public Object execute(String dataSource, Method methodTraget, Object[] args) throws InvocationTargetException, IllegalAccessException {
-        StopWatch stopWatch = new StopWatch();
+        Stopwatch stopWatch = new Stopwatch();
         try {
             stopWatch.start();
             Dao dao = daoFactory.getDao(dataSource);
@@ -81,7 +80,7 @@ public class DaoMethod {
             return methodTraget.invoke(baseMapper, args);
         } finally {
             stopWatch.stop();
-            log.debug("SQL执行耗时:{}ms", stopWatch.getTotalTimeMillis());
+            log.debug("SQL执行耗时:{}ms", stopWatch.getDuration());
         }
     }
 
@@ -89,7 +88,7 @@ public class DaoMethod {
      * 解析SQL，将sql中的实体类和字段解析为对应数据库字段
      */
     private void parseAndTranslationSql() {
-        if (!StringUtils.hasText(this.sourceSql)) {
+        if (Strings.isBlank(this.sourceSql)) {
             SimpleSqlParser simpleSqlParserHelper = new SimpleSqlParser(this.methodSignature.getSqlTemplate());
             simpleSqlParserHelper.parse();
             this.sourceSql = simpleSqlParserHelper.getSql();
@@ -122,7 +121,7 @@ public class DaoMethod {
                     status = false;
                     continue;
                 }
-                if (val instanceof String && !StringUtils.hasLength((String) val)) {
+                if (val instanceof String && Strings.isBlank((String) val)) {
                     // 值是字符串，且没有长度,则放弃加入sql
                     status = false;
                     continue;
@@ -181,7 +180,9 @@ public class DaoMethod {
                 break;
             default:
         }
-        Assert.notNull(execute, "不支持的方法");
+        if (Objects.isNull(execute)) {
+            throw new RuntimeException("不支持的方法");
+        }
         return execute;
     }
 

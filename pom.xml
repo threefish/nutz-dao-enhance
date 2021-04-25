@@ -8,6 +8,7 @@
         <module>annotation</module>
         <module>nutz-dao-spring</module>
         <module>test</module>
+        <module>core</module>
     </modules>
     <parent>
         <groupId>org.springframework.boot</groupId>

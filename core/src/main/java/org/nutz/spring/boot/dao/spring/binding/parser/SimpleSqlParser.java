@@ -4,9 +4,9 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.nutz.dao.entity.Entity;
 import org.nutz.dao.entity.MappingField;
+import org.nutz.lang.Lang;
+import org.nutz.lang.Strings;
 import org.nutz.spring.boot.dao.spring.binding.EntityClassInfoHolder;
-import org.springframework.util.CollectionUtils;
-import org.springframework.util.StringUtils;
 
 import java.util.*;
 import java.util.regex.Matcher;
@@ -46,13 +46,13 @@ public class SimpleSqlParser {
             // 增加字段映射
             this.columns.addAll(conditionMapping.getColumns());
         }
-        if (!StringUtils.hasText(this.sql)) {
+        if (Strings.isBlank(this.sql)) {
             // sql 是空的，一定是未找到需要进行增强翻译的sql,直接返回原始sql
             this.sql = this.originalSql;
         } else {
             // 用占位符替换后的sql来再次分析字段
             final Set<ColumnMapping> columnMapping = getColumnMapping(getTokens(this.sql));
-            if (!CollectionUtils.isEmpty(columnMapping)) {
+            if (Lang.isNotEmpty(columnMapping)) {
                 this.columns.addAll(columnMapping);
             }
         }
@@ -143,7 +143,7 @@ public class SimpleSqlParser {
      * @return
      */
     private void analyzeConditionMapping(String sql) {
-        if (!CollectionUtils.isEmpty(this.tables)) {
+        if (Lang.isNotEmpty(this.tables)) {
             List<ConditionMapping> mappingList = new ArrayList<>();
             Matcher matcher = CONDITION_PATTERN.matcher(sql);
             int i = 0;
@@ -227,7 +227,7 @@ public class SimpleSqlParser {
      */
     private Set<ColumnMapping> getColumnMapping(String[] allTokens) {
         Set<ColumnMapping> columnMappings = new HashSet<>();
-        if (!CollectionUtils.isEmpty(this.tables)) {
+        if (Lang.isNotEmpty(this.tables)) {
             for (TableMapping tableMapping : this.tables) {
                 for (String token : allTokens) {
                     Pattern pattern = tableMapping.getPattern();

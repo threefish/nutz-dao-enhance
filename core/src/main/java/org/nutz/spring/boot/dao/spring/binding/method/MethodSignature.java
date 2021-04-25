@@ -10,6 +10,7 @@ package org.nutz.spring.boot.dao.spring.binding.method;
 import lombok.Getter;
 import org.nutz.dao.Sqls;
 import org.nutz.dao.sql.SqlCallback;
+import org.nutz.lang.Strings;
 import org.nutz.spring.boot.dao.annotation.Delete;
 import org.nutz.spring.boot.dao.annotation.Insert;
 import org.nutz.spring.boot.dao.annotation.Query;
@@ -19,7 +20,6 @@ import org.nutz.spring.boot.dao.reflection.TypeParameterResolver;
 import org.nutz.spring.boot.dao.util.MethodSignatureUtil;
 import org.nutz.spring.boot.dao.util.SqlCallbackUtil;
 import org.nutz.spring.boot.dao.util.ValueTypeUtil;
-import org.springframework.util.Assert;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
@@ -129,7 +129,9 @@ public class MethodSignature {
     private void initPager(Method method, String name) {
         this.paginationQuery = PageRecord.class.equals(this.returnType);
         if (this.paginationQuery) {
-            Assert.isTrue(MethodSignatureUtil.firstParameterIsPaginationInfo(method), String.format("[%s]的返回值是分页类型，第一个参数必须是 Pager", name));
+            if(!MethodSignatureUtil.firstParameterIsPaginationInfo(method)){
+                throw new RuntimeException(String.format("[%s]的返回值是分页类型，第一个参数必须是 Pager", name));
+            }
         }
     }
 
@@ -216,7 +218,9 @@ public class MethodSignature {
             } else {
                 throw new RuntimeException(String.format("[%s] 缺失 QuerySql、UpdateSql、InsertSql 等任意注解", name));
             }
-            Assert.hasText(this.sqlTemplate, String.format("自定义sql不能为空", name));
+            if(Strings.isBlank(this.sqlTemplate)){
+                throw new RuntimeException(String.format("自定义sql不能为空", name));
+            }
         }
     }
 
@@ -245,7 +249,9 @@ public class MethodSignature {
         if (this.returnType != void.class) {
             // 有返回值且方法名不是内部的
             if (!methodNames.contains(this.methodName)) {
-                Assert.notNull(this.sqlCallback, String.format("方法[%s]无法获取设置Callback!!!请发ISSUSE", this.methodName));
+                if(Objects.isNull(this.sqlCallback)){
+                    throw new RuntimeException(String.format("方法[%s]无法获取设置Callback!!!请发ISSUSE", this.methodName));
+                }
             }
         }
     }
