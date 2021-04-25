@@ -1,0 +1,3 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+org.nutz.dao.spring.boot.config.NutzDaoAutoConfig,\
+  org.nutz.dao.spring.boot.config.NutzDaoProperties
