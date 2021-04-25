@@ -9,6 +9,7 @@
         <module>spring-registrar</module>
         <module>test</module>
         <module>core</module>
+        <module>nutz-registrar</module>
     </modules>
     <groupId>org.nutz.dao</groupId>
     <artifactId>enhance</artifactId>
@@ -73,17 +74,28 @@
         </plugins>
     </build>
 
-    <distributionManagement>
+    <repositories>
         <repository>
-            <id>xjbpm-maven-public</id>
-            <url>http://www.xjbpm.cn:8081/repository/maven-public/</url>
-            <uniqueVersion>true</uniqueVersion>
+            <id>nutz</id>
+            <url>https://jfrog.nutz.cn/artifactory/jcenter</url>
         </repository>
-        <snapshotRepository>
-            <id>xjbpm-maven-public</id>
-            <url>http://www.xjbpm.cn:8081/repository/maven-public/</url>
-        </snapshotRepository>
-    </distributionManagement>
+        <repository>
+            <id>oss-snapshot</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        </repository>
+        <repository>
+            <id>nutz-snapshots</id>
+            <url>https://jfrog.nutz.cn/artifactory/snapshots</url>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>always</updatePolicy>
+            </snapshots>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+        </repository>
+    </repositories>
+
 
 
 </project>

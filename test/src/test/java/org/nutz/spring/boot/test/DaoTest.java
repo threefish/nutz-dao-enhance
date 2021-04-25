@@ -46,6 +46,7 @@ public class DaoTest {
 
     @Before
     public void before() {
+        userMapper.clear();
         u1 = userMapper.insert(UserDO.builder().age(15).realName("测试1").build());
         u2 = userMapper.insert(UserDO.builder().age(16).realName("测试2").build());
         u3 = userMapper.insert(UserDO.builder().age(17).realName("测试3").build());
