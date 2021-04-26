@@ -8,13 +8,13 @@ import org.nutz.dao.enhance.factory.DaoFactory;
 import org.nutz.dao.enhance.holder.EntityClassInfoHolder;
 import org.nutz.dao.enhance.method.parser.ConditionMapping;
 import org.nutz.dao.enhance.method.parser.SimpleSqlParser;
+import org.nutz.dao.enhance.method.signature.MethodSignature;
 import org.nutz.dao.entity.Entity;
 import org.nutz.el.El;
 import org.nutz.lang.Lang;
 import org.nutz.lang.Stopwatch;
 import org.nutz.lang.Strings;
 import org.nutz.lang.util.Context;
-import org.nutz.dao.enhance.method.signature.MethodSignature;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -53,7 +53,11 @@ public class DaoMethod {
         this.daoFactory = daoFactory;
         this.methodSignature = new MethodSignature(mapperInterface, method);
         this.entityClass = this.methodSignature.getEntityClass();
-        this.entity = Objects.isNull(this.entityClass) ? null : daoFactory.getDao(dataSource).getEntity(this.entityClass);
+        final Dao dao = daoFactory.getDao(dataSource);
+        if (Objects.isNull(dao)) {
+            throw new RuntimeException(String.format("'%s' dao is null", dataSource));
+        }
+        this.entity = Objects.isNull(this.entityClass) ? null : dao.getEntity(this.entityClass);
         if (Objects.nonNull(this.entity)) {
             EntityClassInfoHolder.setEntity(this.entityClass, this.entity);
         }

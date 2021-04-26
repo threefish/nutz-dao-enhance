@@ -1,21 +1,18 @@
-package org.nutz.dao.spring.boot.annotation;
+package org.nutz.dao.enhance.registrar.annotation;
 
 import org.nutz.dao.enhance.config.DataSourceConstant;
-import org.nutz.dao.spring.boot.registrar.DaoScannerRegistrar;
-import org.springframework.context.annotation.Import;
 
 import java.lang.annotation.*;
 
 /**
  * @author 黄川 huchuc@vip.qq.com
- * @date: 2020/7/30
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 @Documented
-@Import(DaoScannerRegistrar.class)
 @Repeatable(DaoScans.class)
 public @interface DaoScan {
+
     /**
      * Alias for the {@link #basePackages()} attribute. Allows for more concise annotation declarations e.g.:
      * {@code @DaoScan("org.my.pkg")} instead of {@code @DaoScan(basePackages = "org.my.pkg"})}.

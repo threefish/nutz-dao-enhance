@@ -10,6 +10,12 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>nutz-registrar</artifactId>
+    <dependencies>
+        <dependency>
+            <groupId>org.nutz.dao</groupId>
+            <artifactId>core</artifactId>
+        </dependency>
+    </dependencies>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>

@@ -6,10 +6,11 @@
     <packaging>pom</packaging>
     <modules>
         <module>annotation</module>
-        <module>spring-registrar</module>
-        <module>test</module>
         <module>core</module>
+        <module>spring-registrar</module>
         <module>nutz-registrar</module>
+        <module>test-spring</module>
+        <module>test-nutz</module>
     </modules>
     <groupId>org.nutz.dao</groupId>
     <artifactId>enhance</artifactId>
