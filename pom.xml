@@ -9,8 +9,7 @@
         <module>core</module>
         <module>spring-registrar</module>
         <module>nutz-registrar</module>
-        <module>test-spring</module>
-        <module>test-nutz</module>
+        <module>test</module>
     </modules>
     <groupId>org.nutz.dao</groupId>
     <artifactId>enhance</artifactId>
@@ -41,6 +40,11 @@
             <dependency>
                 <groupId>org.nutz.dao</groupId>
                 <artifactId>spring-registrar</artifactId>
+                <version>${enhance.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.nutz.dao</groupId>
+                <artifactId>nutz-registrar</artifactId>
                 <version>${enhance.version}</version>
             </dependency>
             <dependency>
