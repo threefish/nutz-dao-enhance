@@ -5,6 +5,7 @@ import org.nutz.dao.spring.boot.annotation.DaoScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+
 /**
  * @author 黄川 huchuc@vip.qq.com
  */

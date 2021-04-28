@@ -2,11 +2,11 @@ package org.nutz.dao.enhance.execute;
 
 import org.nutz.dao.Dao;
 import org.nutz.dao.Sqls;
+import org.nutz.dao.enhance.method.signature.MethodSignature;
 import org.nutz.dao.enhance.pagination.PageRecord;
 import org.nutz.dao.pager.Pager;
 import org.nutz.dao.sql.Sql;
 import org.nutz.dao.util.Daos;
-import org.nutz.dao.enhance.method.signature.MethodSignature;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,8 +51,6 @@ public class PaginationQueryExecute extends AbstractExecute {
         pageRecord.setRecords(listData);
         pageRecord.setPager(this.pager);
         return this.returnIsOptionalVal(pageRecord);
-
     }
-
 
 }

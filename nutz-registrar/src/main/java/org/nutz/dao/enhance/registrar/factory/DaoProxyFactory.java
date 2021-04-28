@@ -16,7 +16,7 @@ public class DaoProxyFactory {
 
     private static final Map<Method, DaoMethodInvoker> methodCache = new ConcurrentHashMap<>();
 
-    public static  <T> T getObject(Class<T> mapperInterface, DaoFactory daoFactory, String dataSource) {
+    public static <T> T getObject(Class<T> mapperInterface, DaoFactory daoFactory, String dataSource) {
         return (T) Proxy.newProxyInstance(mapperInterface.getClassLoader(),
                 new Class[]{mapperInterface},
                 new DaoProxy<>(daoFactory, dataSource, mapperInterface, methodCache)

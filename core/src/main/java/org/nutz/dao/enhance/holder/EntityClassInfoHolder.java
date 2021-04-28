@@ -47,8 +47,8 @@ public class EntityClassInfoHolder {
      * @return
      */
     public static Entity<?> getEntity(String name) {
-        Class<?> aClass = getClass(name);
-        return Objects.isNull(aClass) ? null : ENTITY_HASH_MAP.get(aClass);
+        Class<?> klass = getClass(name);
+        return Objects.isNull(klass) ? null : ENTITY_HASH_MAP.get(klass);
     }
 
     /**

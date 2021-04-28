@@ -36,6 +36,11 @@ public class BaseDaoImpl<T> implements BaseDao<T> {
     }
 
     @Override
+    public T insert(T obj, boolean ignoreNull, boolean ignoreZero, boolean ignoreBlankStr) {
+        return this.dao.insert(obj, ignoreNull, ignoreZero, ignoreBlankStr);
+    }
+
+    @Override
     public T insertWith(T obj, String regex) {
         return this.dao.insert(obj, regex);
     }
@@ -50,10 +55,7 @@ public class BaseDaoImpl<T> implements BaseDao<T> {
         return this.dao.insertRelation(obj, regex);
     }
 
-    @Override
-    public T insert(T obj, boolean ignoreNull, boolean ignoreZero, boolean ignoreBlankStr) {
-        return this.dao.insert(obj, ignoreNull, ignoreZero, ignoreBlankStr);
-    }
+
 
     @Override
     public T insertOrUpdate(T obj) {
@@ -166,14 +168,16 @@ public class BaseDaoImpl<T> implements BaseDao<T> {
     }
 
     @Override
+    public int delete(T obj) {
+        return this.dao.delete(obj);
+    }
+
+    @Override
     public int deletex(Object... pks) {
         return this.dao.deletex(this.entityClass, pks);
     }
 
-    @Override
-    public int delete(T obj) {
-        return this.dao.delete(obj);
-    }
+
 
     @Override
     public int deleteWith(T obj, String regex) {
@@ -196,13 +200,13 @@ public class BaseDaoImpl<T> implements BaseDao<T> {
     }
 
     @Override
-    public T fetchx(Object... pks) {
-        return this.dao.fetchx(this.entityClass, pks);
+    public T fetch(Condition cnd) {
+        return this.dao.fetch(this.entityClass, cnd);
     }
 
     @Override
-    public T fetch(Condition cnd) {
-        return this.dao.fetch(this.entityClass, cnd);
+    public T fetchx(Object... pks) {
+        return this.dao.fetchx(this.entityClass, pks);
     }
 
     @Override
@@ -261,13 +265,13 @@ public class BaseDaoImpl<T> implements BaseDao<T> {
     }
 
     @Override
-    public List<T> queryByJoin(String regex, Condition cnd) {
-        return this.dao.queryByJoin(this.entityClass, regex, cnd);
+    public T fetchByJoin(String regex, Condition cnd, Map<String, Condition> cnds) {
+        return this.dao.fetchByJoin(this.entityClass, regex, cnd, cnds);
     }
 
     @Override
-    public T fetchByJoin(String regex, Condition cnd, Map<String, Condition> cnds) {
-        return this.dao.fetchByJoin(this.entityClass, regex, cnd, cnds);
+    public List<T> queryByJoin(String regex, Condition cnd) {
+        return this.dao.queryByJoin(this.entityClass, regex, cnd);
     }
 
     @Override

@@ -16,27 +16,33 @@ public class DaoProperties {
         // 增强sql查询器
         Sqls.setSqlBorning(NutSqlEnhance.class);
     }
+
     /**
      * 启用ddl功能
      */
     boolean enableDdl = true;
+
     /**
      * 是否允许添加字段
      */
     boolean migrationAdd = true;
+
     /**
      * 是否允许删除字段
      */
     boolean migrationDel = true;
+
     /**
      * 是否检查索引
      */
     boolean migrationCheckIndex = true;
+
     /**
      * key 数据源
      * value 自动创建表扫描实体包,逗号隔开
      */
     HashMap<String, String> entityPackages;
+
     /**
      * 是否检查字段为数据库的关键字
      */

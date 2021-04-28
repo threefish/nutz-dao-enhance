@@ -2,7 +2,6 @@ package org.nutz.dao.spring.boot.config;
 
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.EnableAspectJAutoProxy;
 
 /**
  * @author 黄川 huchuc@vip.qq.com

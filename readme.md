@@ -1,9 +1,9 @@
 # nutz-dao-enhance
 
-
 通过动态代理实现，不需要实现类就可以操作数据库，参考Jpa
 
 #### 测试类
+
 ```java
 
 /**
@@ -177,7 +177,8 @@ public class DaoTest {
 
 ```
 
-####  实体类 entity
+#### 实体类 entity
+
 ```java
 @Data
 @Builder
@@ -195,6 +196,7 @@ public class UserDO {
 ```
 
 #### 数据库操作对象Mapper
+
 ```java
 @Dao
 @Component

@@ -17,7 +17,7 @@ public interface DaoFactory {
     /**
      * 默认DaoFactory bean名称
      */
-    String defaualtDaoFactoryBeanName="daoFactory";
+    String defaualtDaoFactoryBeanName = "daoFactory";
 
     /**
      * 获取dao

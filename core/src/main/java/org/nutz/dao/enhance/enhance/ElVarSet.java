@@ -57,7 +57,6 @@ public class ElVarSet implements VarSet {
         return map.keySet();
     }
 
-
     @Override
     public VarSet putAll(Map<String, Object> map) {
         if (map != null) {

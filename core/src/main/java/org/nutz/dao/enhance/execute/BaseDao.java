@@ -29,6 +29,17 @@ public interface BaseDao<T> {
     T insert(T t);
 
     /**
+     * 以特殊规则执行insert
+     *
+     * @param t              实例对象
+     * @param ignoreNull     忽略空值
+     * @param ignoreZero     忽略0值
+     * @param ignoreBlankStr 忽略空白字符串
+     * @return 传入的实例变量
+     */
+    T insert(T t, boolean ignoreNull, boolean ignoreZero, boolean ignoreBlankStr);
+
+    /**
      * 将对象插入数据库同时，也将符合一个正则表达式的所有关联字段关联的对象统统插入相应的数据库
      * <p>
      * 关于关联字段更多信息，请参看 '@One' | '@Many' | '@ManyMany' 更多的描述
@@ -66,16 +77,7 @@ public interface BaseDao<T> {
     T insertRelation(T obj, String regex);
 
 
-    /**
-     * 以特殊规则执行insert
-     *
-     * @param t              实例对象
-     * @param ignoreNull     忽略空值
-     * @param ignoreZero     忽略0值
-     * @param ignoreBlankStr 忽略空白字符串
-     * @return 传入的实例变量
-     */
-    T insert(T t, boolean ignoreNull, boolean ignoreZero, boolean ignoreBlankStr);
+
 
     /**
      * 根据对象的主键(@Id/@Name/@Pk)先查询, 如果存在就更新, 不存在就插入
@@ -282,6 +284,19 @@ public interface BaseDao<T> {
      */
     int delete(String name);
 
+    /**
+     * 自动判断如何删除一个对象。
+     * <p>
+     * 如果声明了 '@Id' 则相当于 delete(Class<T>,long)<br>
+     * 如果声明了 '@Name'，则相当于 delete(Class<T>,String)<br>
+     * 如果声明了 '@PK'，则 deletex(Class<T>,Object ...)<br>
+     * 如果没声明任何上面三个注解，则会抛出一个运行时异常
+     * </p>
+     *
+     * @param obj 要被删除的对象
+     */
+    int delete(T obj);
+
 
     /**
      * 根据复合主键，删除一个对象。该对象必须声明 '@PK'，并且，给定的参数顺序 必须同 '@PK' 中声明的顺序一致，否则会产生不可预知的错误。
@@ -290,18 +305,6 @@ public interface BaseDao<T> {
      */
     int deletex(Object... pks);
 
-
-    /**
-     * 自动判断如何删除一个对象。
-     * <p>
-     * 如果声明了 '@Id' 则相当于 delete(Class<T>,long)<br>
-     * 如果声明了 '@Name'，则相当于 delete(Class<T>,String)<br>
-     * 如果声明了 '@PK'，则 deletex(Class<T>,Object ...)<br>
-     * 如果没声明任何上面三个注解，则会抛出一个运行时异常
-     *
-     * @param obj 要被删除的对象
-     */
-    int delete(T obj);
 
 
     /**
@@ -366,15 +369,6 @@ public interface BaseDao<T> {
      */
     T fetch(String name);
 
-
-    /**
-     * 根据复合主键，获取一个对象。该对象必须声明 '@PK'，并且，给定的参数顺序 必须同 '@PK' 中声明的顺序一致，否则会产生不可预知的错误。
-     *
-     * @param pks 复合主键需要的参数，必须同 '@PK'中声明的顺序一致
-     */
-    T fetchx(Object... pks);
-
-
     /**
      * 根据 WHERE 条件获取一个对象。如果有多个对象符合条件，将只获取 ResultSet 第一个记录
      *
@@ -384,6 +378,15 @@ public interface BaseDao<T> {
      * @see org.nutz.dao.entity.annotation.Name
      */
     T fetch(Condition cnd);
+
+    /**
+     * 根据复合主键，获取一个对象。该对象必须声明 '@PK'，并且，给定的参数顺序 必须同 '@PK' 中声明的顺序一致，否则会产生不可预知的错误。
+     *
+     * @param pks 复合主键需要的参数，必须同 '@PK'中声明的顺序一致
+     */
+    T fetchx(Object... pks);
+
+
 
 
     /**
@@ -506,6 +509,7 @@ public interface BaseDao<T> {
      */
     T fetchByJoin(String regex, String name);
 
+    T fetchByJoin(String regex, Condition cnd, Map<String, Condition> cnds);
 
     /**
      * 根据查询条件获取所有对象.<b>注意: 条件语句需要加上主表名或关联属性的JAVA属性名!!!</b>
@@ -518,8 +522,6 @@ public interface BaseDao<T> {
      */
     List<T> queryByJoin(String regex, Condition cnd);
 
-    T fetchByJoin(String regex, Condition cnd, Map<String, Condition> cnds);
-
     /**
      * 根据查询条件获取分页对象.<b>注意: 条件语句需要加上主表名或关联属性的JAVA属性名!!!</b>
      * <p/>
@@ -531,7 +533,6 @@ public interface BaseDao<T> {
      * @return 实体对象的列表, 符合regex的关联属性也会取出
      */
     List<T> queryByJoin(String regex, Condition cnd, Pager pager);
-
 
     List<T> queryByJoin(String regex, Condition cnd, Pager pager, Map<String, Condition> cnds);
 

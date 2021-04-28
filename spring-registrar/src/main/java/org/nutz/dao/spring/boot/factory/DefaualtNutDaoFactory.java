@@ -2,9 +2,9 @@ package org.nutz.dao.spring.boot.factory;
 
 import lombok.RequiredArgsConstructor;
 import org.nutz.dao.Dao;
+import org.nutz.dao.enhance.config.DataSourceConstant;
 import org.nutz.dao.enhance.factory.DaoFactory;
 import org.nutz.dao.impl.NutDao;
-import org.nutz.dao.enhance.config.DataSourceConstant;
 import org.nutz.dao.spring.boot.runner.SpringDaoRunner;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;

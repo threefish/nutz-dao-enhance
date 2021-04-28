@@ -124,7 +124,7 @@ public class DaoIocLoader implements IocLoader {
         final List<String> list = dataSourcePackagesMapping.getOrDefault(daoScan.dataSource(), new ArrayList<>());
         Arrays.stream(daoScan.value()).forEach(list::add);
         Arrays.stream(daoScan.basePackages()).forEach(list::add);
-        Arrays.stream(daoScan.basePackageClasses()).forEach(aClass -> list.add(aClass.getName()));
+        Arrays.stream(daoScan.basePackageClasses()).forEach(klass -> list.add(klass.getName()));
         dataSourcePackagesMapping.put(daoScan.dataSource(), list);
     }
 

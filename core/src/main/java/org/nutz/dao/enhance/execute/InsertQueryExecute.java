@@ -2,11 +2,11 @@ package org.nutz.dao.enhance.execute;
 
 import org.nutz.dao.Dao;
 import org.nutz.dao.Sqls;
+import org.nutz.dao.enhance.method.signature.MethodSignature;
+import org.nutz.dao.enhance.util.ValueTypeUtil;
 import org.nutz.dao.jdbc.ValueAdaptor;
 import org.nutz.dao.sql.Sql;
 import org.nutz.dao.util.Daos;
-import org.nutz.dao.enhance.method.signature.MethodSignature;
-import org.nutz.dao.enhance.util.ValueTypeUtil;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;

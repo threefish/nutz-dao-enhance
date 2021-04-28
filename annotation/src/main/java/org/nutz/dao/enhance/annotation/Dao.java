@@ -14,7 +14,6 @@ import java.lang.annotation.Target;
 public @interface Dao {
     /**
      * bean名称
-     * @return
      */
     String name() default "";
 }

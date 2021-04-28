@@ -18,9 +18,9 @@ import java.util.*;
  */
 public class MethodSignatureUtil {
     /**
-     * 内置方法无需获取@Sql
+     * 内置方法
      */
-    public final static List<String> BUILT_IN_METHOD = new ArrayList<String>() {
+    public static final  List<String> BUILT_IN_METHOD = new ArrayList<String>() {
         {
             this.addValueBygetDeclaredMethodVal(BaseDao.class);
         }

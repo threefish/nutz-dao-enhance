@@ -2,9 +2,9 @@ package org.nutz.dao.enhance.execute;
 
 import org.nutz.dao.Condition;
 import org.nutz.dao.Dao;
+import org.nutz.dao.enhance.method.signature.MethodSignature;
 import org.nutz.dao.sql.Sql;
 import org.nutz.lang.Lang;
-import org.nutz.dao.enhance.method.signature.MethodSignature;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -30,7 +30,6 @@ public abstract class AbstractExecute implements Execute {
      * 真正执行的sql
      */
     protected String executeSql;
-
 
     public AbstractExecute(Dao dao, String executeSql, MethodSignature methodSignature, Object[] args) {
         this.dao = dao;

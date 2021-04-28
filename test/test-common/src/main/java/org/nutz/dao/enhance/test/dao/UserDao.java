@@ -7,6 +7,7 @@ import org.nutz.dao.enhance.pagination.PageRecord;
 import org.nutz.dao.enhance.test.entity.UserDO;
 import org.nutz.dao.entity.Record;
 import org.nutz.dao.pager.Pager;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -25,9 +26,9 @@ public interface UserDao extends BaseDao<UserDO> {
      * @param name
      * @return
      */
-    @Query("select u.* from UserDO as u where 1=1" +
-            "#[ and u.realName=@name and u.gmtCreate=@gmtCreate ] " +
-            "#[ and u.realName=@name ] ")
+    @Query("select u.* from UserDO as u where 1=1"
+            + "#[ and u.realName=@name and u.gmtCreate=@gmtCreate ] "
+            + "#[ and u.realName=@name ] ")
     UserDO queryByCndHql(String name);
 
     /**
@@ -36,8 +37,8 @@ public interface UserDao extends BaseDao<UserDO> {
      *
      * @param user
      */
-    @Query("select u.* from UserDO as u where 1=1 " +
-            "#[ and u.realName=@{user.realName} ] ")
+    @Query("select u.* from UserDO as u where 1=1 "
+            + "#[ and u.realName=@{user.realName} ] ")
     UserDO queryByVoHql(UserDO user);
 
     /**
@@ -67,7 +68,6 @@ public interface UserDao extends BaseDao<UserDO> {
     @Query("select * from user $condition")
     @Entity(UserDO.class)
     List<UserDO> listUser(Condition condition);
-
 
     /**
      * 根据 condition 条件返回

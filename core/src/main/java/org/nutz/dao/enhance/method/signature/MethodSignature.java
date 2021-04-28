@@ -14,12 +14,12 @@ import org.nutz.dao.enhance.annotation.Insert;
 import org.nutz.dao.enhance.annotation.Query;
 import org.nutz.dao.enhance.annotation.Update;
 import org.nutz.dao.enhance.pagination.PageRecord;
-import org.nutz.dao.sql.SqlCallback;
-import org.nutz.lang.Strings;
-import org.nutz.dao.enhance.util.TypeParameterResolver;
 import org.nutz.dao.enhance.util.MethodSignatureUtil;
 import org.nutz.dao.enhance.util.SqlCallbackUtil;
+import org.nutz.dao.enhance.util.TypeParameterResolver;
 import org.nutz.dao.enhance.util.ValueTypeUtil;
+import org.nutz.dao.sql.SqlCallback;
+import org.nutz.lang.Strings;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
@@ -93,7 +93,7 @@ public class MethodSignature {
 
     public MethodSignature(Class<?> mapperInterface, Method method) {
         // 代码顺序不能调整
-        String name = String.format("%s.%s", mapperInterface.getName(), MethodSignatureUtil.getMethodName(method));
+        final String name = String.format("%s.%s", mapperInterface.getName(), MethodSignatureUtil.getMethodName(method));
         this.methodName = method.getName();
         // 获取条件参数位置
         this.conditionParameterInedx = MethodSignatureUtil.getConditionParameterInedx(method.getParameterTypes());
@@ -129,7 +129,7 @@ public class MethodSignature {
     private void initPager(Method method, String name) {
         this.paginationQuery = PageRecord.class.equals(this.returnType);
         if (this.paginationQuery) {
-            if(!MethodSignatureUtil.firstParameterIsPaginationInfo(method)){
+            if (!MethodSignatureUtil.firstParameterIsPaginationInfo(method)) {
                 throw new RuntimeException(String.format("[%s]的返回值是分页类型，第一个参数必须是 Pager", name));
             }
         }
@@ -192,6 +192,7 @@ public class MethodSignature {
 
     /**
      * 设置自定义sql
+     *
      * @param name
      * @param method
      */
@@ -218,7 +219,7 @@ public class MethodSignature {
             } else {
                 throw new RuntimeException(String.format("[%s] 缺失 QuerySql、UpdateSql、InsertSql 等任意注解", name));
             }
-            if(Strings.isBlank(this.sqlTemplate)){
+            if (Strings.isBlank(this.sqlTemplate)) {
                 throw new RuntimeException(String.format("自定义sql不能为空", name));
             }
         }
@@ -239,9 +240,7 @@ public class MethodSignature {
             // 设置集合类型的回调
             if (ValueTypeUtil.isCollection(this.returnType)) {
                 this.setCollectionSqlCallback();
-            }
-            //设置List数组类型的回调
-            else if (ValueTypeUtil.isArray(this.returnType)) {
+            } else if (ValueTypeUtil.isArray(this.returnType)) {
                 throw new RuntimeException("不支持设置List数组类型的回调！");
             }
         }
@@ -249,7 +248,7 @@ public class MethodSignature {
         if (this.returnType != void.class) {
             // 有返回值且方法名不是内部的
             if (!methodNames.contains(this.methodName)) {
-                if(Objects.isNull(this.sqlCallback)){
+                if (Objects.isNull(this.sqlCallback)) {
                     throw new RuntimeException(String.format("方法[%s]无法获取设置Callback!!!请发ISSUSE", this.methodName));
                 }
             }

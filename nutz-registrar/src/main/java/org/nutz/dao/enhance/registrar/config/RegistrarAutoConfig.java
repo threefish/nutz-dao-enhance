@@ -28,7 +28,7 @@ public class RegistrarAutoConfig {
     }
 
     @IocBean(name = DaoFactory.defaualtDaoFactoryBeanName, create = "init")
-    public DaoFactory daoFactory(){
-       return new DefaualtNutDaoFactory(ioc);
+    public DaoFactory daoFactory() {
+        return new DefaualtNutDaoFactory(ioc);
     }
 }
