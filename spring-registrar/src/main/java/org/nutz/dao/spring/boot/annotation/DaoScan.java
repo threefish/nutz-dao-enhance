@@ -1,6 +1,6 @@
 package org.nutz.dao.spring.boot.annotation;
 
-import org.nutz.dao.enhance.config.DataSourceConstant;
+import org.nutz.dao.enhance.config.DaoEnhanceConstant;
 import org.nutz.dao.spring.boot.registrar.DaoScannerRegistrar;
 import org.springframework.context.annotation.Import;
 
@@ -46,5 +46,5 @@ public @interface DaoScan {
     /**
      * 数据源,采用默认数据源
      */
-    String dataSource() default DataSourceConstant.DEFAUALT_DATASOURCE_KEY;
+    String dataSource() default DaoEnhanceConstant.DEFAUALT_DATASOURCE_KEY;
 }

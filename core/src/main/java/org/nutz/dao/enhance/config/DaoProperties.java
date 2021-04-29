@@ -41,6 +41,7 @@ public class DaoProperties {
      * key 数据源
      * value 自动创建表扫描实体包,逗号隔开
      */
+    @Deprecated
     HashMap<String, String> entityPackages;
 
     /**

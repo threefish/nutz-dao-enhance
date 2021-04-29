@@ -15,8 +15,10 @@ import java.util.Optional;
 /**
  * @author 黄川 huchuc@vip.qq.com
  * @date: 2020/7/30
+ * 自动建表需要 @Entity(UserDO.class)
  */
 @Dao
+@AutoCreateTable(UserDO.class)
 public interface UserDao extends BaseDao<UserDO> {
 
     /**

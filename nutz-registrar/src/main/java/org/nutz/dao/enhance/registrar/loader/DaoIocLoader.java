@@ -3,6 +3,7 @@ package org.nutz.dao.enhance.registrar.loader;
 import lombok.extern.slf4j.Slf4j;
 import org.nutz.dao.enhance.annotation.Dao;
 import org.nutz.dao.enhance.factory.DaoFactory;
+import org.nutz.dao.enhance.holder.AutoCreateTableHolder;
 import org.nutz.dao.enhance.registrar.annotation.DaoScan;
 import org.nutz.dao.enhance.registrar.annotation.DaoScans;
 import org.nutz.dao.enhance.registrar.factory.DaoProxyFactory;
@@ -23,12 +24,14 @@ import java.util.*;
 public class DaoIocLoader implements IocLoader {
 
     public static final String LOADER_NAME = "*org.nutz.dao.enhance.registrar.loader.DaoIocLoader";
-
-    protected Map<String, List<String>> dataSourcePackagesMapping = new HashMap<>();
-    private HashMap<String, IocObject> map = new HashMap<String, IocObject>();
-
-    public DaoIocLoader() {
-    }
+    /**
+     * 数据源对应包名映射
+     */
+    protected Map<String, Set<String>> dataSourcePackagesMapping = new HashMap<>();
+    /**
+     * ioc bean name 对象缓存
+     */
+    private HashMap<String, IocObject> iocBeanNameObject = new HashMap<>();
 
     /**
      * 传入要扫描的主模块包名
@@ -43,7 +46,7 @@ public class DaoIocLoader implements IocLoader {
             }
         }
         addDaoClass();
-        if (map.isEmpty()) {
+        if (iocBeanNameObject.isEmpty()) {
             log.warn("NONE @DaoScan  @DaoScans found!! Check your ioc configure!! packages={}", Arrays.toString(packages));
         }
     }
@@ -80,12 +83,12 @@ public class DaoIocLoader implements IocLoader {
                 }
             }
             // 重名了, 需要用户用@IocBean(name="xxxx") 区分一下
-            if (map.containsKey(beanName)) {
+            if (iocBeanNameObject.containsKey(beanName)) {
                 throw new IocException(beanName,
                         "Duplicate beanName=%s, by %s !!  Have been define by %s !!",
                         beanName,
                         classZ.getName(),
-                        map.get(beanName).getType().getName());
+                        iocBeanNameObject.get(beanName).getType().getName());
             }
             IocObject iocObject = new IocObject();
             iocObject.setType(classZ);
@@ -93,7 +96,8 @@ public class DaoIocLoader implements IocLoader {
             iocObject.addArg(Iocs.convert(DaoFactory.defaualtDaoFactoryBeanName, true));
             iocObject.addArg(new IocValue(IocValue.TYPE_NORMAL, dataSourceName));
             iocObject.setFactory(DaoProxyFactory.class.getName() + "#getObject");
-            map.put(beanName, iocObject);
+            iocBeanNameObject.put(beanName, iocObject);
+            AutoCreateTableHolder.addDataSourceEntityClassMapping(dataSourceName, classZ);
             log.info("   > add '{}' - {}", beanName, classZ.getName());
         }
     }
@@ -120,8 +124,9 @@ public class DaoIocLoader implements IocLoader {
         }
     }
 
+
     private void addToMapping(DaoScan daoScan) {
-        final List<String> list = dataSourcePackagesMapping.getOrDefault(daoScan.dataSource(), new ArrayList<>());
+        final Set<String> list = dataSourcePackagesMapping.getOrDefault(daoScan.dataSource(), new HashSet<>());
         Arrays.stream(daoScan.value()).forEach(list::add);
         Arrays.stream(daoScan.basePackages()).forEach(list::add);
         Arrays.stream(daoScan.basePackageClasses()).forEach(klass -> list.add(klass.getName()));
@@ -130,19 +135,19 @@ public class DaoIocLoader implements IocLoader {
 
     @Override
     public String[] getName() {
-        return map.keySet().toArray(new String[0]);
+        return iocBeanNameObject.keySet().toArray(new String[0]);
     }
 
     @Override
     public IocObject load(IocLoading loading, String name) throws ObjectLoadException {
         if (has(name)) {
-            return map.get(name);
+            return iocBeanNameObject.get(name);
         }
         throw new ObjectLoadException("Object '" + name + "' without define! Pls check your ioc configure");
     }
 
     @Override
     public boolean has(String name) {
-        return map.containsKey(name);
+        return iocBeanNameObject.containsKey(name);
     }
 }

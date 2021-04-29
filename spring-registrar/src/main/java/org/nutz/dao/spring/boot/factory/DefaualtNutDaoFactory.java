@@ -2,7 +2,7 @@ package org.nutz.dao.spring.boot.factory;
 
 import lombok.RequiredArgsConstructor;
 import org.nutz.dao.Dao;
-import org.nutz.dao.enhance.config.DataSourceConstant;
+import org.nutz.dao.enhance.config.DaoEnhanceConstant;
 import org.nutz.dao.enhance.factory.DaoFactory;
 import org.nutz.dao.impl.NutDao;
 import org.nutz.dao.spring.boot.runner.SpringDaoRunner;
@@ -35,7 +35,7 @@ public class DefaualtNutDaoFactory implements DaoFactory, InitializingBean, Appl
 
     @Override
     public Dao getDao() {
-        return this.getDao(DataSourceConstant.DEFAUALT_DATASOURCE_KEY);
+        return this.getDao(DaoEnhanceConstant.DEFAUALT_DATASOURCE_KEY);
     }
 
     @Override
@@ -46,7 +46,7 @@ public class DefaualtNutDaoFactory implements DaoFactory, InitializingBean, Appl
     @Override
     public void afterPropertiesSet() {
         // 默认数据源
-        daoHashMap.put(DataSourceConstant.DEFAUALT_DATASOURCE_KEY, this.createDao(this.applicationContext.getBean(DataSource.class)));
+        daoHashMap.put(DaoEnhanceConstant.DEFAUALT_DATASOURCE_KEY, this.createDao(this.applicationContext.getBean(DataSource.class)));
         // 多数据源
         final String[] names = this.applicationContext.getBeanNamesForType(DataSource.class);
         Arrays.stream(names).filter(dataSource -> !daoHashMap.containsKey(dataSource)).forEach(name ->

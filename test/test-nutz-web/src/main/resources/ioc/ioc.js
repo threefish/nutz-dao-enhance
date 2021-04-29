@@ -8,5 +8,11 @@ var ioc = {
             password: "123456",
             connectionTestQuery: "SELECT 1",
         }
+    },
+    conf: {
+        type: "org.nutz.ioc.impl.PropertiesProxy",
+        fields: {
+            paths: ["conf/"],
+        }
     }
 };
