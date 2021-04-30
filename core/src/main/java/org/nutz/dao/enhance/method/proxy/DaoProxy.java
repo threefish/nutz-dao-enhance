@@ -15,13 +15,16 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Map;
 
+/**
+ * @author 黄川 huchuc@vip.qq.com
+ */
 public class DaoProxy<T> implements InvocationHandler, Serializable {
 
 
     private static final int ALLOWED_MODES = MethodHandles.Lookup.PRIVATE | MethodHandles.Lookup.PROTECTED
             | MethodHandles.Lookup.PACKAGE | MethodHandles.Lookup.PUBLIC;
-    private static final Constructor<MethodHandles.Lookup> lookupConstructor;
-    private static final Method privateLookupInMethod;
+    private static final Constructor<MethodHandles.Lookup> LOOKUP_CONSTRUCTOR;
+    private static final Method PRIVATE_LOOKUP_IN_METHOD;
     private static final long serialVersionUID = -2145536075779023989L;
 
     static {
@@ -31,10 +34,10 @@ public class DaoProxy<T> implements InvocationHandler, Serializable {
         } catch (NoSuchMethodException e) {
             privateLookupIn = null;
         }
-        privateLookupInMethod = privateLookupIn;
+        PRIVATE_LOOKUP_IN_METHOD = privateLookupIn;
 
         Constructor<MethodHandles.Lookup> lookup = null;
-        if (privateLookupInMethod == null) {
+        if (PRIVATE_LOOKUP_IN_METHOD == null) {
             // JDK 1.8
             try {
                 lookup = MethodHandles.Lookup.class.getDeclaredConstructor(Class.class, int.class);
@@ -47,7 +50,7 @@ public class DaoProxy<T> implements InvocationHandler, Serializable {
                 lookup = null;
             }
         }
-        lookupConstructor = lookup;
+        LOOKUP_CONSTRUCTOR = lookup;
     }
 
     private final Class<T> mapperInterface;
@@ -88,7 +91,7 @@ public class DaoProxy<T> implements InvocationHandler, Serializable {
             return methodCache.computeIfAbsent(method, m -> {
                 if (m.isDefault()) {
                     try {
-                        if (privateLookupInMethod == null) {
+                        if (PRIVATE_LOOKUP_IN_METHOD == null) {
                             return new DefaultMethodInvoker(getMethodHandleJava8(method));
                         } else {
                             return new DefaultMethodInvoker(getMethodHandleJava9(method));
@@ -110,7 +113,7 @@ public class DaoProxy<T> implements InvocationHandler, Serializable {
     private MethodHandle getMethodHandleJava9(Method method)
             throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
         final Class<?> declaringClass = method.getDeclaringClass();
-        return ((MethodHandles.Lookup) privateLookupInMethod.invoke(null, declaringClass, MethodHandles.lookup())).findSpecial(
+        return ((MethodHandles.Lookup) PRIVATE_LOOKUP_IN_METHOD.invoke(null, declaringClass, MethodHandles.lookup())).findSpecial(
                 declaringClass, method.getName(), MethodType.methodType(method.getReturnType(), method.getParameterTypes()),
                 declaringClass);
     }
@@ -118,7 +121,7 @@ public class DaoProxy<T> implements InvocationHandler, Serializable {
     private MethodHandle getMethodHandleJava8(Method method)
             throws IllegalAccessException, InstantiationException, InvocationTargetException {
         final Class<?> declaringClass = method.getDeclaringClass();
-        return lookupConstructor.newInstance(declaringClass, ALLOWED_MODES).unreflectSpecial(method, declaringClass);
+        return LOOKUP_CONSTRUCTOR.newInstance(declaringClass, ALLOWED_MODES).unreflectSpecial(method, declaringClass);
     }
 
     private static class PlainMethodInvoker implements DaoMethodInvoker {

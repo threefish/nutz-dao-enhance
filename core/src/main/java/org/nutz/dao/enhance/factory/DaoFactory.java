@@ -17,10 +17,10 @@ public interface DaoFactory {
     /**
      * 默认DaoFactory bean名称
      */
-    String defaualtDaoFactoryBeanName = "daoFactory";
+    String DEFAUALT_DAO_FACTORY_BEAN_NAME = "daoFactory";
 
     /**
-     * 获取dao
+     * 获取默认dao
      *
      * @return
      */
@@ -29,6 +29,7 @@ public interface DaoFactory {
     /**
      * 获取dao
      *
+     * @param dataSource
      * @return
      */
     Dao getDao(String dataSource);

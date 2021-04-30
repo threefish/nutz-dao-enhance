@@ -16,6 +16,7 @@ import java.util.regex.Pattern;
  * @author 黄川 huchuc@vip.qq.com
  * 简单的sql解析
  */
+@SuppressWarnings("ALL")
 @Slf4j
 public class SimpleSqlParser {
     private static final String WHITESPACE = " \n\r\f\t";

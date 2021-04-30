@@ -14,12 +14,12 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class DaoProxyFactory {
 
-    private static final Map<Method, DaoMethodInvoker> methodCache = new ConcurrentHashMap<>();
+    private static final Map<Method, DaoMethodInvoker> METHOD_CACHE = new ConcurrentHashMap<>();
 
     public static <T> T getObject(Class<T> mapperInterface, DaoFactory daoFactory, String dataSource) {
         return (T) Proxy.newProxyInstance(mapperInterface.getClassLoader(),
                 new Class[]{mapperInterface},
-                new DaoProxy<>(daoFactory, dataSource, mapperInterface, methodCache)
+                new DaoProxy<>(daoFactory, dataSource, mapperInterface, METHOD_CACHE)
         );
     }
 

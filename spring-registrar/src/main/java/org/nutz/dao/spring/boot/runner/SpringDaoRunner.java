@@ -21,6 +21,7 @@ import java.sql.Connection;
  */
 public class SpringDaoRunner extends NutDaoRunner {
 
+    @SuppressWarnings("AlibabaAvoidStartWithDollarAndUnderLineNaming")
     @Override
     public void _run(DataSource dataSource, ConnCallback callback) {
         Connection con = DataSourceUtils.getConnection(dataSource);

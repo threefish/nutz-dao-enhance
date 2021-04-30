@@ -33,7 +33,7 @@ public class ClassPathDaoScanner extends ClassPathBeanDefinitionScanner {
 
     @Override
     public Set<BeanDefinitionHolder> doScan(String... basePackages) {
-        final RuntimeBeanReference runtimeBeanReference = new RuntimeBeanReference(DaoFactory.defaualtDaoFactoryBeanName);
+        final RuntimeBeanReference runtimeBeanReference = new RuntimeBeanReference(DaoFactory.DEFAUALT_DAO_FACTORY_BEAN_NAME);
         Set<BeanDefinitionHolder> beanDefinitions = super.doScan(basePackages);
         for (BeanDefinitionHolder definitionHolder : beanDefinitions) {
             GenericBeanDefinition beanDefinition = (GenericBeanDefinition) definitionHolder.getBeanDefinition();

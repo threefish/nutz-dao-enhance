@@ -31,7 +31,7 @@ public class DaoIocLoader implements IocLoader {
     /**
      * ioc bean name 对象缓存
      */
-    private HashMap<String, IocObject> iocBeanNameObject = new HashMap<>();
+    private final HashMap<String, IocObject> iocBeanNameObject = new HashMap<>();
 
     /**
      * 传入要扫描的主模块包名
@@ -93,7 +93,7 @@ public class DaoIocLoader implements IocLoader {
             IocObject iocObject = new IocObject();
             iocObject.setType(classZ);
             iocObject.addArg(new IocValue(IocValue.TYPE_NORMAL, classZ));
-            iocObject.addArg(Iocs.convert(DaoFactory.defaualtDaoFactoryBeanName, true));
+            iocObject.addArg(Iocs.convert(DaoFactory.DEFAUALT_DAO_FACTORY_BEAN_NAME, true));
             iocObject.addArg(new IocValue(IocValue.TYPE_NORMAL, dataSourceName));
             iocObject.setFactory(DaoProxyFactory.class.getName() + "#getObject");
             iocBeanNameObject.put(beanName, iocObject);

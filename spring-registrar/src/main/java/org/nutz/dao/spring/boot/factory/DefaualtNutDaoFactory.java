@@ -21,7 +21,7 @@ import java.util.HashMap;
  * @author 黄川 2020/12/16
  * 默认实现
  */
-@Component(value = DaoFactory.defaualtDaoFactoryBeanName)
+@Component(value = DaoFactory.DEFAUALT_DAO_FACTORY_BEAN_NAME)
 @ConditionalOnBean(DaoFactory.class)
 @RequiredArgsConstructor
 public class DefaualtNutDaoFactory implements DaoFactory, InitializingBean, ApplicationContextAware {
