@@ -19,6 +19,8 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table("user")
+// 在开启自动建表的情况下可以通过这个注解忽略自动创建表更新等，
+//@IgnoreAutoDDL
 public class UserDO implements java.io.Serializable {
     @Id
     Integer id;

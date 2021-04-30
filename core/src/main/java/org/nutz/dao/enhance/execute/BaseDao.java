@@ -77,8 +77,6 @@ public interface BaseDao<T> {
     T insertRelation(T obj, String regex);
 
 
-
-
     /**
      * 根据对象的主键(@Id/@Name/@Pk)先查询, 如果存在就更新, 不存在就插入
      *
@@ -306,7 +304,6 @@ public interface BaseDao<T> {
     int deletex(Object... pks);
 
 
-
     /**
      * 将对象删除的同时，也将符合一个正则表达式的所有关联字段关联的对象统统删除
      * <p>
@@ -385,8 +382,6 @@ public interface BaseDao<T> {
      * @param pks 复合主键需要的参数，必须同 '@PK'中声明的顺序一致
      */
     T fetchx(Object... pks);
-
-
 
 
     /**

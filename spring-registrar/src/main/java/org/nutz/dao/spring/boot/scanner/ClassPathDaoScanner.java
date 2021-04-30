@@ -4,6 +4,7 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.nutz.dao.enhance.annotation.Dao;
 import org.nutz.dao.enhance.factory.DaoFactory;
+import org.nutz.dao.enhance.holder.AutoCreateTableHolder;
 import org.nutz.dao.spring.boot.factory.DaoProxyFactory;
 import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
@@ -33,7 +34,6 @@ public class ClassPathDaoScanner extends ClassPathBeanDefinitionScanner {
     @Override
     public Set<BeanDefinitionHolder> doScan(String... basePackages) {
         final RuntimeBeanReference runtimeBeanReference = new RuntimeBeanReference(DaoFactory.defaualtDaoFactoryBeanName);
-        // 新版本不支持这种方式了 RuntimeBeanReference runtimeBeanReference = new RuntimeBeanReference(DaoFactory.class);
         Set<BeanDefinitionHolder> beanDefinitions = super.doScan(basePackages);
         for (BeanDefinitionHolder definitionHolder : beanDefinitions) {
             GenericBeanDefinition beanDefinition = (GenericBeanDefinition) definitionHolder.getBeanDefinition();
@@ -42,6 +42,7 @@ public class ClassPathDaoScanner extends ClassPathBeanDefinitionScanner {
             beanDefinition.getConstructorArgumentValues().addGenericArgumentValue(beanClassName);
             beanDefinition.getConstructorArgumentValues().addGenericArgumentValue(dataSource);
             beanDefinition.getConstructorArgumentValues().addGenericArgumentValue(runtimeBeanReference);
+            AutoCreateTableHolder.addDataSourceEntityClassMapping(dataSource, beanClassName);
             if (log.isDebugEnabled()) {
                 log.debug("自动生成'{}'代理类 beanName:{}", beanClassName, definitionHolder.getBeanName());
             }

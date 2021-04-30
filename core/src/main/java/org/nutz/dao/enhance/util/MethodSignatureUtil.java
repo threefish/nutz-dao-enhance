@@ -20,7 +20,7 @@ public class MethodSignatureUtil {
     /**
      * 内置方法
      */
-    public static final  List<String> BUILT_IN_METHOD = new ArrayList<String>() {
+    public static final List<String> BUILT_IN_METHOD = new ArrayList<String>() {
         {
             this.addValueBygetDeclaredMethodVal(BaseDao.class);
         }
@@ -116,7 +116,7 @@ public class MethodSignatureUtil {
      * @param clazz
      * @return
      */
-    public static Class getClassEntityType(Class<?> clazz) {
+    public static Class<?> getClassEntityType(Class<?> clazz) {
         Class cl = null;
         Type[] genericInterfaces = clazz.getGenericInterfaces();
         if (Lang.isNotEmpty(genericInterfaces)) {

@@ -56,7 +56,6 @@ public class BaseDaoImpl<T> implements BaseDao<T> {
     }
 
 
-
     @Override
     public T insertOrUpdate(T obj) {
         return this.dao.insertOrUpdate(obj);
@@ -176,7 +175,6 @@ public class BaseDaoImpl<T> implements BaseDao<T> {
     public int deletex(Object... pks) {
         return this.dao.deletex(this.entityClass, pks);
     }
-
 
 
     @Override

@@ -4,8 +4,6 @@ import lombok.Data;
 import org.nutz.dao.Sqls;
 import org.nutz.dao.enhance.enhance.NutSqlEnhance;
 
-import java.util.HashMap;
-
 /**
  * @author 黄川 huchuc@vip.qq.com
  */
@@ -36,14 +34,6 @@ public class DaoProperties {
      * 是否检查索引
      */
     boolean migrationCheckIndex = true;
-
-    /**
-     * key 数据源
-     * value 自动创建表扫描实体包,逗号隔开
-     */
-    @Deprecated
-    HashMap<String, String> entityPackages;
-
     /**
      * 是否检查字段为数据库的关键字
      */

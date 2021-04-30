@@ -4,7 +4,6 @@ import org.nutz.dao.enhance.config.DaoProperties;
 import org.nutz.dao.enhance.factory.DaoFactory;
 import org.nutz.dao.enhance.registrar.factory.DefaualtNutDaoFactory;
 import org.nutz.dao.enhance.registrar.util.DaoPropertiesUtil;
-import org.nutz.dao.util.Daos;
 import org.nutz.ioc.Ioc;
 import org.nutz.ioc.impl.PropertiesProxy;
 import org.nutz.ioc.loader.annotation.Inject;
@@ -26,11 +25,6 @@ public class RegistrarAutoConfig {
 
     public void init() {
         this.daoProperties = DaoPropertiesUtil.toDaoProperties(propertiesProxy);
-        Daos.CHECK_COLUMN_NAME_KEYWORD = this.daoProperties.isCheckColumnNameKeyword();
-        Daos.FORCE_WRAP_COLUMN_NAME = this.daoProperties.isForceWrapColumnName();
-        Daos.FORCE_UPPER_COLUMN_NAME = this.daoProperties.isForceUpperColumnName();
-        Daos.FORCE_HUMP_COLUMN_NAME = this.daoProperties.isForceHumpColumnName();
-        Daos.DEFAULT_VARCHAR_WIDTH = this.daoProperties.getDefaultVarcharWidth();
     }
 
     @IocBean

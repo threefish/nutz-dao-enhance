@@ -11,5 +11,5 @@ public class DaoEnhanceConstant {
     /**
      * 配置文件前缀
      */
-    public static final String PROPERTIES_PREFIX = "nutzdao.enhance.";
+    public static final String PROPERTIES_PREFIX = "nutzdao.enhance";
 }

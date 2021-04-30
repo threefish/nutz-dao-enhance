@@ -69,7 +69,7 @@
         </module>
 
         <!-- 检查是否使用 '*' 号导入，是否只有一个顶级类，包语句和导入语句不需要换行的情况. -->
-<!--        <module name="AvoidStarImport"/>-->
+        <!--        <module name="AvoidStarImport"/>-->
         <module name="OneTopLevelClass"/>
         <module name="NoLineWrap">
             <property name="tokens" value="PACKAGE_DEF, IMPORT, STATIC_IMPORT"/>
@@ -302,7 +302,7 @@
         <module name="AbbreviationAsWordInName">
             <property name="ignoreFinal" value="false"/>
             <property name="allowedAbbreviationLength" value="1"/>
-            <property name="allowedAbbreviations" value="XML, URL, ID, FTP, DTO, VO, DO, TO, PO, BO, POJO"/>
+            <property name="allowedAbbreviations" value="XML, URL, ID, FTP, DTO, VO, DO, TO, PO, BO, DDL"/>
             <property name="tokens"
                       value="CLASS_DEF, INTERFACE_DEF, ENUM_DEF, ANNOTATION_DEF, ANNOTATION_FIELD_DEF,
                     PARAMETER_DEF, VARIABLE_DEF, METHOD_DEF, PATTERN_VARIABLE_DEF, RECORD_DEF, RECORD_COMPONENT_DEF"/>
@@ -402,9 +402,9 @@
                      value="Method name ''{0}'' must match pattern ''{1}''."/>
         </module>
         <!-- 单行的 Javadoc，不忽略行内标签. -->
-<!--        <module name="SingleLineJavadoc">-->
-<!--            <property name="ignoreInlineTags" value="false"/>-->
-<!--        </module>-->
+        <!--        <module name="SingleLineJavadoc">-->
+        <!--            <property name="ignoreInlineTags" value="false"/>-->
+        <!--        </module>-->
         <!-- 检查允许空 catch 块的情况，通过将异常实例变量名命名为 'expected', 'ignore' 就会跳过该项的检查. -->
         <module name="EmptyCatchBlock">
             <property name="exceptionVariableName" value="expected|ignore"/>

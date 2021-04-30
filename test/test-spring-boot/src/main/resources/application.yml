@@ -16,6 +16,3 @@ spring:
       max-lifetime: 1800000
       connection-timeout: 30000
       connection-test-query: SELECT 1
-nutz:
-  dao:
-    entityPackages: { dataSource: 'org.nutz.spring.boot.dao.test.entity' }

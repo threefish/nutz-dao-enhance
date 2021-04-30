@@ -18,7 +18,6 @@ import java.util.Optional;
  * 自动建表需要 @Entity(UserDO.class)
  */
 @Dao
-@AutoCreateTable(UserDO.class)
 public interface UserDao extends BaseDao<UserDO> {
 
     /**
