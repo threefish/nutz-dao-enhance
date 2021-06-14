@@ -15,6 +15,12 @@
             <groupId>org.nutz.dao</groupId>
             <artifactId>core</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.nutz</groupId>
+            <artifactId>nutzboot-core</artifactId>
+            <version>2.4.2.v20201205</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
 
     <properties>

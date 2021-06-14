@@ -1,0 +1,2 @@
+org.nutz.dao.enhance.registrar.loader.NutzBootDaoIocLoader
+org.nutz.dao.enhance.registrar.config.RegistrarAutoConfig
