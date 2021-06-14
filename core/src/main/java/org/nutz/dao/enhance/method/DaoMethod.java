@@ -9,6 +9,7 @@ import org.nutz.dao.enhance.holder.EntityClassInfoHolder;
 import org.nutz.dao.enhance.method.parser.ConditionMapping;
 import org.nutz.dao.enhance.method.parser.SimpleSqlParser;
 import org.nutz.dao.enhance.method.signature.MethodSignature;
+import org.nutz.dao.enhance.provider.ProviderContext;
 import org.nutz.dao.entity.Entity;
 import org.nutz.el.El;
 import org.nutz.lang.Lang;
@@ -71,22 +72,50 @@ public class DaoMethod {
      * @param args
      * @return
      */
-    public Object execute(String dataSource, Method methodTraget, Object[] args) throws InvocationTargetException, IllegalAccessException {
+    public Object execute(String dataSource, Method methodTraget, Object[] args) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException, InstantiationException {
         Stopwatch stopWatch = new Stopwatch();
         try {
             stopWatch.start();
             Dao dao = daoFactory.getDao(dataSource);
             if (this.methodSignature.isCustomizeSql()) {
                 this.parseAndTranslationSql();
+                // 有自定义提供方法处理
+                if (this.methodSignature.isCustomProvider()) {
+                    return this.invokeCustomProvider(dao, args);
+                }
                 return this.getCustomizeSqlExecute(dao, args).invoke();
             }
             // 每次都new一个对象是方便动态传递dao进去，实现多数据源动态切换
-            BaseDao baseMapper = new BaseDaoImpl(dao, this.methodSignature.getEntityClass(), this.entity);
-            return methodTraget.invoke(baseMapper, args);
+            BaseDao baseDao = new BaseDaoImpl(dao, this.methodSignature.getEntityClass(), this.entity);
+            return methodTraget.invoke(baseDao, args);
         } finally {
             stopWatch.stop();
             log.debug("SQL执行耗时:{}ms", stopWatch.getDuration());
         }
+    }
+
+    /**
+     * 执行自定义处理器方法
+     *
+     * @param dao
+     * @param args
+     * @return
+     */
+    private Object invokeCustomProvider(Dao dao, Object[] args) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+        String executeSql = replaceConditionSql(args);
+        ProviderContext providerContext = new ProviderContext();
+        providerContext.setDao(dao);
+        providerContext.setExecuteSql(executeSql);
+        providerContext.setMethodSignature(this.methodSignature);
+        Object[] parameterObject = Objects.nonNull(args) ? new Object[args.length + 1] : new Object[1];
+        parameterObject[0] = providerContext;
+        if (Objects.nonNull(args)) {
+            for (int i = 0; i < args.length; i++) {
+                parameterObject[i + 1] = args[i];
+            }
+        }
+        Object targetObject = this.methodSignature.getCustomProviderType().getDeclaredConstructor().newInstance();
+        return this.methodSignature.getCustomProviderMethod().invoke(targetObject, parameterObject);
     }
 
     /**

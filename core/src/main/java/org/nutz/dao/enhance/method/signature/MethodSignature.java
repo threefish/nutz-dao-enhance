@@ -9,10 +9,7 @@ package org.nutz.dao.enhance.method.signature;
 
 import lombok.Getter;
 import org.nutz.dao.Sqls;
-import org.nutz.dao.enhance.annotation.Delete;
-import org.nutz.dao.enhance.annotation.Insert;
-import org.nutz.dao.enhance.annotation.Query;
-import org.nutz.dao.enhance.annotation.Update;
+import org.nutz.dao.enhance.annotation.*;
 import org.nutz.dao.enhance.pagination.PageRecord;
 import org.nutz.dao.enhance.util.MethodSignatureUtil;
 import org.nutz.dao.enhance.util.SqlCallbackUtil;
@@ -90,10 +87,24 @@ public class MethodSignature {
      * 是否是更新语句
      */
     private SqlCommandType sqlCommandType;
+    /**
+     * 自定义提供者
+     */
+    private boolean customProvider;
+    /**
+     * 自定义提供者类型
+     */
+    private Class<?> customProviderType;
+    /**
+     * 自定义提供者执行方法
+     */
+    private Method customProviderMethod;
+
 
     public MethodSignature(Class<?> mapperInterface, Method method) {
         // 代码顺序不能调整
         final String name = String.format("%s.%s", mapperInterface.getName(), MethodSignatureUtil.getMethodName(method));
+        final CustomProvider customProvider = method.getAnnotation(CustomProvider.class);
         this.methodName = method.getName();
         // 获取条件参数位置
         this.conditionParameterInedx = MethodSignatureUtil.getConditionParameterInedx(method.getParameterTypes());
@@ -102,11 +113,30 @@ public class MethodSignature {
         this.initParameterName(method);
         this.initCustomizeSql(name, method);
         this.initReturnType(mapperInterface, method);
-        this.initPager(method, name);
-        this.initEntityClass(method);
-        this.initSqlCallback();
         // 是否是返回多条记录
         this.multipleRecords = ValueTypeUtil.isCollection(this.returnType);
+        this.customProvider = Objects.nonNull(customProvider);
+        if (this.customProvider) {
+            // 自定义提供者
+            this.initCustomProvider(customProvider);
+        } else {
+            this.initPager(method, name);
+            this.initEntityClass(method);
+            this.initSqlCallback();
+        }
+    }
+
+    /**
+     * 初始化自定义提供者信息
+     *
+     * @param customProvider
+     */
+    private void initCustomProvider(CustomProvider customProvider) {
+        if (Strings.isBlank(customProvider.methodName())) {
+            throw new RuntimeException("CustomProvider methodName 不能为空");
+        }
+        this.customProviderType = customProvider.type();
+        this.customProviderMethod = MethodSignatureUtil.getCustomProviderTypeMethod(customProvider.type(), customProvider.methodName(), this.returnType);
     }
 
     /**

@@ -8,7 +8,7 @@ spring:
     url: jdbc:mysql://127.0.0.1:3306/test?useUnicode=true&characterEncoding=UTF-8
     username: root
     hikari:
-      maximum-pool-size: 200
+      maximum-pool-size: 5
       max-idle: 4
       minimum-idle: 1
       auto-commit: true

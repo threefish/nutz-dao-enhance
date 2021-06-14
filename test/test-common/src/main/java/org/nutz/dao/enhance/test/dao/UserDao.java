@@ -5,6 +5,7 @@ import org.nutz.dao.enhance.annotation.*;
 import org.nutz.dao.enhance.execute.BaseDao;
 import org.nutz.dao.enhance.pagination.PageRecord;
 import org.nutz.dao.enhance.test.entity.UserDO;
+import org.nutz.dao.enhance.test.provider.TestProvider;
 import org.nutz.dao.entity.Record;
 import org.nutz.dao.pager.Pager;
 
@@ -188,5 +189,19 @@ public interface UserDao extends BaseDao<UserDO> {
     @Query("select u.id from UserDO as u")
     Integer[] queryIntegerIds();
 
+
+    /**
+     * 自定义提供类处理
+     *
+     * 通过自定义扩展，实现插入并返回自增ID
+     *
+     * @param name
+     * @param age
+     * @param create
+     * @return
+     */
+    @Insert("INSERT INTO user(`real_name`, `age`,`gmt_create`,`create_by`) VALUES (@name,@age, now(),@create)")
+    @CustomProvider(type = TestProvider.class, methodName = "insertWithCustomprovider")
+    int insertWithCustomprovider(String name, int age, String create);
 
 }

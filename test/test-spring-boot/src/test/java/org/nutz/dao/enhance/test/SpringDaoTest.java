@@ -124,6 +124,7 @@ public class SpringDaoTest {
 
     }
 
+
     @Test
     public void test_update_age_by_id() {
         int insertId = userDao.insert("王五", 100, "张三");
@@ -198,6 +199,12 @@ public class SpringDaoTest {
     public void test_query_integer_ids() {
         Integer[] ints = userDao.queryIntegerIds();
         assert Arrays.equals(ints, new Integer[]{u1.getId(), u2.getId(), u3.getId()});
+    }
+
+    @Test
+    public void test_insert_with_customprovider() {
+        int insertId = userDao.insertWithCustomprovider("王五", 100, null);
+        assert insertId > 0;
     }
 
 }

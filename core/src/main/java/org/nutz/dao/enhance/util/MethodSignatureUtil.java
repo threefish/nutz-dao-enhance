@@ -9,9 +9,11 @@ import org.nutz.lang.Lang;
 import sun.reflect.generics.reflectiveObjects.ParameterizedTypeImpl;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.Type;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author 黄川 2020/12/16
@@ -202,4 +204,35 @@ public class MethodSignatureUtil {
         }
         return -1;
     }
+
+    /**
+     * 获取自定义提供者的方法
+     *
+     * @param providerType
+     * @param methodName
+     * @param returnType
+     * @return
+     */
+    public static Method getCustomProviderTypeMethod(Class<?> providerType, String methodName,Class<?> returnType) {
+        List<Method> sameNameMethods = Arrays.stream(providerType.getMethods()).filter(m -> m.getName().equals(methodName)).collect(Collectors.toList());
+        if (sameNameMethods.isEmpty()) {
+            throw new RuntimeException("Cannot resolve the provider method because '" + methodName + "' not found in CustomProvider '" + providerType.getName() + "'.");
+        }
+        List<Method> targetMethods = sameNameMethods.stream()
+                .filter(method -> Modifier.isStatic(method.getModifiers()))
+                .filter(m -> returnType.isAssignableFrom(m.getReturnType()))
+                .collect(Collectors.toList());
+        if (targetMethods.size() == 1) {
+            return targetMethods.get(0);
+        }
+        if (targetMethods.isEmpty()) {
+            throw new RuntimeException("Cannot resolve the provider method because '"
+                    + methodName + "' does not return the CharSequence or its subclass in CustomProvider '"
+                    + providerType.getName() + "'.");
+        } else {
+            throw new RuntimeException("Cannot resolve the provider method because '"
+                    + methodName + "' is found multiple in CustomProvider '" + providerType.getName() + "'.");
+        }
+    }
+
 }

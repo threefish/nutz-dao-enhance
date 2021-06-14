@@ -7,6 +7,7 @@ var ioc = {
             username: "root",
             password: "123456",
             connectionTestQuery: "SELECT 1",
+            maxPoolSize: "5"
         }
     },
     conf: {

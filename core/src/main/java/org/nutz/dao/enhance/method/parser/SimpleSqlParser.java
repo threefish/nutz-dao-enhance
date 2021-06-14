@@ -144,24 +144,22 @@ public class SimpleSqlParser {
      * @return
      */
     private void analyzeConditionMapping(String sql) {
-        if (Lang.isNotEmpty(this.tables)) {
-            List<ConditionMapping> mappingList = new ArrayList<>();
-            Matcher matcher = CONDITION_PATTERN.matcher(sql);
-            int i = 0;
-            String tempSql = sql;
-            while (matcher.find()) {
-                String key = String.format("$Condition%s$", i);
-                int start = matcher.start();
-                int end = matcher.end();
-                final String token = sql.substring(start + 2, end - 1);
-                final Set<ColumnMapping> columns = getColumnMapping(getTokens(token));
-                mappingList.add(new ConditionMapping(key, columns, token, getConditionParameter(token)));
-                tempSql = tempSql.replace(String.format("#[%s]", token), key);
-                i++;
-            }
-            this.sql = tempSql;
-            this.conditions = mappingList;
+        List<ConditionMapping> mappingList = new ArrayList<>();
+        Matcher matcher = CONDITION_PATTERN.matcher(sql);
+        int i = 0;
+        String tempSql = sql;
+        while (matcher.find()) {
+            String key = String.format("$Condition%s$", i);
+            int start = matcher.start();
+            int end = matcher.end();
+            final String token = sql.substring(start + 2, end - 1);
+            final Set<ColumnMapping> columns = getColumnMapping(getTokens(token));
+            mappingList.add(new ConditionMapping(key, columns, token, getConditionParameter(token)));
+            tempSql = tempSql.replace(String.format("#[%s]", token), key);
+            i++;
         }
+        this.sql = tempSql;
+        this.conditions = mappingList;
     }
 
     /**

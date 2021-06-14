@@ -200,7 +200,7 @@ public class UserDO {
 ```java
 @Dao
 @Component
-public interface UserMapper extends BaseDao<UserDO> {
+public interface UserDao extends BaseDao<UserDO> {
 
     /**
      * gmtCreate 入参不存在，所以当前#[]中的全部条件不生效
@@ -209,9 +209,9 @@ public interface UserMapper extends BaseDao<UserDO> {
      * @param name
      * @return
      */
-    @Query("select u.* from UserDO as u where 1=1" +
-            "#[ and u.realName=@name and u.gmtCreate=@gmtCreate ] " +
-            "#[ and u.realName=@name ] ")
+    @Query("select u.* from UserDO as u where 1=1"
+            + "#[ and u.realName=@name and u.gmtCreate=@gmtCreate ] "
+            + "#[ and u.realName=@name ] ")
     UserDO queryByCndHql(String name);
 
     /**
@@ -220,8 +220,8 @@ public interface UserMapper extends BaseDao<UserDO> {
      *
      * @param user
      */
-    @Query("select u.* from UserDO as u where 1=1 " +
-            "#[ and u.realName=@{user.realName} ] ")
+    @Query("select u.* from UserDO as u where 1=1 "
+            + "#[ and u.realName=@{user.realName} ] ")
     UserDO queryByVoHql(UserDO user);
 
     /**
@@ -240,7 +240,7 @@ public interface UserMapper extends BaseDao<UserDO> {
      * @return
      */
     @Query("select * from user where id=@id")
-    Optional<UserDO> queryOptionalUserById(int id);
+    Optional<UserDO> queryOptionalUserById(@Param("id") int id);
 
     /**
      * 根据 condition 条件返回
@@ -251,7 +251,6 @@ public interface UserMapper extends BaseDao<UserDO> {
     @Query("select * from user $condition")
     @Entity(UserDO.class)
     List<UserDO> listUser(Condition condition);
-
 
     /**
      * 根据 condition 条件返回
@@ -372,6 +371,21 @@ public interface UserMapper extends BaseDao<UserDO> {
     Integer[] queryIntegerIds();
 
 
+    /**
+     * 自定义提供类处理
+     *
+     * 通过自定义扩展，实现插入并返回自增ID
+     *
+     * @param name
+     * @param age
+     * @param create
+     * @return
+     */
+    @Insert("INSERT INTO user(`real_name`, `age`,`gmt_create`,`create_by`) VALUES (@name,@age, now(),@create)")
+    @CustomProvider(type = TestProvider.class, methodName = "insertWithCustomprovider")
+    int insertWithCustomprovider(String name, int age, String create);
+
 }
+
 
 ```

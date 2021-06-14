@@ -197,4 +197,10 @@ public class NutzDaoTest {
         assert Arrays.equals(ints, new Integer[]{u1.getId(), u2.getId(), u3.getId()});
     }
 
+    @Test
+    public void test_insert_with_customprovider() {
+        int insertId = userDao.insertWithCustomprovider("王五", 100, null);
+        assert insertId > 0;
+    }
+
 }
