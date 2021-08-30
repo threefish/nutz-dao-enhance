@@ -6,12 +6,8 @@ import org.nutz.dao.enhance.annotation.Param;
 import org.nutz.dao.enhance.execute.BaseDao;
 import org.nutz.dao.pager.Pager;
 import org.nutz.lang.Lang;
-import sun.reflect.generics.reflectiveObjects.ParameterizedTypeImpl;
 
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.lang.reflect.Parameter;
-import java.lang.reflect.Type;
+import java.lang.reflect.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -22,7 +18,7 @@ public class MethodSignatureUtil {
     /**
      * 内置方法
      */
-    public static final List<String> BUILT_IN_METHOD = new ArrayList<String>() {
+    public static final List<String> BUILT_IN_METHOD = new ArrayList<>() {
         {
             this.addValueBygetDeclaredMethodVal(BaseDao.class);
         }
@@ -123,8 +119,8 @@ public class MethodSignatureUtil {
         Type[] genericInterfaces = clazz.getGenericInterfaces();
         if (Lang.isNotEmpty(genericInterfaces)) {
             Type genericInterface = genericInterfaces[0];
-            if (genericInterface instanceof ParameterizedTypeImpl) {
-                ParameterizedTypeImpl parameterizedType = (ParameterizedTypeImpl) genericInterface;
+            if (genericInterface instanceof ParameterizedType) {
+                ParameterizedType parameterizedType = (ParameterizedType) genericInterface;
                 cl = getActualTypeClassFirst(parameterizedType.getActualTypeArguments());
             }
         }
@@ -213,7 +209,7 @@ public class MethodSignatureUtil {
      * @param returnType
      * @return
      */
-    public static Method getCustomProviderTypeMethod(Class<?> providerType, String methodName,Class<?> returnType) {
+    public static Method getCustomProviderTypeMethod(Class<?> providerType, String methodName, Class<?> returnType) {
         List<Method> sameNameMethods = Arrays.stream(providerType.getMethods()).filter(m -> m.getName().equals(methodName)).collect(Collectors.toList());
         if (sameNameMethods.isEmpty()) {
             throw new RuntimeException("Cannot resolve the provider method because '" + methodName + "' not found in CustomProvider '" + providerType.getName() + "'.");
