@@ -30,8 +30,8 @@ public class TestProvider {
      * @return
      */
     public static int insertWithCustomprovider(ProviderContext providerContext, String name, int age, String create) {
-        String executeSql = providerContext.getExecuteSql();
-        Dao dao = providerContext.getDao();
+        String executeSql = providerContext.executeSql;
+        Dao dao = providerContext.dao;
         Map<String, Object> params = new HashMap<>(3);
         params.put("name", name);
         params.put("age", age);

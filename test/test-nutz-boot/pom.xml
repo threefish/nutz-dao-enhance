@@ -74,8 +74,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.8.0</version>
                 <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
+                    <source>16</source>
+                    <target>16</target>
                     <encoding>UTF-8</encoding>
                     <compilerArgs>
                         <!--  在编译时指定-parameters选项，将方法的参数名记入class文件，并在运行时通过反射机制获取相关信息-->

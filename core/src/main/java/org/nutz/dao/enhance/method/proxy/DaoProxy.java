@@ -2,7 +2,7 @@ package org.nutz.dao.enhance.method.proxy;
 
 
 import org.nutz.dao.enhance.factory.DaoFactory;
-import org.nutz.dao.enhance.method.DaoMethod;
+import org.nutz.dao.enhance.method.DaoMethodInvoke;
 import org.nutz.dao.enhance.method.DaoMethodInvoker;
 
 import java.io.Serializable;
@@ -101,7 +101,7 @@ public class DaoProxy<T> implements InvocationHandler, Serializable {
                         throw new RuntimeException(e);
                     }
                 } else {
-                    return new PlainMethodInvoker(new DaoMethod(daoFactory, dataSource, mapperInterface, method));
+                    return new PlainMethodInvoker(new DaoMethodInvoke(daoFactory, dataSource, mapperInterface, method));
                 }
             });
         } catch (RuntimeException re) {
@@ -125,9 +125,9 @@ public class DaoProxy<T> implements InvocationHandler, Serializable {
     }
 
     private static class PlainMethodInvoker implements DaoMethodInvoker {
-        private final DaoMethod mapperMethod;
+        private final DaoMethodInvoke mapperMethod;
 
-        public PlainMethodInvoker(DaoMethod mapperMethod) {
+        public PlainMethodInvoker(DaoMethodInvoke mapperMethod) {
             super();
             this.mapperMethod = mapperMethod;
         }

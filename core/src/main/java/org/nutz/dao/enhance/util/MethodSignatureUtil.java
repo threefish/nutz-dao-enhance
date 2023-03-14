@@ -4,6 +4,7 @@ import org.nutz.dao.Condition;
 import org.nutz.dao.enhance.annotation.Entity;
 import org.nutz.dao.enhance.annotation.Param;
 import org.nutz.dao.enhance.execute.BaseDao;
+import org.nutz.dao.enhance.provider.ProviderContext;
 import org.nutz.dao.pager.Pager;
 import org.nutz.lang.Lang;
 
@@ -18,7 +19,7 @@ public class MethodSignatureUtil {
     /**
      * 内置方法
      */
-    public static final List<String> BUILT_IN_METHOD = new ArrayList<>() {
+    public static final List<String> BUILT_IN_METHOD = new ArrayList<String>() {
         {
             this.addValueBygetDeclaredMethodVal(BaseDao.class);
         }
@@ -209,14 +210,32 @@ public class MethodSignatureUtil {
      * @param returnType
      * @return
      */
-    public static Method getCustomProviderTypeMethod(Class<?> providerType, String methodName, Class<?> returnType) {
+    public static Method getCustomProviderTypeMethod(Method orginMethod, Class<?> providerType, String methodName, Class<?> returnType) {
         List<Method> sameNameMethods = Arrays.stream(providerType.getMethods()).filter(m -> m.getName().equals(methodName)).collect(Collectors.toList());
         if (sameNameMethods.isEmpty()) {
             throw new RuntimeException("Cannot resolve the provider method because '" + methodName + "' not found in CustomProvider '" + providerType.getName() + "'.");
         }
         List<Method> targetMethods = sameNameMethods.stream()
-                .filter(method -> Modifier.isStatic(method.getModifiers()))
-                .filter(m -> returnType.isAssignableFrom(m.getReturnType()))
+                .filter(m -> Modifier.isStatic(m.getModifiers()))
+                .filter(porxyMethod -> {
+                    boolean returnTypeEq = orginMethod.getReturnType().isAssignableFrom(porxyMethod.getReturnType());
+                    Class<?>[] orginMethodParameterTypes = orginMethod.getParameterTypes();
+                    Class<?>[] porxyMethodParameterTypes = porxyMethod.getParameterTypes();
+                    if (returnTypeEq
+                            && porxyMethodParameterTypes.length > 0
+                            && orginMethodParameterTypes.length == porxyMethodParameterTypes.length - 1
+                            && porxyMethodParameterTypes[0].isAssignableFrom(ProviderContext.class)
+                    ) {
+                        for (int i = 1; i < porxyMethodParameterTypes.length; i++) {
+                            Class<?> porxyMethodParameterType = porxyMethodParameterTypes[i];
+                            if (!porxyMethodParameterType.isAssignableFrom(orginMethodParameterTypes[i - 1])) {
+                                return false;
+                            }
+                        }
+                        return true;
+                    }
+                    return false;
+                })
                 .collect(Collectors.toList());
         if (targetMethods.size() == 1) {
             return targetMethods.get(0);

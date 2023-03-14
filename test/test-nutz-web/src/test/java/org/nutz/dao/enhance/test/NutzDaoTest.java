@@ -203,4 +203,11 @@ public class NutzDaoTest {
         assert insertId > 0;
     }
 
+    @Test
+    public void test_each() {
+        userDao.each(Cnd.NEW(), (index, ele, length) -> {
+            System.out.println(index);
+        });
+    }
+
 }

@@ -1,10 +1,10 @@
 package org.nutz.dao.enhance.execute;
 
 import org.nutz.dao.Condition;
-import org.nutz.dao.Dao;
 import org.nutz.dao.FieldFilter;
 import org.nutz.dao.FieldMatcher;
-import org.nutz.dao.entity.Entity;
+import org.nutz.dao.enhance.annotation.CustomProvider;
+import org.nutz.dao.enhance.provider.BaseDaoProvider;
 import org.nutz.dao.pager.Pager;
 import org.nutz.lang.Each;
 
@@ -15,6 +15,7 @@ import java.util.Map;
  * @author 黄川 huchuc@vip.qq.com
  * @date: 2020/7/31
  */
+@SuppressWarnings("all")
 public interface BaseDao<T> {
     /**
      * 将一个对象插入到一个数据源。
@@ -26,6 +27,7 @@ public interface BaseDao<T> {
      * @param t
      * @return
      */
+    @CustomProvider(type = BaseDaoProvider.class)
     T insert(T t);
 
     /**
@@ -37,6 +39,7 @@ public interface BaseDao<T> {
      * @param ignoreBlankStr 忽略空白字符串
      * @return 传入的实例变量
      */
+    @CustomProvider(type = BaseDaoProvider.class)
     T insert(T t, boolean ignoreNull, boolean ignoreZero, boolean ignoreBlankStr);
 
     /**
@@ -51,6 +54,7 @@ public interface BaseDao<T> {
      * @see org.nutz.dao.entity.annotation.Many
      * @see org.nutz.dao.entity.annotation.ManyMany
      */
+    @CustomProvider(type = BaseDaoProvider.class)
     T insertWith(T obj, String regex);
 
     /**
@@ -63,6 +67,7 @@ public interface BaseDao<T> {
      * @see org.nutz.dao.entity.annotation.Many
      * @see org.nutz.dao.entity.annotation.ManyMany
      */
+    @CustomProvider(type = BaseDaoProvider.class)
     T insertLinks(T obj, String regex);
 
 
@@ -74,6 +79,7 @@ public interface BaseDao<T> {
      * @return 对象自身
      * @see org.nutz.dao.entity.annotation.ManyMany
      */
+    @CustomProvider(type = BaseDaoProvider.class)
     T insertRelation(T obj, String regex);
 
 
@@ -83,6 +89,7 @@ public interface BaseDao<T> {
      * @param t 对象
      * @return 原对象
      */
+    @CustomProvider(type = BaseDaoProvider.class)
     T insertOrUpdate(T t);
 
     /**
@@ -93,6 +100,7 @@ public interface BaseDao<T> {
      * @param updateFieldFilter 更新时的字段过滤,可以是null
      * @return 原对象
      */
+    @CustomProvider(type = BaseDaoProvider.class)
     T insertOrUpdate(T t, FieldFilter insertFieldFilter, FieldFilter updateFieldFilter);
 
     /**
@@ -107,6 +115,7 @@ public interface BaseDao<T> {
      * @param fieldName   参考字段的Java属性名.默认是"version",可以是任意数值字段
      * @return 若更新成功, 返回值大于0, 否则小于等于0
      */
+    @CustomProvider(type = BaseDaoProvider.class)
     int updateAndIncrIfMatch(T obj, FieldFilter fieldFilter, String fieldName);
 
     /**
@@ -115,6 +124,7 @@ public interface BaseDao<T> {
      * @param obj 需要更新的对象, 必须有version属性
      * @return 若更新成功, 大于0, 否则小于0
      */
+    @CustomProvider(type = BaseDaoProvider.class)
     int updateWithVersion(T obj);
 
     /**
@@ -124,6 +134,7 @@ public interface BaseDao<T> {
      * @param fieldFilter 需要过滤的字段设置
      * @return 若更新成功, 大于0, 否则小于0
      */
+    @CustomProvider(type = BaseDaoProvider.class)
     int updateWithVersion(T obj, FieldFilter fieldFilter);
 
     /**
@@ -140,6 +151,7 @@ public interface BaseDao<T> {
      * @return 返回实际被更新的记录条数，一般的情况下，如果更新成功，返回 1，否则，返回 0
      * @see FieldFilter
      */
+    @CustomProvider(type = BaseDaoProvider.class)
     int update(T obj);
 
 
@@ -150,6 +162,7 @@ public interface BaseDao<T> {
      * @param actived 正则表达式描述要被更新的字段
      * @return 返回实际被更新的记录条数，一般的情况下，如果更新成功，返回 1，否则，返回 0
      */
+    @CustomProvider(type = BaseDaoProvider.class)
     int update(T obj, String actived);
 
 
@@ -160,12 +173,16 @@ public interface BaseDao<T> {
      * @param actived 正则表达式描述要被更新的字段
      * @return 返回实际被更新的记录条数，一般的情况下，如果更新成功，返回 1，否则，返回 0
      */
+    @CustomProvider(type = BaseDaoProvider.class)
     int update(T obj, String actived, String locked, boolean ignoreNull);
 
+    @CustomProvider(type = BaseDaoProvider.class)
     int update(T obj, FieldFilter fieldFilter);
 
+    @CustomProvider(type = BaseDaoProvider.class)
     int update(T obj, FieldFilter fieldFilter, Condition cnd);
 
+    @CustomProvider(type = BaseDaoProvider.class)
     int update(T obj, Condition cnd);
 
 
@@ -177,6 +194,7 @@ public interface BaseDao<T> {
      * @param obj 要被更新的对象
      * @return 返回实际被更新的记录条数，一般的情况下，如果是单一Pojo,更新成功，返回 1，否则，返回 0
      */
+    @CustomProvider(type = BaseDaoProvider.class)
     int updateIgnoreNull(T obj);
 
 
@@ -192,6 +210,7 @@ public interface BaseDao<T> {
      * @see org.nutz.dao.entity.annotation.Many
      * @see org.nutz.dao.entity.annotation.ManyMany
      */
+    @CustomProvider(type = BaseDaoProvider.class)
     T updateWith(T obj, String regex);
 
 
@@ -205,11 +224,14 @@ public interface BaseDao<T> {
      * @see org.nutz.dao.entity.annotation.Many
      * @see org.nutz.dao.entity.annotation.ManyMany
      */
+    @CustomProvider(type = BaseDaoProvider.class)
     T updateLinks(T obj, String regex);
 
 
+    @CustomProvider(type = BaseDaoProvider.class)
     List<T> query(Condition cnd, Pager pager, FieldMatcher matcher);
 
+    @CustomProvider(type = BaseDaoProvider.class)
     List<T> query(Condition cnd, Pager pager, String regex);
 
     /**
@@ -219,6 +241,7 @@ public interface BaseDao<T> {
      * @param pager 翻页信息。如果为 null，则一次全部返回. 不会使用cnd中的pager!!!
      * @return 对象列表
      */
+    @CustomProvider(type = BaseDaoProvider.class)
     List<T> query(Condition cnd, Pager pager);
 
     /**
@@ -228,6 +251,7 @@ public interface BaseDao<T> {
      *            只有在调用这个函数的时候， cnd.limit 才会生效
      * @return 对象列表
      */
+    @CustomProvider(type = BaseDaoProvider.class)
     List<T> query(Condition cnd);
 
 
@@ -241,6 +265,7 @@ public interface BaseDao<T> {
      * @param callback 处理回调
      * @return 一共迭代的数量
      */
+    @CustomProvider(type = BaseDaoProvider.class)
     int each(Condition cnd, Pager pager, Each<T> callback);
 
     /**
@@ -250,6 +275,7 @@ public interface BaseDao<T> {
      * @param callback 处理回调
      * @return 一共迭代的数量
      */
+    @CustomProvider(type = BaseDaoProvider.class)
     int each(Condition cnd, Each<T> callback);
 
 
@@ -264,6 +290,7 @@ public interface BaseDao<T> {
      * @return 影响的行数
      * @see org.nutz.dao.entity.annotation.Id
      */
+    @CustomProvider(type = BaseDaoProvider.class)
     int delete(long id);
 
 
@@ -280,6 +307,7 @@ public interface BaseDao<T> {
      * @return 影响的行数
      * @see org.nutz.dao.entity.annotation.Name
      */
+    @CustomProvider(type = BaseDaoProvider.class)
     int delete(String name);
 
     /**
@@ -293,6 +321,7 @@ public interface BaseDao<T> {
      *
      * @param obj 要被删除的对象
      */
+    @CustomProvider(type = BaseDaoProvider.class)
     int delete(T obj);
 
 
@@ -301,6 +330,7 @@ public interface BaseDao<T> {
      *
      * @param pks 复合主键需要的参数，必须同 '@PK'中声明的顺序一致
      */
+    @CustomProvider(type = BaseDaoProvider.class)
     int deletex(Object... pks);
 
 
@@ -320,6 +350,7 @@ public interface BaseDao<T> {
      * @see org.nutz.dao.entity.annotation.Many
      * @see org.nutz.dao.entity.annotation.ManyMany
      */
+    @CustomProvider(type = BaseDaoProvider.class)
     int deleteWith(T obj, String regex);
 
 
@@ -339,6 +370,7 @@ public interface BaseDao<T> {
      * @see org.nutz.dao.entity.annotation.Many
      * @see org.nutz.dao.entity.annotation.ManyMany
      */
+    @CustomProvider(type = BaseDaoProvider.class)
     int deleteLinks(T obj, String regex);
 
 
@@ -350,6 +382,7 @@ public interface BaseDao<T> {
      * @param id 对象 ID
      * @see org.nutz.dao.entity.annotation.Id
      */
+    @CustomProvider(type = BaseDaoProvider.class)
     T fetch(long id);
 
 
@@ -364,6 +397,7 @@ public interface BaseDao<T> {
      * @return 对象本身
      * @see org.nutz.dao.entity.annotation.Name
      */
+    @CustomProvider(type = BaseDaoProvider.class)
     T fetch(String name);
 
     /**
@@ -374,6 +408,7 @@ public interface BaseDao<T> {
      * @see Condition
      * @see org.nutz.dao.entity.annotation.Name
      */
+    @CustomProvider(type = BaseDaoProvider.class)
     T fetch(Condition cnd);
 
     /**
@@ -381,6 +416,7 @@ public interface BaseDao<T> {
      *
      * @param pks 复合主键需要的参数，必须同 '@PK'中声明的顺序一致
      */
+    @CustomProvider(type = BaseDaoProvider.class)
     T fetchx(Object... pks);
 
 
@@ -394,6 +430,7 @@ public interface BaseDao<T> {
      * @see org.nutz.dao.entity.annotation.Many
      * @see org.nutz.dao.entity.annotation.ManyMany
      */
+    @CustomProvider(type = BaseDaoProvider.class)
     T fetchLinks(T obj, String regex);
 
 
@@ -407,6 +444,7 @@ public interface BaseDao<T> {
      * @param cnd   关联字段的过滤(排序,条件语句,分页等)
      * @return 传入的数据对象
      */
+    @CustomProvider(type = BaseDaoProvider.class)
     T fetchLinks(T obj, String regex, Condition cnd);
 
 
@@ -416,6 +454,7 @@ public interface BaseDao<T> {
      * @param cnd 查询条件，如果为 null，则全部清除
      * @return 影响的行数
      */
+    @CustomProvider(type = BaseDaoProvider.class)
     int clear(Condition cnd);
 
 
@@ -426,6 +465,7 @@ public interface BaseDao<T> {
      *
      * @return 影响的行数
      */
+    @CustomProvider(type = BaseDaoProvider.class)
     int clear();
 
 
@@ -439,6 +479,7 @@ public interface BaseDao<T> {
      * @param regex 正则表达式，描述了什么样的关联字段将被关注。如果为 null，则表示全部的关联字段都会被清除
      * @return 数据对象本身
      */
+    @CustomProvider(type = BaseDaoProvider.class)
     T clearLinks(T obj, String regex);
 
 
@@ -448,6 +489,7 @@ public interface BaseDao<T> {
      * @param cnd WHERE 条件
      * @return 数量
      */
+    @CustomProvider(type = BaseDaoProvider.class)
     int count(Condition cnd);
 
     /**
@@ -455,6 +497,7 @@ public interface BaseDao<T> {
      *
      * @return 数量
      */
+    @CustomProvider(type = BaseDaoProvider.class)
     int count();
 
 
@@ -463,6 +506,7 @@ public interface BaseDao<T> {
      *
      * @return 最大 ID 值
      */
+    @CustomProvider(type = BaseDaoProvider.class)
     int getMaxId();
 
 
@@ -475,6 +519,7 @@ public interface BaseDao<T> {
      * @param cnd   查询条件,必须带表名!!!
      * @return 实体对象, 符合regex的关联属性也会取出
      */
+    @CustomProvider(type = BaseDaoProvider.class)
     T fetchByJoin(String regex, Condition cnd);
 
     /**
@@ -488,6 +533,7 @@ public interface BaseDao<T> {
      * @param id    对象id
      * @return 实体
      */
+    @CustomProvider(type = BaseDaoProvider.class)
     T fetchByJoin(String regex, long id);
 
 
@@ -502,8 +548,10 @@ public interface BaseDao<T> {
      * @param name  对象name
      * @return 实体
      */
+    @CustomProvider(type = BaseDaoProvider.class)
     T fetchByJoin(String regex, String name);
 
+    @CustomProvider(type = BaseDaoProvider.class)
     T fetchByJoin(String regex, Condition cnd, Map<String, Condition> cnds);
 
     /**
@@ -515,6 +563,7 @@ public interface BaseDao<T> {
      * @param cnd   查询条件, 主表写表名, 子表写关联属性的JAVA属性名!
      * @return 实体对象的列表, 符合regex的关联属性也会取出
      */
+    @CustomProvider(type = BaseDaoProvider.class)
     List<T> queryByJoin(String regex, Condition cnd);
 
     /**
@@ -527,8 +576,10 @@ public interface BaseDao<T> {
      * @param pager 分页对象 <b>注意: 分页不要在cnd中传入!</b>
      * @return 实体对象的列表, 符合regex的关联属性也会取出
      */
+    @CustomProvider(type = BaseDaoProvider.class)
     List<T> queryByJoin(String regex, Condition cnd, Pager pager);
 
+    @CustomProvider(type = BaseDaoProvider.class)
     List<T> queryByJoin(String regex, Condition cnd, Pager pager, Map<String, Condition> cnds);
 
     /**
@@ -538,14 +589,7 @@ public interface BaseDao<T> {
      * @param cnd   查询条件, 主表写表名, 子表写关联属性的JAVA属性名!
      * @return 数量
      */
+    @CustomProvider(type = BaseDaoProvider.class)
     int countByJoin(String regex, Condition cnd);
 
-
-    Entity<T> getEntity();
-
-
-    Dao getDao();
-
-
-    Class<T> getEntityClass();
 }

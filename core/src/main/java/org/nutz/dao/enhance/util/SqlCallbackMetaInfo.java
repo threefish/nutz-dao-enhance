@@ -12,11 +12,11 @@ import java.util.Map;
 /**
  * @author 黄川 huchuc@vip.qq.com
  */
-public class SqlCallbackUtil {
+public class SqlCallbackMetaInfo {
     /**
      * 通用的
      */
-    private static final HashMap<Class<?>, SqlCallback> COMMON_SQL_CALLBACK_HASH_MAP = new HashMap() {
+    public static final HashMap<Class<?>, SqlCallback> COMMON_SQL_CALLBACK_HASH_MAP = new HashMap() {
         {
             put(Integer.class, Sqls.callback.integer());
             put(int.class, Sqls.callback.integer());
@@ -47,7 +47,7 @@ public class SqlCallbackUtil {
     /**
      * 对应的list返回类型
      */
-    private static final HashMap<Class<?>, SqlCallback> LIST_SQL_CALLBACK_HASH_MAP = new HashMap() {
+    public static final HashMap<Class<?>, SqlCallback> LIST_SQL_CALLBACK_HASH_MAP = new HashMap() {
         {
             put(Integer.class, Sqls.callback.ints());
             put(int.class, Sqls.callback.ints());

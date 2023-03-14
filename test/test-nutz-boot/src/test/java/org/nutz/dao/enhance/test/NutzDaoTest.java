@@ -199,8 +199,9 @@ public class NutzDaoTest {
 
     @Test
     public void test_insert_with_customprovider() {
+        int maxId = userDao.getMaxId();
         int insertId = userDao.insertWithCustomprovider("王五", 100, null);
-        assert insertId > 0;
+        assert insertId == maxId + 1;
     }
 
 }

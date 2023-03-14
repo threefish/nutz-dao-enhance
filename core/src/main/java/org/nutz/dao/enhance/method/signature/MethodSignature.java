@@ -12,7 +12,7 @@ import org.nutz.dao.Sqls;
 import org.nutz.dao.enhance.annotation.*;
 import org.nutz.dao.enhance.pagination.PageRecord;
 import org.nutz.dao.enhance.util.MethodSignatureUtil;
-import org.nutz.dao.enhance.util.SqlCallbackUtil;
+import org.nutz.dao.enhance.util.SqlCallbackMetaInfo;
 import org.nutz.dao.enhance.util.TypeParameterResolver;
 import org.nutz.dao.enhance.util.ValueTypeUtil;
 import org.nutz.dao.sql.SqlCallback;
@@ -90,7 +90,7 @@ public class MethodSignature {
     /**
      * 自定义提供者
      */
-    private boolean customProvider;
+    private final boolean customProvider;
     /**
      * 自定义提供者类型
      */
@@ -118,7 +118,7 @@ public class MethodSignature {
         this.customProvider = Objects.nonNull(customProvider);
         if (this.customProvider) {
             // 自定义提供者
-            this.initCustomProvider(customProvider);
+            this.initCustomProvider(customProvider, method);
         } else {
             this.initPager(method, name);
             this.initEntityClass(method);
@@ -131,12 +131,13 @@ public class MethodSignature {
      *
      * @param customProvider
      */
-    private void initCustomProvider(CustomProvider customProvider) {
+    private void initCustomProvider(CustomProvider customProvider, Method method) {
+        String methodName = customProvider.methodName();
         if (Strings.isBlank(customProvider.methodName())) {
-            throw new RuntimeException("CustomProvider methodName 不能为空");
+            methodName = method.getName();
         }
         this.customProviderType = customProvider.type();
-        this.customProviderMethod = MethodSignatureUtil.getCustomProviderTypeMethod(customProvider.type(), customProvider.methodName(), this.returnType);
+        this.customProviderMethod = MethodSignatureUtil.getCustomProviderTypeMethod(method, customProvider.type(), methodName, this.returnType);
     }
 
     /**
@@ -265,7 +266,7 @@ public class MethodSignature {
             this.sqlCallback = Sqls.callback.entity();
             return;
         }
-        this.sqlCallback = SqlCallbackUtil.getCommonSqlCallback(this.returnType);
+        this.sqlCallback = SqlCallbackMetaInfo.getCommonSqlCallback(this.returnType);
         if (Objects.isNull(this.sqlCallback)) {
             // 设置集合类型的回调
             if (ValueTypeUtil.isCollection(this.returnType)) {
@@ -302,7 +303,7 @@ public class MethodSignature {
                 this.sqlCallback = Sqls.callback.maps();
                 return;
             }
-            final SqlCallback collectionSqlCallback = SqlCallbackUtil.getCollectionSqlCallback(this.returnGenericType);
+            final SqlCallback collectionSqlCallback = SqlCallbackMetaInfo.getCollectionSqlCallback(this.returnGenericType);
             if (Objects.nonNull(collectionSqlCallback)) {
                 return;
             }

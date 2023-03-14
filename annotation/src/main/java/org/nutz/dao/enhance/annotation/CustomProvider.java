@@ -17,9 +17,11 @@ public @interface CustomProvider {
     Class<?> type();
 
     /**
-     * 指定实现 SQL 查询的静态类中的具体方法名
+     * 指定实现 SQL 查询的静态类中的具体方法名.
+     * 为空时和接口方法一致
+     *
      * @return
      */
-    String methodName();
+    String methodName() default "";
 
 }

@@ -65,9 +65,10 @@ public class SimpleSqlParser {
      *
      * @return
      */
-    public void parse() {
+    public SimpleSqlParser parse() {
         this.replaceSql();
         this.replaceConditionSql();
+        return this;
     }
 
     /**

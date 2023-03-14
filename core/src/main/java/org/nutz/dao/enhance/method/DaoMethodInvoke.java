@@ -26,7 +26,7 @@ import java.util.*;
  * @date: 2020/7/31
  */
 @Slf4j
-public class DaoMethod {
+public class DaoMethodInvoke {
 
     /**
      * 方法信息
@@ -44,13 +44,14 @@ public class DaoMethod {
      */
     private List<ConditionMapping> conditions = Collections.EMPTY_LIST;
 
+
     /**
      * 这里对mapper进行解析，每个mapper只会解析1次
      *
      * @param mapperInterface
      * @param method
      */
-    public DaoMethod(DaoFactory daoFactory, String dataSource, Class<?> mapperInterface, Method method) {
+    public DaoMethodInvoke(DaoFactory daoFactory, String dataSource, Class<?> mapperInterface, Method method) {
         this.daoFactory = daoFactory;
         this.methodSignature = new MethodSignature(mapperInterface, method);
         this.entityClass = this.methodSignature.getEntityClass();
@@ -79,18 +80,21 @@ public class DaoMethod {
             Dao dao = daoFactory.getDao(dataSource);
             if (this.methodSignature.isCustomizeSql()) {
                 this.parseAndTranslationSql();
-                // 有自定义提供方法处理
+                // 是自定义sql，且有自定义提供方法处理
                 if (this.methodSignature.isCustomProvider()) {
-                    return this.invokeCustomProvider(dao, args);
+                    return this.invokeCustomProvider(dao, args, this.entity);
                 }
                 return this.getCustomizeSqlExecute(dao, args).invoke();
+            } else if (this.methodSignature.isCustomProvider()) {
+                // 有自定义提供方法处理,但不是自定义sql
+                return this.invokeCustomProvider(dao, args, this.entity);
             }
-            // 每次都new一个对象是方便动态传递dao进去，实现多数据源动态切换
-            BaseDao baseDao = new BaseDaoImpl(dao, this.methodSignature.getEntityClass(), this.entity);
-            return methodTraget.invoke(baseDao, args);
+            throw new UnsupportedOperationException(String.format("方法 %s 未提供实现方法！", methodTraget.toGenericString()));
         } finally {
             stopWatch.stop();
-            log.debug("SQL执行耗时:{}ms", stopWatch.getDuration());
+            if (log.isDebugEnabled()) {
+                log.debug("执行耗时:{}ms", stopWatch.getDuration());
+            }
         }
     }
 
@@ -101,12 +105,9 @@ public class DaoMethod {
      * @param args
      * @return
      */
-    private Object invokeCustomProvider(Dao dao, Object[] args) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+    private Object invokeCustomProvider(Dao dao, Object[] args, Entity entity) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
         String executeSql = replaceConditionSql(args);
-        ProviderContext providerContext = new ProviderContext();
-        providerContext.setDao(dao);
-        providerContext.setExecuteSql(executeSql);
-        providerContext.setMethodSignature(this.methodSignature);
+        ProviderContext providerContext = ProviderContext.of(dao, this.methodSignature, executeSql, args, this.methodSignature.getEntityClass(), entity);
         Object[] parameterObject = Objects.nonNull(args) ? new Object[args.length + 1] : new Object[1];
         parameterObject[0] = providerContext;
         if (Objects.nonNull(args)) {
@@ -123,8 +124,7 @@ public class DaoMethod {
      */
     private void parseAndTranslationSql() {
         if (Strings.isBlank(this.sourceSql)) {
-            SimpleSqlParser simpleSqlParserHelper = new SimpleSqlParser(this.methodSignature.getSqlTemplate());
-            simpleSqlParserHelper.parse();
+            SimpleSqlParser simpleSqlParserHelper = new SimpleSqlParser(this.methodSignature.getSqlTemplate()).parse();
             this.sourceSql = simpleSqlParserHelper.getSql();
             this.conditions = simpleSqlParserHelper.getConditions();
         }
@@ -190,7 +190,9 @@ public class DaoMethod {
      */
     private Execute getCustomizeSqlExecute(Dao dao, Object[] args) {
         String executeSql = replaceConditionSql(args);
-        log.debug("执行SQL:{}", executeSql);
+        if (log.isDebugEnabled()) {
+            log.debug("执行SQL:{}", executeSql);
+        }
         Execute execute = null;
         switch (this.methodSignature.getSqlCommandType()) {
             case SELECT:
