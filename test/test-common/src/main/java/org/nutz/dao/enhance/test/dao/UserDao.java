@@ -5,6 +5,7 @@ import org.nutz.dao.enhance.annotation.*;
 import org.nutz.dao.enhance.execute.BaseDao;
 import org.nutz.dao.enhance.pagination.PageRecord;
 import org.nutz.dao.enhance.test.entity.UserDO;
+import org.nutz.dao.enhance.test.entity.UserVO;
 import org.nutz.dao.enhance.test.provider.TestProvider;
 import org.nutz.dao.entity.Record;
 import org.nutz.dao.pager.Pager;
@@ -16,7 +17,8 @@ import java.util.Optional;
 /**
  * @author 黄川 huchuc@vip.qq.com
  * @date: 2020/7/30
- * 自动建表需要 @Entity(UserDO.class)
+ * 自动建表，通过泛型 找到 UserDO 再根据 UserDO 信息进行建表。如果不需要自动建表，需要再UserDO上添加 @IgnoreAutoDDL 主键
+ * 如果没有定义泛型但是也需要自动建表功能 则需要添加 @Entity(UserDO.class) 注解
  */
 @Dao
 public interface UserDao extends BaseDao<UserDO> {
@@ -204,5 +206,29 @@ public interface UserDao extends BaseDao<UserDO> {
     @CustomProvider(type = TestProvider.class, methodName = "insertWithCustomprovider")
     int insertWithCustomprovider(String name, int age, String create);
 
+    /**
+     * 返回值是列表
+     * CREATE  PROCEDURE `callList`()
+     * BEGIN
+     * SELECT * FROM user;
+     * END
+     *
+     * @return
+     */
+    @CallFunction("call callList()")
+    Optional<List<UserVO>> callList();
+
+    /**
+     * 通过出参返回单行数据
+     * CREATE PROCEDURE `callOut`(IN id INT,OUT realName VARCHAR(15),OUT age INT(15))
+     * BEGIN
+     * SELECT real_name,user.`age` INTO realName,age FROM `user`  WHERE `user`.id=id;
+     * END
+     */
+    @CallFunction(value = "call callOut(@id,?,?)", out = {
+            @CallFunction.Out(name = "realName", index = 2),
+            @CallFunction.Out(name = "age", index = 3)
+    })
+    Optional<UserVO> callOut(@Param("id") int id);
 
 }

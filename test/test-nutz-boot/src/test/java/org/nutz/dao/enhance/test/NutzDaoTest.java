@@ -11,6 +11,7 @@ import org.nutz.dao.Cnd;
 import org.nutz.dao.enhance.pagination.PageRecord;
 import org.nutz.dao.enhance.test.dao.UserDao;
 import org.nutz.dao.enhance.test.entity.UserDO;
+import org.nutz.dao.enhance.test.entity.UserVO;
 import org.nutz.dao.entity.Record;
 import org.nutz.dao.pager.Pager;
 import org.nutz.ioc.loader.annotation.Inject;
@@ -203,5 +204,19 @@ public class NutzDaoTest {
         int insertId = userDao.insertWithCustomprovider("王五", 100, null);
         assert insertId == maxId + 1;
     }
+
+    @Test
+    public void test_call_list() {
+        Optional<List<UserVO>> maps = userDao.callList();
+        assert maps.get().size() == 3;
+    }
+
+    @Test
+    public void test_call_out() {
+        int maxId = userDao.getMaxId();
+        Optional<UserVO> data = userDao.callOut(maxId);
+        assert u3.getRealName().equals(data.get().getRealName());
+    }
+
 
 }

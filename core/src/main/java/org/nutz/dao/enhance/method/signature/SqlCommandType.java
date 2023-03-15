@@ -26,5 +26,9 @@ public enum SqlCommandType {
     /**
      * 查询
      */
-    SELECT
+    SELECT,
+    /**
+     * 调用存储过程
+     */
+    CALL_FUNCTION
 }

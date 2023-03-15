@@ -4,9 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.nutz.dao.entity.annotation.Column;
-import org.nutz.dao.entity.annotation.Id;
-import org.nutz.dao.entity.annotation.Table;
 
 import java.util.Date;
 
@@ -19,16 +16,10 @@ import java.util.Date;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Table("user")
-public class UserDO implements java.io.Serializable {
-    @Id
+public class UserVO implements java.io.Serializable {
     Integer id;
-    @Column
     String realName;
-    @Column
     Integer age;
-    @Column
     Date gmtCreate;
-    @Column
     String createBy;
 }

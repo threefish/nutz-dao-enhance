@@ -11,6 +11,7 @@ import org.nutz.dao.Cnd;
 import org.nutz.dao.enhance.pagination.PageRecord;
 import org.nutz.dao.enhance.test.dao.UserDao;
 import org.nutz.dao.enhance.test.entity.UserDO;
+import org.nutz.dao.enhance.test.entity.UserVO;
 import org.nutz.dao.entity.Record;
 import org.nutz.dao.pager.Pager;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +33,9 @@ import java.util.Optional;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @Transactional
 public class SpringDaoTest {
-
+    /**
+     * 防止IDE报红可以在 UserDao 类上加 Spring 注册注解如  @Repository @Component 等
+     */
     @Autowired
     private UserDao userDao;
 
@@ -203,8 +206,22 @@ public class SpringDaoTest {
 
     @Test
     public void test_insert_with_customprovider() {
+        int maxId = userDao.getMaxId();
         int insertId = userDao.insertWithCustomprovider("王五", 100, null);
-        assert insertId > 0;
+        assert insertId == maxId + 1;
+    }
+
+    @Test
+    public void test_call_list() {
+        Optional<List<UserVO>> maps = userDao.callList();
+        assert maps.get().size() == 3;
+    }
+
+    @Test
+    public void test_call_out() {
+        int maxId = userDao.getMaxId();
+        Optional<UserVO> data = userDao.callOut(maxId);
+        assert u3.getRealName().equals(data.get().getRealName());
     }
 
 }

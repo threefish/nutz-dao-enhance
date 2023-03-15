@@ -20,13 +20,13 @@ public class AutoCreateTableHolder {
     /**
      * 需要自动建表的数据源名称对应实体类映射,建完表就会清空
      */
-    private static HashMap<String, Set<Class<?>>> DATA_SOURCE_ENTITY_CLASS_MAPPING = new HashMap<>();
+    private static final HashMap<String, Set<Class<?>>> DATA_SOURCE_ENTITY_CLASS_MAPPING = new HashMap<>();
 
     public static void addDataSourceEntityClassMapping(String dataSourceName, String className) {
         try {
             addDataSourceEntityClassMapping(dataSourceName, Class.forName(className));
         } catch (ClassNotFoundException e) {
-            log.trace("扫描添加class失败：{}", className);
+            log.error("扫描添加class失败：{}", className);
         }
     }
 

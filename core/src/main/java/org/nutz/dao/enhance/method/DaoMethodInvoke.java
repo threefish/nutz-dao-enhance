@@ -214,6 +214,9 @@ public class DaoMethodInvoke {
             case INSERT:
                 execute = new InsertQueryExecute(dao, executeSql, this.methodSignature, args);
                 break;
+            case CALL_FUNCTION:
+                execute = new CallFunctionExecute(dao, executeSql, this.methodSignature, args);
+                break;
             default:
         }
         if (Objects.isNull(execute)) {

@@ -16,6 +16,7 @@ import org.nutz.dao.enhance.util.SqlCallbackMetaInfo;
 import org.nutz.dao.enhance.util.TypeParameterResolver;
 import org.nutz.dao.enhance.util.ValueTypeUtil;
 import org.nutz.dao.sql.SqlCallback;
+import org.nutz.lang.Lang;
 import org.nutz.lang.Strings;
 
 import java.lang.reflect.Method;
@@ -46,7 +47,14 @@ public class MethodSignature {
      * 参数名列表
      */
     private final HashMap<Integer, String> parameterNames = new HashMap<>();
-
+    /**
+     * 存储过程出参列表参数名列表
+     */
+    private final List<OutParam> storedProcedureOutParameters = new ArrayList<>();
+    /**
+     * 是存储过程
+     */
+    private boolean storedProcedure;
     /**
      * 无返回值的
      */
@@ -104,17 +112,18 @@ public class MethodSignature {
     public MethodSignature(Class<?> mapperInterface, Method method) {
         // 代码顺序不能调整
         final String name = String.format("%s.%s", mapperInterface.getName(), MethodSignatureUtil.getMethodName(method));
-        final CustomProvider customProvider = method.getAnnotation(CustomProvider.class);
         this.methodName = method.getName();
         // 获取条件参数位置
         this.conditionParameterInedx = MethodSignatureUtil.getConditionParameterInedx(method.getParameterTypes());
         // 类上直接获取实体类型
         this.entityClass = MethodSignatureUtil.getClassEntityType(mapperInterface);
+        this.initCallFunction(method);
         this.initParameterName(method);
         this.initCustomizeSql(name, method);
         this.initReturnType(mapperInterface, method);
         // 是否是返回多条记录
         this.multipleRecords = ValueTypeUtil.isCollection(this.returnType);
+        final CustomProvider customProvider = method.getAnnotation(CustomProvider.class);
         this.customProvider = Objects.nonNull(customProvider);
         if (this.customProvider) {
             // 自定义提供者
@@ -123,6 +132,19 @@ public class MethodSignature {
             this.initPager(method, name);
             this.initEntityClass(method);
             this.initSqlCallback();
+        }
+    }
+
+    private void initCallFunction(Method method) {
+        CallFunction annotation = method.getAnnotation(CallFunction.class);
+        this.storedProcedure = Objects.nonNull(annotation);
+        if (this.storedProcedure) {
+            CallFunction.Out[] outs = annotation.out();
+            if (Lang.isNotEmpty(outs)) {
+                for (CallFunction.Out out : outs) {
+                    this.storedProcedureOutParameters.add(OutParam.of(out.index(), out.name(), out.type()));
+                }
+            }
         }
     }
 
@@ -236,6 +258,7 @@ public class MethodSignature {
             Update updateSql = method.getAnnotation(Update.class);
             Insert insertSql = method.getAnnotation(Insert.class);
             Delete delectSql = method.getAnnotation(Delete.class);
+            CallFunction callFunctionSql = method.getAnnotation(CallFunction.class);
             if (Objects.nonNull(querySql)) {
                 this.sqlTemplate = querySql.value();
             } else if (Objects.nonNull(updateSql)) {
@@ -247,6 +270,9 @@ public class MethodSignature {
             } else if (Objects.nonNull(delectSql)) {
                 this.sqlTemplate = delectSql.value();
                 this.sqlCommandType = SqlCommandType.DELETE;
+            } else if (Objects.nonNull(callFunctionSql)) {
+                this.sqlTemplate = callFunctionSql.value();
+                this.sqlCommandType = SqlCommandType.CALL_FUNCTION;
             } else {
                 throw new RuntimeException(String.format("[%s] 缺失 QuerySql、UpdateSql、InsertSql 等任意注解", name));
             }
@@ -279,7 +305,7 @@ public class MethodSignature {
         if (this.returnType != void.class) {
             // 有返回值且方法名不是内部的
             if (!methodNames.contains(this.methodName)) {
-                if (Objects.isNull(this.sqlCallback)) {
+                if (Objects.isNull(this.sqlCallback) && !this.storedProcedure) {
                     throw new RuntimeException(String.format("方法[%s]无法获取设置Callback!!!请发ISSUSE", this.methodName));
                 }
             }
@@ -305,6 +331,10 @@ public class MethodSignature {
             }
             final SqlCallback collectionSqlCallback = SqlCallbackMetaInfo.getCollectionSqlCallback(this.returnGenericType);
             if (Objects.nonNull(collectionSqlCallback)) {
+                return;
+            }
+            if (this.storedProcedure) {
+                // 是存储过程，存储过程是自定义实现的，无需设置callback
                 return;
             }
             // collectionSqlCallback 还是null，那就是未识别的类型
