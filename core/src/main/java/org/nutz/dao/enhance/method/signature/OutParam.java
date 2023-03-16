@@ -11,8 +11,6 @@ import lombok.Data;
 @AllArgsConstructor(staticName = "of")
 public class OutParam {
 
-    public final int index;
-
     public final String name;
 
     public final int type;

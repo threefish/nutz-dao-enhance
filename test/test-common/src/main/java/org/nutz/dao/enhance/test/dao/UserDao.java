@@ -10,6 +10,7 @@ import org.nutz.dao.enhance.test.provider.TestProvider;
 import org.nutz.dao.entity.Record;
 import org.nutz.dao.pager.Pager;
 
+import java.sql.Types;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -215,7 +216,7 @@ public interface UserDao extends BaseDao<UserDO> {
      *
      * @return
      */
-    @CallFunction("call callList()")
+    @CallStoredProcedure("call callList()")
     Optional<List<UserVO>> callList();
 
     /**
@@ -225,10 +226,54 @@ public interface UserDao extends BaseDao<UserDO> {
      * SELECT real_name,user.`age` INTO realName,age FROM `user`  WHERE `user`.id=id;
      * END
      */
-    @CallFunction(value = "call callOut(@id,?,?)", out = {
-            @CallFunction.Out(name = "realName", index = 2),
-            @CallFunction.Out(name = "age", index = 3)
+    @CallStoredProcedure(value = "call callOut(@id,@realName,@age)", out = {
+            @CallStoredProcedure.Out(name = "realName"),
+            @CallStoredProcedure.Out(name = "age", jdbcType = Types.INTEGER)
     })
     Optional<UserVO> callOut(@Param("id") int id);
+
+
+    /**
+     * 返回值是列表
+     * CREATE  PROCEDURE `callList`()
+     * BEGIN
+     * SELECT * FROM user;
+     * END
+     *
+     * @return
+     */
+    @CallStoredProcedure("call callList()")
+    void callList1();
+
+    /**
+     * 通过出参返回单行数据
+     * CREATE PROCEDURE `callOut`(IN id INT,OUT realName VARCHAR(15),OUT age INT(15))
+     * BEGIN
+     * SELECT real_name,user.`age` INTO realName,age FROM `user`  WHERE `user`.id=id;
+     * END
+     */
+    @CallStoredProcedure(value = "call callOut(@id,@realName,@age)", out = {
+            @CallStoredProcedure.Out(name = "realName"),
+            @CallStoredProcedure.Out(name = "age", jdbcType = Types.INTEGER)
+    })
+    void callOut1(@Param("id") int id);
+
+
+    @CallStoredProcedure("call callList()")
+    List callList2();
+
+    /**
+     * 通过出参返回单行数据
+     * CREATE PROCEDURE `callOut`(IN id INT,OUT realName VARCHAR(15),OUT age INT(15))
+     * BEGIN
+     * SELECT real_name,user.`age` INTO realName,age FROM `user`  WHERE `user`.id=id;
+     * END
+     */
+    @CallStoredProcedure(value = "call callOut(@id,@realName,@age)", out = {
+            @CallStoredProcedure.Out(name = "realName"),
+            @CallStoredProcedure.Out(name = "age", jdbcType = Types.INTEGER)
+    })
+    Map callOut2(@Param("id") int id);
+
 
 }

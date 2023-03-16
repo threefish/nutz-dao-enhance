@@ -9,14 +9,17 @@ import java.sql.Types;
 /**
  * @author 黄川 huchuc@vip.qq.com
  * date: 2023/3/15
+ * 调用存储过程
  */
 @Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface CallFunction {
+public @interface CallStoredProcedure {
 
     String value();
 
-
+    /**
+     * 出参订阅
+     */
     Out[] out() default {};
 
     /**
@@ -24,11 +27,9 @@ public @interface CallFunction {
      */
     @interface Out {
 
-        int index();
-
         String name();
 
-        int type() default Types.VARCHAR;
+        int jdbcType() default Types.VARCHAR;
 
     }
 

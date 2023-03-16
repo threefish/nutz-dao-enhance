@@ -218,5 +218,30 @@ public class NutzDaoTest {
         assert u3.getRealName().equals(data.get().getRealName());
     }
 
+    @Test
+    public void test_call_list1() {
+        userDao.callList1();
+    }
+
+    @Test
+    public void test_call_out1() {
+        int maxId = userDao.getMaxId();
+        userDao.callOut1(maxId);
+    }
+
+    @Test
+    public void test_call_list2() {
+        List list = userDao.callList2();
+        assert list.size() == 3;
+    }
+
+
+    @Test
+    public void test_call_out2() {
+        int maxId = userDao.getMaxId();
+        Map map = userDao.callOut2(maxId);
+        System.out.println(map);
+    }
+
 
 }

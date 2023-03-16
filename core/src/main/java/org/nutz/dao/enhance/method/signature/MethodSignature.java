@@ -136,13 +136,13 @@ public class MethodSignature {
     }
 
     private void initCallFunction(Method method) {
-        CallFunction annotation = method.getAnnotation(CallFunction.class);
+        CallStoredProcedure annotation = method.getAnnotation(CallStoredProcedure.class);
         this.storedProcedure = Objects.nonNull(annotation);
         if (this.storedProcedure) {
-            CallFunction.Out[] outs = annotation.out();
+            CallStoredProcedure.Out[] outs = annotation.out();
             if (Lang.isNotEmpty(outs)) {
-                for (CallFunction.Out out : outs) {
-                    this.storedProcedureOutParameters.add(OutParam.of(out.index(), out.name(), out.type()));
+                for (CallStoredProcedure.Out out : outs) {
+                    this.storedProcedureOutParameters.add(OutParam.of(out.name(), out.jdbcType()));
                 }
             }
         }
@@ -258,7 +258,7 @@ public class MethodSignature {
             Update updateSql = method.getAnnotation(Update.class);
             Insert insertSql = method.getAnnotation(Insert.class);
             Delete delectSql = method.getAnnotation(Delete.class);
-            CallFunction callFunctionSql = method.getAnnotation(CallFunction.class);
+            CallStoredProcedure callFunctionSql = method.getAnnotation(CallStoredProcedure.class);
             if (Objects.nonNull(querySql)) {
                 this.sqlTemplate = querySql.value();
             } else if (Objects.nonNull(updateSql)) {
