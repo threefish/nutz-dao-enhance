@@ -30,5 +30,5 @@ public enum SqlCommandType {
     /**
      * 调用存储过程
      */
-    CALL_FUNCTION
+    CALL_STORED_PROCEDURE
 }

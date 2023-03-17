@@ -14,9 +14,9 @@ import org.nutz.lang.util.NutMap;
  * 存储过程
  */
 @Slf4j
-public class CallFunctionExecute extends AbstractExecute {
+public class CallStoredProcedureExecute extends AbstractExecute {
 
-    public CallFunctionExecute(Dao dao, String executeSql, MethodSignature methodSignature, Object[] args) {
+    public CallStoredProcedureExecute(Dao dao, String executeSql, MethodSignature methodSignature, Object[] args) {
         super(dao, executeSql, methodSignature, args);
     }
 

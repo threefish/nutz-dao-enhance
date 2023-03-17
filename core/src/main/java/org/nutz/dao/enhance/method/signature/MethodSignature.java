@@ -272,7 +272,7 @@ public class MethodSignature {
                 this.sqlCommandType = SqlCommandType.DELETE;
             } else if (Objects.nonNull(callFunctionSql)) {
                 this.sqlTemplate = callFunctionSql.value();
-                this.sqlCommandType = SqlCommandType.CALL_FUNCTION;
+                this.sqlCommandType = SqlCommandType.CALL_STORED_PROCEDURE;
             } else {
                 throw new RuntimeException(String.format("[%s] 缺失 QuerySql、UpdateSql、InsertSql 等任意注解", name));
             }

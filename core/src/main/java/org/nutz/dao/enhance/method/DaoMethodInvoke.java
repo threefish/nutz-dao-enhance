@@ -3,6 +3,10 @@ package org.nutz.dao.enhance.method;
 
 import lombok.extern.slf4j.Slf4j;
 import org.nutz.dao.Dao;
+import org.nutz.dao.enhance.annotation.CreatedBy;
+import org.nutz.dao.enhance.annotation.CreatedDate;
+import org.nutz.dao.enhance.annotation.LastModifiedBy;
+import org.nutz.dao.enhance.annotation.LastModifiedDate;
 import org.nutz.dao.enhance.execute.*;
 import org.nutz.dao.enhance.factory.DaoFactory;
 import org.nutz.dao.enhance.holder.EntityClassInfoHolder;
@@ -10,13 +14,17 @@ import org.nutz.dao.enhance.method.parser.ConditionMapping;
 import org.nutz.dao.enhance.method.parser.SimpleSqlParser;
 import org.nutz.dao.enhance.method.signature.MethodSignature;
 import org.nutz.dao.enhance.provider.ProviderContext;
+import org.nutz.dao.enhance.util.MethodSignatureUtil;
 import org.nutz.dao.entity.Entity;
+import org.nutz.dao.entity.MappingField;
+import org.nutz.dao.impl.entity.macro.ElFieldMacro;
 import org.nutz.el.El;
 import org.nutz.lang.Lang;
 import org.nutz.lang.Stopwatch;
 import org.nutz.lang.Strings;
 import org.nutz.lang.util.Context;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
@@ -33,7 +41,7 @@ public class DaoMethodInvoke {
      */
     private final MethodSignature methodSignature;
     private final DaoFactory daoFactory;
-    private final Entity<?> entity;
+    private Entity<?> entity;
     private final Class<?> entityClass;
     /**
      * 源sql信息
@@ -59,11 +67,35 @@ public class DaoMethodInvoke {
         if (Objects.isNull(dao)) {
             throw new RuntimeException(String.format("'%s' dao is null", dataSource));
         }
-        this.entity = Objects.isNull(this.entityClass) ? null : dao.getEntity(this.entityClass);
-        if (Objects.nonNull(this.entity)) {
-            EntityClassInfoHolder.setEntity(this.entityClass, this.entity);
+        this.entity = Objects.isNull(this.entityClass) ? null : EntityClassInfoHolder.getEntity(this.entityClass);
+        if (Objects.nonNull(this.entityClass) && this.entity == null) {
+            // 缓存不存在
+            this.entity = dao.getEntity(this.entityClass);
+            if (Objects.nonNull(this.entity)) {
+                EntityClassInfoHolder.setEntity(this.entityClass, this.entity);
+                List<Field> declaredFields = MethodSignatureUtil.getAllFields(this.entityClass);
+                for (Field declaredField : declaredFields) {
+                    CreatedBy createdBy = declaredField.getAnnotation(CreatedBy.class);
+                    CreatedDate createdDate = declaredField.getAnnotation(CreatedDate.class);
+                    LastModifiedBy lastModifiedBy = declaredField.getAnnotation(LastModifiedBy.class);
+                    LastModifiedDate lastModifiedDate = declaredField.getAnnotation(LastModifiedDate.class);
+                    if (Objects.nonNull(createdBy) || Objects.nonNull(lastModifiedBy)) {
+                        MappingField field = this.entity.getField(declaredField.getName());
+                        if (field != null) {
+                            this.entity.addBeforeInsertMacro(new ElFieldMacro(field, "uuid()"));
+                        }
+                    }
+                    if (Objects.nonNull(createdDate) || Objects.nonNull(lastModifiedDate)) {
+                        MappingField field = this.entity.getField(declaredField.getName());
+                        if (field != null) {
+                            this.entity.addBeforeInsertMacro(new ElFieldMacro(field, "now()"));
+                        }
+                    }
+                }
+            }
         }
     }
+
 
     /**
      * 执行
@@ -214,8 +246,8 @@ public class DaoMethodInvoke {
             case INSERT:
                 execute = new InsertQueryExecute(dao, executeSql, this.methodSignature, args);
                 break;
-            case CALL_FUNCTION:
-                execute = new CallFunctionExecute(dao, executeSql, this.methodSignature, args);
+            case CALL_STORED_PROCEDURE:
+                execute = new CallStoredProcedureExecute(dao, executeSql, this.methodSignature, args);
                 break;
             default:
         }

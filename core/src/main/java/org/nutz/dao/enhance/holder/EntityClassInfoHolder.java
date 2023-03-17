@@ -40,6 +40,7 @@ public class EntityClassInfoHolder {
         return ENTITY_HASH_MAP.get(klass);
     }
 
+
     /**
      * 获取
      *

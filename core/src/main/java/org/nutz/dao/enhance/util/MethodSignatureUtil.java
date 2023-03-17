@@ -250,4 +250,26 @@ public class MethodSignatureUtil {
         }
     }
 
+    /**
+     * 获取全部字段
+     *
+     * @param entityClass
+     * @return
+     */
+    public static List<Field> getAllFields(Class<?> entityClass) {
+        Class cls = entityClass;
+        List<Field> fieldList = new ArrayList<>();
+        while (cls != null && cls != Object.class) {
+            Field[] fields = cls.getDeclaredFields();
+            for (Field fd : fields) {
+                fieldList.add(fd);
+                if (!fd.isAccessible()) {
+                    fd.setAccessible(true);
+                }
+            }
+            cls = cls.getSuperclass();
+        }
+        return fieldList;
+    }
+
 }

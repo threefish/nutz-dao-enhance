@@ -448,3 +448,8 @@ public interface UserDao extends BaseDao<UserDO> {
 
 
 ```
+### 打包
+
+```
+maven clean package -P releasse
+```
