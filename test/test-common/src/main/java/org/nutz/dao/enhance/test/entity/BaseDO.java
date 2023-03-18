@@ -1,7 +1,7 @@
 package org.nutz.dao.enhance.test.entity;
 
 import lombok.Data;
-import org.nutz.dao.enhance.annotation.LastModifiedBy;
+import org.nutz.dao.enhance.annotation.CreatedBy;
 import org.nutz.dao.enhance.annotation.LastModifiedDate;
 import org.nutz.dao.entity.annotation.Column;
 
@@ -19,6 +19,6 @@ public class BaseDO implements java.io.Serializable {
     protected Date gmtCreate;
 
     @Column
-    @LastModifiedBy
+    @CreatedBy
     protected String createBy;
 }

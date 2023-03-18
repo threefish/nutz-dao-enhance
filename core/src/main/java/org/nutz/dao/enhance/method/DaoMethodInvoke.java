@@ -8,7 +8,7 @@ import org.nutz.dao.enhance.annotation.CreatedDate;
 import org.nutz.dao.enhance.annotation.LastModifiedBy;
 import org.nutz.dao.enhance.annotation.LastModifiedDate;
 import org.nutz.dao.enhance.audit.AuditingEntityRunMethod;
-import org.nutz.dao.enhance.enhance.AuditElFieldMacro;
+import org.nutz.dao.enhance.enhance.AuditElPojoInterceptor;
 import org.nutz.dao.enhance.factory.DaoFactory;
 import org.nutz.dao.enhance.method.execute.*;
 import org.nutz.dao.enhance.method.holder.EntityClassInfoHolder;
@@ -19,6 +19,8 @@ import org.nutz.dao.enhance.method.signature.MethodSignature;
 import org.nutz.dao.enhance.util.MethodSignatureUtil;
 import org.nutz.dao.entity.Entity;
 import org.nutz.dao.entity.MappingField;
+import org.nutz.dao.interceptor.PojoInterceptor;
+import org.nutz.dao.interceptor.impl.DefaultPojoInterceptor;
 import org.nutz.el.El;
 import org.nutz.lang.Lang;
 import org.nutz.lang.Stopwatch;
@@ -78,35 +80,38 @@ public class DaoMethodInvoke {
             this.entity = dao.getEntity(this.entityClass);
             if (Objects.nonNull(this.entity)) {
                 EntityClassInfoHolder.setEntity(this.entityClass, this.entity);
-                List<Field> declaredFields = MethodSignatureUtil.getAllFields(this.entityClass);
-                for (Field declaredField : declaredFields) {
-                    CreatedBy createdBy = declaredField.getAnnotation(CreatedBy.class);
-                    CreatedDate createdDate = declaredField.getAnnotation(CreatedDate.class);
-                    LastModifiedBy lastModifiedBy = declaredField.getAnnotation(LastModifiedBy.class);
-                    LastModifiedDate lastModifiedDate = declaredField.getAnnotation(LastModifiedDate.class);
-                    if (Objects.nonNull(createdBy)) {
-                        this.initAudit(declaredField, String.format("%s()", AuditingEntityRunMethod.NAME), createdBy.nullEffective());
+                PojoInterceptor interceptor = this.entity.getInterceptor();
+                if (interceptor instanceof DefaultPojoInterceptor) {
+                    DefaultPojoInterceptor defaultPojoInterceptor = ((DefaultPojoInterceptor) interceptor);
+                    List<Field> declaredFields = MethodSignatureUtil.getAllFields(this.entityClass);
+                    for (Field declaredField : declaredFields) {
+                        MappingField mf = this.entity.getField(declaredField.getName());
+                        CreatedBy createdBy = declaredField.getAnnotation(CreatedBy.class);
+                        CreatedDate createdDate = declaredField.getAnnotation(CreatedDate.class);
+                        LastModifiedBy lastModifiedBy = declaredField.getAnnotation(LastModifiedBy.class);
+                        LastModifiedDate lastModifiedDate = declaredField.getAnnotation(LastModifiedDate.class);
+                        if (Objects.nonNull(createdBy)) {
+                            defaultPojoInterceptor.getList().add(new AuditElPojoInterceptor(mf, String.format("%s()", AuditingEntityRunMethod.NAME), "prevInsert", createdBy.nullEffective()));
+                        }
+                        if (Objects.nonNull(lastModifiedBy)) {
+                            defaultPojoInterceptor.getList().add(new AuditElPojoInterceptor(mf, String.format("%s()", AuditingEntityRunMethod.NAME), "prevUpdate", lastModifiedBy.nullEffective()));
+                        }
+                        if (Objects.nonNull(createdDate)) {
+                            defaultPojoInterceptor.getList().add(new AuditElPojoInterceptor(mf, String.format("%s()", AuditingEntityRunMethod.NAME), "prevInsert", createdDate.nullEffective()));
+                        }
+                        if (Objects.nonNull(lastModifiedDate)) {
+                            defaultPojoInterceptor.getList().add(new AuditElPojoInterceptor(mf, "now()", "prevUpdate", lastModifiedDate.nullEffective()));
+                        }
                     }
-                    if (Objects.nonNull(lastModifiedBy)) {
-                        this.initAudit(declaredField, String.format("%s()", AuditingEntityRunMethod.NAME), lastModifiedBy.nullEffective());
-                    }
-                    if (Objects.nonNull(createdDate)) {
-                        this.initAudit(declaredField, "now()", createdDate.nullEffective());
-                    }
-                    if (Objects.nonNull(lastModifiedDate)) {
-                        this.initAudit(declaredField, "now()", lastModifiedDate.nullEffective());
+                } else {
+                    if (log.isWarnEnabled()) {
+                        log.warn("'{}' PojoInterceptor is not DefaultPojoInterceptor,Will affect audit functionality!!!", this.entityClass);
                     }
                 }
             }
         }
     }
 
-    private void initAudit(Field declaredField, String el, boolean nullEffective) {
-        MappingField field = this.entity.getField(declaredField.getName());
-        if (field != null) {
-            this.entity.addBeforeInsertMacro(new AuditElFieldMacro(field, el, nullEffective));
-        }
-    }
 
     /**
      * 执行
