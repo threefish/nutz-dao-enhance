@@ -7,17 +7,18 @@ import org.nutz.dao.enhance.annotation.CreatedBy;
 import org.nutz.dao.enhance.annotation.CreatedDate;
 import org.nutz.dao.enhance.annotation.LastModifiedBy;
 import org.nutz.dao.enhance.annotation.LastModifiedDate;
-import org.nutz.dao.enhance.execute.*;
+import org.nutz.dao.enhance.audit.AuditingEntityRunMethod;
+import org.nutz.dao.enhance.enhance.AuditElFieldMacro;
 import org.nutz.dao.enhance.factory.DaoFactory;
-import org.nutz.dao.enhance.holder.EntityClassInfoHolder;
+import org.nutz.dao.enhance.method.execute.*;
+import org.nutz.dao.enhance.method.holder.EntityClassInfoHolder;
 import org.nutz.dao.enhance.method.parser.ConditionMapping;
 import org.nutz.dao.enhance.method.parser.SimpleSqlParser;
+import org.nutz.dao.enhance.method.provider.ProviderContext;
 import org.nutz.dao.enhance.method.signature.MethodSignature;
-import org.nutz.dao.enhance.provider.ProviderContext;
 import org.nutz.dao.enhance.util.MethodSignatureUtil;
 import org.nutz.dao.entity.Entity;
 import org.nutz.dao.entity.MappingField;
-import org.nutz.dao.impl.entity.macro.ElFieldMacro;
 import org.nutz.el.El;
 import org.nutz.lang.Lang;
 import org.nutz.lang.Stopwatch;
@@ -65,8 +66,12 @@ public class DaoMethodInvoke {
         this.entityClass = this.methodSignature.getEntityClass();
         final Dao dao = daoFactory.getDao(dataSource);
         if (Objects.isNull(dao)) {
-            throw new RuntimeException(String.format("'%s' dao is null", dataSource));
+            throw new RuntimeException(String.format("dataSource '%s' is null.", dataSource));
         }
+        this.initEntityInfo(dao);
+    }
+
+    private void initEntityInfo(Dao dao) {
         this.entity = Objects.isNull(this.entityClass) ? null : EntityClassInfoHolder.getEntity(this.entityClass);
         if (Objects.nonNull(this.entityClass) && this.entity == null) {
             // 缓存不存在
@@ -79,23 +84,29 @@ public class DaoMethodInvoke {
                     CreatedDate createdDate = declaredField.getAnnotation(CreatedDate.class);
                     LastModifiedBy lastModifiedBy = declaredField.getAnnotation(LastModifiedBy.class);
                     LastModifiedDate lastModifiedDate = declaredField.getAnnotation(LastModifiedDate.class);
-                    if (Objects.nonNull(createdBy) || Objects.nonNull(lastModifiedBy)) {
-                        MappingField field = this.entity.getField(declaredField.getName());
-                        if (field != null) {
-                            this.entity.addBeforeInsertMacro(new ElFieldMacro(field, "uuid()"));
-                        }
+                    if (Objects.nonNull(createdBy)) {
+                        this.initAudit(declaredField, String.format("%s()", AuditingEntityRunMethod.NAME), createdBy.nullEffective());
                     }
-                    if (Objects.nonNull(createdDate) || Objects.nonNull(lastModifiedDate)) {
-                        MappingField field = this.entity.getField(declaredField.getName());
-                        if (field != null) {
-                            this.entity.addBeforeInsertMacro(new ElFieldMacro(field, "now()"));
-                        }
+                    if (Objects.nonNull(lastModifiedBy)) {
+                        this.initAudit(declaredField, String.format("%s()", AuditingEntityRunMethod.NAME), lastModifiedBy.nullEffective());
+                    }
+                    if (Objects.nonNull(createdDate)) {
+                        this.initAudit(declaredField, "now()", createdDate.nullEffective());
+                    }
+                    if (Objects.nonNull(lastModifiedDate)) {
+                        this.initAudit(declaredField, "now()", lastModifiedDate.nullEffective());
                     }
                 }
             }
         }
     }
 
+    private void initAudit(Field declaredField, String el, boolean nullEffective) {
+        MappingField field = this.entity.getField(declaredField.getName());
+        if (field != null) {
+            this.entity.addBeforeInsertMacro(new AuditElFieldMacro(field, el, nullEffective));
+        }
+    }
 
     /**
      * 执行

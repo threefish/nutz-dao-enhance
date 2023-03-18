@@ -1,4 +1,4 @@
-package org.nutz.dao.enhance.holder;
+package org.nutz.dao.enhance.method.holder;
 
 import lombok.extern.slf4j.Slf4j;
 import org.nutz.dao.Dao;

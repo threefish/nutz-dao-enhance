@@ -1,4 +1,4 @@
-package org.nutz.dao.enhance.holder;
+package org.nutz.dao.enhance.method.holder;
 
 import org.nutz.dao.entity.Entity;
 

@@ -17,11 +17,27 @@
         <nutzboot.version>2.4.2.v20201205</nutzboot.version>
     </properties>
 
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.nutz</groupId>
+                <artifactId>nutzboot-parent</artifactId>
+                <version>${nutzboot.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
     <dependencies>
         <dependency>
             <groupId>org.nutz.dao</groupId>
             <artifactId>test-common</artifactId>
             <version>1.0.0-RC</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
         </dependency>
 
         <dependency>
@@ -71,6 +87,5 @@
             <version>5.6.3</version>
             <scope>test</scope>
         </dependency>
-
     </dependencies>
 </project>

@@ -1,4 +1,4 @@
-package org.nutz.dao.enhance.execute;
+package org.nutz.dao.enhance.method.execute;
 
 import lombok.extern.slf4j.Slf4j;
 import org.nutz.dao.Dao;

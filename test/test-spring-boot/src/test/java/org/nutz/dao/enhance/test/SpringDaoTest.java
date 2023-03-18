@@ -19,10 +19,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * @author 黄川 huchuc@vip.qq.com
@@ -54,6 +51,11 @@ public class SpringDaoTest {
     @After
     public void after() {
         userDao.clear();
+    }
+
+    @Test
+    public void test_auditing() {
+        assert Objects.equals(u1.getCreateBy(), "spring-test");
     }
 
     @Test

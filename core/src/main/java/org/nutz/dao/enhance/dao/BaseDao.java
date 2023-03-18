@@ -1,10 +1,10 @@
-package org.nutz.dao.enhance.execute;
+package org.nutz.dao.enhance.dao;
 
 import org.nutz.dao.Condition;
 import org.nutz.dao.FieldFilter;
 import org.nutz.dao.FieldMatcher;
 import org.nutz.dao.enhance.annotation.CustomProvider;
-import org.nutz.dao.enhance.provider.BaseDaoProvider;
+import org.nutz.dao.enhance.method.provider.BaseDaoProvider;
 import org.nutz.dao.pager.Pager;
 import org.nutz.lang.Each;
 

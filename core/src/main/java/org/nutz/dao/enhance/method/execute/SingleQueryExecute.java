@@ -1,4 +1,4 @@
-package org.nutz.dao.enhance.execute;
+package org.nutz.dao.enhance.method.execute;
 
 import org.nutz.dao.Dao;
 import org.nutz.dao.Sqls;
@@ -9,9 +9,9 @@ import org.nutz.dao.sql.Sql;
  * @author 黄川 2020/12/15
  * 单记录查询
  */
-public class UpdateQueryExecute extends AbstractExecute {
+public class SingleQueryExecute extends AbstractExecute {
 
-    public UpdateQueryExecute(Dao dao, String executeSql, MethodSignature methodSignature, Object[] args) {
+    public SingleQueryExecute(Dao dao, String executeSql, MethodSignature methodSignature, Object[] args) {
         super(dao, executeSql, methodSignature, args);
     }
 
@@ -22,6 +22,7 @@ public class UpdateQueryExecute extends AbstractExecute {
         sql.setEntity(dao.getEntity(this.methodSignature.getEntityClass()));
         sql.setCallback(methodSignature.getSqlCallback());
         dao.execute(sql);
-        return this.returnIsOptionalVal(sql.getUpdateCount());
+        return this.returnIsOptionalVal(sql.getObject(methodSignature.getReturnType()));
+
     }
 }

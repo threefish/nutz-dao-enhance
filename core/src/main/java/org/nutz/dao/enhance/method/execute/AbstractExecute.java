@@ -1,4 +1,4 @@
-package org.nutz.dao.enhance.execute;
+package org.nutz.dao.enhance.method.execute;
 
 import org.nutz.dao.Condition;
 import org.nutz.dao.Dao;

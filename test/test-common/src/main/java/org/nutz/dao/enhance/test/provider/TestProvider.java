@@ -2,7 +2,7 @@ package org.nutz.dao.enhance.test.provider;
 
 import org.nutz.dao.Dao;
 import org.nutz.dao.Sqls;
-import org.nutz.dao.enhance.provider.ProviderContext;
+import org.nutz.dao.enhance.method.provider.ProviderContext;
 import org.nutz.dao.jdbc.ValueAdaptor;
 import org.nutz.dao.sql.Sql;
 import org.nutz.dao.util.Daos;

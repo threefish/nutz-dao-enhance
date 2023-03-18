@@ -3,7 +3,7 @@ package org.nutz.dao.enhance.registrar.loader;
 import lombok.extern.slf4j.Slf4j;
 import org.nutz.dao.enhance.annotation.Dao;
 import org.nutz.dao.enhance.factory.DaoFactory;
-import org.nutz.dao.enhance.holder.AutoCreateTableHolder;
+import org.nutz.dao.enhance.method.holder.AutoCreateTableHolder;
 import org.nutz.dao.enhance.registrar.annotation.DaoScan;
 import org.nutz.dao.enhance.registrar.annotation.DaoScans;
 import org.nutz.dao.enhance.registrar.factory.DaoProxyFactory;

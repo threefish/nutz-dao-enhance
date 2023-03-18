@@ -2,7 +2,7 @@ package org.nutz.dao.enhance.test.dao;
 
 import org.nutz.dao.Condition;
 import org.nutz.dao.enhance.annotation.*;
-import org.nutz.dao.enhance.execute.BaseDao;
+import org.nutz.dao.enhance.dao.BaseDao;
 import org.nutz.dao.enhance.pagination.PageRecord;
 import org.nutz.dao.enhance.test.entity.UserDO;
 import org.nutz.dao.enhance.test.entity.UserVO;

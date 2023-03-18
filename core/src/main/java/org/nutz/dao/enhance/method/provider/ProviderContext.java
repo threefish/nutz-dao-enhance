@@ -1,4 +1,4 @@
-package org.nutz.dao.enhance.provider;
+package org.nutz.dao.enhance.method.provider;
 
 import lombok.AllArgsConstructor;
 import org.nutz.dao.Dao;

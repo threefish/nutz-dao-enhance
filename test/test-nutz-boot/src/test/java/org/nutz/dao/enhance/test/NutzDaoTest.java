@@ -17,10 +17,7 @@ import org.nutz.dao.pager.Pager;
 import org.nutz.ioc.loader.annotation.Inject;
 import org.nutz.ioc.loader.annotation.IocBean;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * @author 黄川 huchuc@vip.qq.com
@@ -49,6 +46,11 @@ public class NutzDaoTest {
     @After
     public void after() {
         userDao.clear();
+    }
+
+    @Test
+    public void test_auditing() {
+        assert Objects.equals(u1.getCreateBy(), "nutz-test");
     }
 
     @Test

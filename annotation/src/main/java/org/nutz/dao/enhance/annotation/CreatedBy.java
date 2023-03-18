@@ -12,4 +12,8 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(value = {ElementType.METHOD, ElementType.FIELD})
 public @interface CreatedBy {
+    /**
+     * nullEffective=true时上面的赋值规则要起效必须是在[当前字段==null]时才能生效
+     */
+    boolean nullEffective() default true;
 }

@@ -4,7 +4,7 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.nutz.dao.enhance.annotation.Dao;
 import org.nutz.dao.enhance.factory.DaoFactory;
-import org.nutz.dao.enhance.holder.AutoCreateTableHolder;
+import org.nutz.dao.enhance.method.holder.AutoCreateTableHolder;
 import org.nutz.dao.spring.boot.factory.DaoProxyFactory;
 import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;

@@ -4,7 +4,7 @@ import org.nutz.dao.Dao;
 import org.nutz.dao.enhance.config.DaoEnhanceConstant;
 import org.nutz.dao.enhance.config.DaoProperties;
 import org.nutz.dao.enhance.factory.DaoFactory;
-import org.nutz.dao.enhance.holder.AutoCreateTableHolder;
+import org.nutz.dao.enhance.method.holder.AutoCreateTableHolder;
 import org.nutz.dao.impl.NutDao;
 import org.nutz.ioc.Ioc;
 

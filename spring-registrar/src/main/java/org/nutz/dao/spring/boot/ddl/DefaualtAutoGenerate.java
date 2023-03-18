@@ -3,7 +3,7 @@ package org.nutz.dao.spring.boot.ddl;
 import lombok.RequiredArgsConstructor;
 import org.nutz.dao.enhance.config.DaoProperties;
 import org.nutz.dao.enhance.factory.DaoFactory;
-import org.nutz.dao.enhance.holder.AutoCreateTableHolder;
+import org.nutz.dao.enhance.method.holder.AutoCreateTableHolder;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 

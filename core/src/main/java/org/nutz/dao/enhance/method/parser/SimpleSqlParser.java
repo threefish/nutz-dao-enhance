@@ -2,7 +2,7 @@ package org.nutz.dao.enhance.method.parser;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.nutz.dao.enhance.holder.EntityClassInfoHolder;
+import org.nutz.dao.enhance.method.holder.EntityClassInfoHolder;
 import org.nutz.dao.entity.Entity;
 import org.nutz.dao.entity.MappingField;
 import org.nutz.lang.Lang;

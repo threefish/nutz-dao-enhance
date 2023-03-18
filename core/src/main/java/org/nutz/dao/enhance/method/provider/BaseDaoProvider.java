@@ -1,4 +1,4 @@
-package org.nutz.dao.enhance.provider;
+package org.nutz.dao.enhance.method.provider;
 
 import org.nutz.dao.Condition;
 import org.nutz.dao.FieldFilter;

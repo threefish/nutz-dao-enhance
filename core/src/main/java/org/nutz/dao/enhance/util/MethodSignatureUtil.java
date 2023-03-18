@@ -3,8 +3,8 @@ package org.nutz.dao.enhance.util;
 import org.nutz.dao.Condition;
 import org.nutz.dao.enhance.annotation.Entity;
 import org.nutz.dao.enhance.annotation.Param;
-import org.nutz.dao.enhance.execute.BaseDao;
-import org.nutz.dao.enhance.provider.ProviderContext;
+import org.nutz.dao.enhance.dao.BaseDao;
+import org.nutz.dao.enhance.method.provider.ProviderContext;
 import org.nutz.dao.pager.Pager;
 import org.nutz.lang.Lang;
 
