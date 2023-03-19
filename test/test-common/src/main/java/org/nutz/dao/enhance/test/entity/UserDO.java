@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.nutz.dao.enhance.annotation.AutoID;
 import org.nutz.dao.entity.annotation.Column;
 import org.nutz.dao.entity.annotation.Id;
 import org.nutz.dao.entity.annotation.Table;
@@ -19,7 +20,8 @@ import org.nutz.dao.entity.annotation.Table;
 @NoArgsConstructor
 @Table("user")
 public class UserDO extends BaseDO {
-    @Id
+    @Id(auto = false)
+    @AutoID
     Integer id;
     @Column
     String realName;

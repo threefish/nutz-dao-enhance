@@ -42,8 +42,7 @@
 
         <dependency>
             <groupId>org.nutz.dao</groupId>
-            <artifactId>nutz-dao-enhance</artifactId>
-            <version>1.0.0-RC</version>
+            <artifactId>nutz-dao-enhance-nutz-starter</artifactId>
         </dependency>
 
         <dependency>

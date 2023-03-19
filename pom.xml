@@ -6,7 +6,7 @@
     <modelVersion>4.0.0</modelVersion>
     <packaging>pom</packaging>
     <groupId>org.nutz.dao</groupId>
-    <artifactId>enhance</artifactId>
+    <artifactId>nutz-dao-enhance</artifactId>
     <version>1.0.0-RC</version>
 
     <name>nutz-dao-enhance</name>
@@ -35,22 +35,22 @@
             </dependency>
             <dependency>
                 <groupId>org.nutz.dao</groupId>
-                <artifactId>core</artifactId>
+                <artifactId>nutz-dao-enhance-core</artifactId>
                 <version>${enhance.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.nutz.dao</groupId>
-                <artifactId>annotation</artifactId>
+                <artifactId>nutz-dao-enhance-annotation</artifactId>
                 <version>${enhance.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.nutz.dao</groupId>
-                <artifactId>nutz-dao-enhance</artifactId>
+                <artifactId>nutz-dao-enhance-nutz-starter</artifactId>
                 <version>${enhance.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.nutz.dao</groupId>
-                <artifactId>nutz-dao-enhance-spring</artifactId>
+                <artifactId>nutz-dao-enhance-spring-starter</artifactId>
                 <version>${enhance.version}</version>
             </dependency>
             <dependency>
@@ -159,10 +159,10 @@
         <profile>
             <id>defaualt</id>
             <modules>
-                <module>annotation</module>
-                <module>core</module>
-                <module>spring-registrar</module>
-                <module>nutz-registrar</module>
+                <module>nutz-dao-enhance-annotation</module>
+                <module>nutz-dao-enhance-core</module>
+                <module>nutz-dao-enhance-spring-starter</module>
+                <module>nutz-dao-enhance-nutz-starter</module>
                 <module>test</module>
             </modules>
             <activation>
@@ -172,10 +172,10 @@
         <profile>
             <id>release</id>
             <modules>
-                <module>annotation</module>
-                <module>core</module>
-                <module>spring-registrar</module>
-                <module>nutz-registrar</module>
+                <module>nutz-dao-enhance-annotation</module>
+                <module>nutz-dao-enhance-core</module>
+                <module>nutz-dao-enhance-spring-starter</module>
+                <module>nutz-dao-enhance-nutz-starter</module>
             </modules>
             <activation>
                 <activeByDefault>false</activeByDefault>

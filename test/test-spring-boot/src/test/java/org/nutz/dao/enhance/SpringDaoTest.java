@@ -1,4 +1,4 @@
-package org.nutz.dao.enhance.test;
+package org.nutz.dao.enhance;
 
 
 import org.junit.After;
@@ -9,13 +9,16 @@ import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.runner.RunWith;
 import org.nutz.dao.Cnd;
 import org.nutz.dao.enhance.pagination.PageRecord;
+import org.nutz.dao.enhance.test.MainApplication;
 import org.nutz.dao.enhance.test.dao.UserDao;
 import org.nutz.dao.enhance.test.entity.UserDO;
 import org.nutz.dao.enhance.test.entity.UserVO;
 import org.nutz.dao.entity.Record;
 import org.nutz.dao.pager.Pager;
-import org.nutz.ioc.loader.annotation.Inject;
-import org.nutz.ioc.loader.annotation.IocBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
@@ -23,12 +26,15 @@ import java.util.*;
  * @author 黄川 huchuc@vip.qq.com
  * @date: 2020/7/31
  */
+@RunWith(SpringRunner.class)
+@SpringBootTest(classes = MainApplication.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-@IocBean
-@RunWith(NbJUnit4Runner.class)
-public class NutzDaoTest {
-
-    @Inject
+@Transactional
+public class SpringDaoTest {
+    /**
+     * 防止IDE报红可以在 UserDao 类上加 Spring 注册注解如  @Repository @Component 等
+     */
+    @Autowired
     private UserDao userDao;
 
     private UserDO u1 = null;
@@ -50,7 +56,7 @@ public class NutzDaoTest {
 
     @Test
     public void test_auditing() {
-        assert Objects.equals(u1.getCreateBy(), "nutz-test");
+        assert Objects.equals(u1.getCreateBy(), "spring-test");
     }
 
     @Test
@@ -123,6 +129,7 @@ public class NutzDaoTest {
         assert insertId > 0;
 
     }
+
 
     @Test
     public void test_update_age_by_id() {
@@ -218,31 +225,5 @@ public class NutzDaoTest {
         Optional<UserVO> data = userDao.callOut(maxId);
         assert u3.getRealName().equals(data.get().getRealName());
     }
-
-    @Test
-    public void test_call_list1() {
-        userDao.callList1();
-    }
-
-    @Test
-    public void test_call_out1() {
-        int maxId = userDao.getMaxId();
-        userDao.callOut1(maxId);
-    }
-
-    @Test
-    public void test_call_list2() {
-        List list = userDao.callList2();
-        assert list.size() == 3;
-    }
-
-
-    @Test
-    public void test_call_out2() {
-        int maxId = userDao.getMaxId();
-        Map map = userDao.callOut2(maxId);
-        System.out.println(map);
-    }
-
 
 }

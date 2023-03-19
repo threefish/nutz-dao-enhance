@@ -26,8 +26,7 @@
 
         <dependency>
             <groupId>org.nutz.dao</groupId>
-            <artifactId>nutz-dao-enhance-spring</artifactId>
-            <version>1.0.0-RC</version>
+            <artifactId>nutz-dao-enhance-spring-starter</artifactId>
         </dependency>
 
         <dependency>
@@ -50,10 +49,7 @@
             <artifactId>spring-boot-starter-jdbc</artifactId>
             <version>${spring.boot}</version>
         </dependency>
-        <dependency>
-            <groupId>org.nutz</groupId>
-            <artifactId>nutz</artifactId>
-        </dependency>
+
 
         <dependency>
             <groupId>mysql</groupId>
@@ -71,7 +67,7 @@
         </dependency>
         <dependency>
             <groupId>org.nutz.dao</groupId>
-            <artifactId>annotation</artifactId>
+            <artifactId>nutz-dao-enhance-annotation</artifactId>
         </dependency>
         <dependency>
             <groupId>junit</groupId>

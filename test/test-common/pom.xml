@@ -17,7 +17,7 @@
         </dependency>
         <dependency>
             <groupId>org.nutz.dao</groupId>
-            <artifactId>core</artifactId>
+            <artifactId>nutz-dao-enhance-core</artifactId>
         </dependency>
     </dependencies>
 
