@@ -27,6 +27,4 @@ public class UserDO extends BaseDO {
     String realName;
     @Column
     Integer age;
-
-
 }
