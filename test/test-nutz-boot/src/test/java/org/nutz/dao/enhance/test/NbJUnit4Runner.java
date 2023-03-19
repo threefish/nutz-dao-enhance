@@ -1,11 +1,5 @@
 package org.nutz.dao.enhance.test;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.LinkedList;
-import java.util.List;
-
 import org.junit.runner.notification.RunNotifier;
 import org.junit.runners.BlockJUnit4ClassRunner;
 import org.junit.runners.model.FrameworkMethod;
@@ -16,6 +10,12 @@ import org.nutz.conf.NutConf;
 import org.nutz.ioc.Ioc;
 import org.nutz.ioc.loader.annotation.Inject;
 import org.nutz.ioc.loader.annotation.IocBean;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.LinkedList;
+import java.util.List;
 
 public class NbJUnit4Runner extends BlockJUnit4ClassRunner {
 
@@ -31,8 +31,7 @@ public class NbJUnit4Runner extends BlockJUnit4ClassRunner {
         try {
             createNbAppMethod = klass.getMethod("createNbApp");
             createNbAppMethod.setAccessible(true);
-        }
-        catch (NoSuchMethodException | SecurityException e) {
+        } catch (NoSuchMethodException | SecurityException e) {
         }
         if (!hasIocBean) {
             for (Field field : klass.getDeclaredFields()) {
@@ -57,8 +56,7 @@ public class NbJUnit4Runner extends BlockJUnit4ClassRunner {
         try {
             app.execute();
             super.runChild(method, notifier);
-        }
-        finally {
+        } finally {
             appHolder.remove();
             // 此处 shutdown 后数据库连接池会被关闭，导致无法运行下一个单元测试
 //            app.shutdown();
@@ -74,8 +72,7 @@ public class NbJUnit4Runner extends BlockJUnit4ClassRunner {
             return new NbApp(getTestClass().getJavaClass());
         try {
             return (NbApp) createNbAppMethod.invoke(null);
-        }
-        catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
             throw new RuntimeException(e);
         }
     }

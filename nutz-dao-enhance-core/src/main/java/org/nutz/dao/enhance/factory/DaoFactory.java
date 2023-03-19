@@ -11,7 +11,7 @@ import org.nutz.dao.Dao;
 
 /**
  * @author 黄川 huchuc@vip.qq.com
- * @date: 2020/12/12
+ * 2020/12/12
  */
 public interface DaoFactory {
     /**
@@ -21,8 +21,6 @@ public interface DaoFactory {
 
     /**
      * 获取默认dao
-     *
-     * @return
      */
     Dao getDao();
 
@@ -30,7 +28,6 @@ public interface DaoFactory {
      * 获取dao
      *
      * @param dataSource
-     * @return
      */
     Dao getDao(String dataSource);
 

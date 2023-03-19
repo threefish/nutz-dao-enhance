@@ -17,7 +17,7 @@ import java.util.Optional;
 
 /**
  * @author 黄川 huchuc@vip.qq.com
- * @date: 2020/7/30
+ * 2020/7/30
  * 自动建表，通过泛型 找到 UserDO 再根据 UserDO 信息进行建表。如果不需要自动建表，需要再UserDO上添加 @IgnoreAutoDDL 主键
  * 如果没有定义泛型但是也需要自动建表功能 则需要添加 @Entity(UserDO.class) 注解
  */
@@ -29,7 +29,6 @@ public interface UserDao extends BaseDao<UserDO> {
      * 输出SQL：select u.id,u.real_name,u.age,u.gmt_create,u.create_by from user as u where 1=1   and u.real_name='测试11'
      *
      * @param name
-     * @return
      */
     @Query("select u.* from UserDO as u where 1=1"
             + "#[ and u.realName=@name and u.gmtCreate=@gmtCreate ] "
@@ -50,7 +49,6 @@ public interface UserDao extends BaseDao<UserDO> {
      * 返回当前实体类
      *
      * @param id
-     * @return
      */
     @Query("select * from user where id=@id")
     UserDO queryUserById(int id);
@@ -59,7 +57,6 @@ public interface UserDao extends BaseDao<UserDO> {
      * 返回当前实体类
      *
      * @param id
-     * @return
      */
     @Query("select * from user where id=@id")
     Optional<UserDO> queryOptionalUserById(@Param("id") int id);
@@ -68,7 +65,6 @@ public interface UserDao extends BaseDao<UserDO> {
      * 根据 condition 条件返回
      *
      * @param condition
-     * @return
      */
     @Query("select * from user $condition")
     @Entity(UserDO.class)
@@ -78,7 +74,6 @@ public interface UserDao extends BaseDao<UserDO> {
      * 根据 condition 条件返回
      *
      * @param condition
-     * @return
      */
     @Query("select * from user $condition")
     @Entity(UserDO.class)
@@ -88,15 +83,12 @@ public interface UserDao extends BaseDao<UserDO> {
      * 查询返回一个map
      *
      * @param id
-     * @return
      */
     @Query("select * from user where id=@id")
     Map queryMapById(int id);
 
     /**
      * 查询返回一个map
-     *
-     * @return
      */
     @Query("select * from user")
     List<Map> listMap();
@@ -105,15 +97,12 @@ public interface UserDao extends BaseDao<UserDO> {
      * 查询返回一个 Record
      *
      * @param id
-     * @return
      */
     @Query("select * from user where id=@id")
     Record queryRecordById(int id);
 
     /**
      * 只会返回第一条记录，且不会像mybaits那样会提示too many result
-     *
-     * @return
      */
     @Query("select * from user")
     UserDO queryAllAndGetFirst();
@@ -122,7 +111,6 @@ public interface UserDao extends BaseDao<UserDO> {
      * 分页查询
      *
      * @param pager
-     * @return
      */
     @Query("select * from user")
     PageRecord listUserPage(Pager pager);
@@ -133,7 +121,6 @@ public interface UserDao extends BaseDao<UserDO> {
      * @param name
      * @param age
      * @param create
-     * @return
      */
     @Insert("INSERT INTO user(`real_name`, `age`,`gmt_create`,`create_by`) VALUES (@name,@age, now(),@create)")
     int insert(String name, int age, String create);
@@ -153,7 +140,6 @@ public interface UserDao extends BaseDao<UserDO> {
      *
      * @param age
      * @param id
-     * @return
      */
     @Update("UPDATE user SET age = @age WHERE id = @id")
     int updateAgeById(int age, int id);
@@ -162,32 +148,31 @@ public interface UserDao extends BaseDao<UserDO> {
      * 删除数据
      *
      * @param id
-     * @return
      */
     @Delete("DELETE FROM user WHERE id=@id")
     int delectById(int id);
 
 
     /**
-     * @return
+     *
      */
     @Query("select u.realName from UserDO as u")
     String[] queryRealNames();
 
     /**
-     * @return
+     *
      */
     @Query("select u.realName from UserDO as u")
     Optional<String[]> queryOptionalRealNames();
 
     /**
-     * @return
+     *
      */
     @Query("select u.id from UserDO as u")
     int[] queryIntIds();
 
     /**
-     * @return
+     *
      */
     @Query("select u.id from UserDO as u")
     Integer[] queryIntegerIds();
@@ -201,7 +186,6 @@ public interface UserDao extends BaseDao<UserDO> {
      * @param name
      * @param age
      * @param create
-     * @return
      */
     @Insert("INSERT INTO user(`real_name`, `age`,`gmt_create`,`create_by`) VALUES (@name,@age, now(),@create)")
     @CustomProvider(type = TestProvider.class, methodName = "insertWithCustomprovider")
@@ -213,8 +197,6 @@ public interface UserDao extends BaseDao<UserDO> {
      * BEGIN
      * SELECT * FROM user;
      * END
-     *
-     * @return
      */
     @CallStoredProcedure("call callList()")
     Optional<List<UserVO>> callList();
@@ -239,8 +221,6 @@ public interface UserDao extends BaseDao<UserDO> {
      * BEGIN
      * SELECT * FROM user;
      * END
-     *
-     * @return
      */
     @CallStoredProcedure("call callList()")
     void callList1();

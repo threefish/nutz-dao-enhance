@@ -2,12 +2,13 @@
 
 ## 增强NutzDao,无需写dao实现类也能完成数据库基础crud、复杂sql查询、存储过程调用。
 
-1. @Entity表示是一个实体,添加到Dao接口类上会默认会自动建表(可通过配置文件调整参考DaoProperties), @Entity(UserDO.class) 放在方法上，该方法返回实体优先采用当前指定的class，放在类上则会自动建表，且全部方法返回实体默认采用当前指定的class
+1. @Entity表示是一个实体,添加到Dao接口类上会默认会自动建表(可通过配置文件调整参考DaoProperties), @Entity(UserDO.class)
+   放在方法上，该方法返回实体优先采用当前指定的class，放在类上则会自动建表，且全部方法返回实体默认采用当前指定的class
 2. 在开启自动建表的情况下，将@IgnoreAutoDDL添加到Dao接口类上将忽略当前类指定实体自动创建表更新功能
-3. 实现 AuditingEntity 接口，可以在更新和插入数据时自动设置当前操作人(对应注解  @CreatedBy @LastModifiedBy)
+3. 实现 AuditingEntity 接口，可以在更新和插入数据时自动设置当前操作人(对应注解 @CreatedBy @LastModifiedBy)
 4. 实现 IdentifierGenerator 接口，可以在插入时对添加了 @AutoID 字段进行赋值。如果搭配 @Id 注解，需要在 @Id(auto=false)时才生效
 5. @CustomProvider 可以方便你扩展更多基础的功能 参考 org.nutz.dao.enhance.dao.BaseDao
-6. #[] 语法使用介绍 例子： #[ and u.realName=@name and u.gmtCreate=@gmtCreate ] name或gmtCreate 入参不存在，则当前#[]中的全部条件都不生效，且会忽略这段sql
+6. # [] 语法使用介绍 例子： #[ and u.realName=@name and u.gmtCreate=@gmtCreate ] name或gmtCreate 入参不存在，则当前#[]中的全部条件都不生效，且会忽略这段sql
 7. 查询预计中可以使用和java实体类名称如： UserDO as u ,会翻译为 user as u 而 u.realName 则会翻译为 u.real_name
 
 PS：1-4项的原理实际是采用NutzDao原生@PrevInsert @PrevUpdate搭配el表达式等方式来实现，原生功能更强大，请自由选择使用。

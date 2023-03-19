@@ -24,7 +24,7 @@ import java.util.*;
 
 /**
  * @author 黄川 huchuc@vip.qq.com
- * @date: 2020/7/31
+ * 2020/7/31
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = MainApplication.class)

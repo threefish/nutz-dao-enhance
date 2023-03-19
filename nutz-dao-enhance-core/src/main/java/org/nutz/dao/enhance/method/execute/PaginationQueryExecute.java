@@ -30,8 +30,6 @@ public class PaginationQueryExecute extends AbstractExecute {
 
     /**
      * 执行
-     *
-     * @return
      */
     @Override
     public Object invoke() {

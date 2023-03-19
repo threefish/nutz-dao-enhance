@@ -9,7 +9,8 @@
     <!-- 读取spring.application.name中的属性来生成日志文件名 -->
     <springProperty name="applicationName" source="spring.application.name" scope="context"/>
     <!-- 变量配置 -->
-    <property name="encoder.pattern" value="[%-5level] [%date{yyyy-MM-dd HH:mm:ss}] [%t] %logger{36}:%line %X{method} - %msg%n"/>
+    <property name="encoder.pattern"
+              value="[%-5level] [%date{yyyy-MM-dd HH:mm:ss}] [%t] %logger{36}:%line %X{method} - %msg%n"/>
     <property name="LOG_HOME" value="${user.home}/logs/${applicationName}"/>
 
     <!-- 输出目的地：控制台 -->

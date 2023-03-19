@@ -6,8 +6,6 @@ package org.nutz.dao.enhance.method.execute;
 public interface Execute {
     /**
      * 真正执行操作
-     *
-     * @return
      */
     Object invoke();
 }

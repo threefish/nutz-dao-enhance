@@ -16,7 +16,7 @@ import java.sql.Connection;
 
 /**
  * @author 黄川 huchuc@vip.qq.com
- * @date: 2021/1/12
+ * 2021/1/12
  * 将事务交给spring管理
  */
 public class SpringDaoRunner extends NutDaoRunner {

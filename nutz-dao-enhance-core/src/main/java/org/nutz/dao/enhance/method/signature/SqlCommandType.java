@@ -8,7 +8,7 @@ package org.nutz.dao.enhance.method.signature;
 
 /**
  * @author 黄川 huchuc@vip.qq.com
- * @date: 2020/12/12
+ * 2020/12/12
  */
 public enum SqlCommandType {
     /**

@@ -9,7 +9,7 @@ import java.lang.annotation.Target;
  * 删除
  *
  * @author 黄川 huchuc@vip.qq.com
- * @date: 2020/12/12
+ * 2020/12/12
  */
 @Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)

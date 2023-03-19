@@ -7,7 +7,7 @@ import java.lang.annotation.Target;
 
 /**
  * @author 黄川 huchuc@vip.qq.com
- * @date: 2020/9/13
+ * 2020/9/13
  * 需要实现 org.nutz.dao.enhance.audit.AuditingEntity
  */
 @Retention(RetentionPolicy.RUNTIME)

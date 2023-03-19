@@ -32,8 +32,6 @@ public class CallStoredProcedureExecute extends AbstractExecute {
 
     /**
      * 输出是out参数
-     *
-     * @return
      */
     private Object lineDataQuery() {
         Sql sql = getSql();
@@ -47,8 +45,6 @@ public class CallStoredProcedureExecute extends AbstractExecute {
 
     /**
      * 集合数据
-     *
-     * @return
      */
     private Object collectionDataQuery() {
         Sql sql = getSql();

@@ -32,7 +32,7 @@ import java.util.*;
 
 /**
  * @author 黄川 huchuc@vip.qq.com
- * @date: 2020/7/31
+ * 2020/7/31
  */
 @Slf4j
 public class DaoMethodInvoke {
@@ -117,7 +117,6 @@ public class DaoMethodInvoke {
      * @param dataSource
      * @param methodTraget
      * @param args
-     * @return
      */
     public Object execute(String dataSource, Method methodTraget, Object[] args) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException, InstantiationException {
         Stopwatch stopWatch = new Stopwatch();
@@ -149,7 +148,6 @@ public class DaoMethodInvoke {
      *
      * @param dao
      * @param args
-     * @return
      */
     private Object invokeCustomProvider(Dao dao, Object[] args, Entity entity) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
         String executeSql = replaceConditionSql(args);
@@ -180,7 +178,6 @@ public class DaoMethodInvoke {
      * 替换条件sql
      *
      * @param args
-     * @return
      */
     private String replaceConditionSql(Object[] args) {
         String sql = this.sourceSql;
@@ -232,7 +229,6 @@ public class DaoMethodInvoke {
      *
      * @param dao
      * @param args
-     * @return
      */
     private Execute getCustomizeSqlExecute(Dao dao, Object[] args) {
         String executeSql = replaceConditionSql(args);

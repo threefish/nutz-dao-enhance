@@ -7,7 +7,7 @@ import java.lang.annotation.Target;
 
 /**
  * @author 黄川 huchuc@vip.qq.com
- * @date: 2020/12/12
+ * 2020/12/12
  * 忽略自动建表
  */
 @Target({ElementType.METHOD, ElementType.TYPE})

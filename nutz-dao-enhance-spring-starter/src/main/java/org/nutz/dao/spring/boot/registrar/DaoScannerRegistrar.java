@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 
 /**
  * @author 黄川 huchuc@vip.qq.com
- * @date: 2020/7/30
+ * 2020/7/30
  */
 public class DaoScannerRegistrar implements ImportBeanDefinitionRegistrar {
 

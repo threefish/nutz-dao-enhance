@@ -69,7 +69,6 @@ public class SqlCallbackMetaInfo {
      * 获取callback类型
      *
      * @param clazz
-     * @return
      */
     public static SqlCallback getCommonSqlCallback(Class<?> clazz) {
         return COMMON_SQL_CALLBACK_HASH_MAP.get(clazz);
@@ -79,7 +78,6 @@ public class SqlCallbackMetaInfo {
      * 获取callback类型
      *
      * @param clazz
-     * @return
      */
     public static SqlCallback getCollectionSqlCallback(Class<?> clazz) {
         return LIST_SQL_CALLBACK_HASH_MAP.get(clazz);

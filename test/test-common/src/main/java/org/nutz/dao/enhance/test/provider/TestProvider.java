@@ -27,7 +27,6 @@ public class TestProvider {
      * @param name
      * @param age
      * @param create
-     * @return
      */
     public static int insertWithCustomprovider(ProviderContext providerContext, String name, int age, String create) {
         String executeSql = providerContext.executeSql;
