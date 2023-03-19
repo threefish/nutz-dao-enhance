@@ -1,6 +1,6 @@
 # nutz-dao-enhance
 
-## 增强NutzDao,无需写dao实现类也能完成数据库基础crud、复杂sql查询和存储过程掉用。
+## 增强NutzDao,无需写dao实现类也能完成数据库基础crud、复杂sql查询、存储过程调用。
 
 1. @Entity表示是一个实体,添加到Dao接口类上会默认会自动建表(可通过配置文件调整参考DaoProperties), @Entity(UserDO.class) 放在方法上，该方法返回实体优先采用当前指定的class，放在类上则会自动建表，且全部方法返回实体默认采用当前指定的class
 2. 在开启自动建表的情况下，将@IgnoreAutoDDL添加到Dao接口类上将忽略当前类指定实体自动创建表更新功能
