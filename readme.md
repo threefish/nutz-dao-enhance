@@ -15,6 +15,13 @@ PS：1-4项的原理实际是采用NutzDao原生@PrevInsert @PrevUpdate搭配el�
 
 ### 更多用法请查看 org.nutz.dao.enhance.test.dao.UserDao
 
+
+#### maven 坐标
+1. [spring boot 版本](https://mvnrepository.com/artifact/org.nutz/nutz-dao-enhance-spring-starter)
+2. [nutz boot 版本](https://mvnrepository.com/artifact/org.nutz/nutz-dao-enhance-nutz-starter)
+
+
+
 #### 数据库操作对象 dao
 
 ```java
