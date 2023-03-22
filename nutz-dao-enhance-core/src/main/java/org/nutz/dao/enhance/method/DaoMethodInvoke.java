@@ -114,12 +114,13 @@ public class DaoMethodInvoke {
     /**
      * 执行
      *
+     * @param proxy
      * @param dataSource
      * @param methodTraget
      * @param args
      * @return
      */
-    public Object execute(String dataSource, Method methodTraget, Object[] args) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException, InstantiationException {
+    public Object execute(Object proxy, String dataSource, Method methodTraget, Object[] args) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException, InstantiationException {
         Stopwatch stopWatch = new Stopwatch();
         try {
             stopWatch.start();
@@ -128,12 +129,12 @@ public class DaoMethodInvoke {
                 this.parseAndTranslationSql();
                 // 是自定义sql，且有自定义提供方法处理
                 if (this.methodSignature.isCustomProvider()) {
-                    return this.invokeCustomProvider(dao, args, this.entity);
+                    return this.invokeCustomProvider(proxy, dao, args, this.entity);
                 }
                 return this.getCustomizeSqlExecute(dao, args).invoke();
             } else if (this.methodSignature.isCustomProvider()) {
                 // 有自定义提供方法处理,但不是自定义sql
-                return this.invokeCustomProvider(dao, args, this.entity);
+                return this.invokeCustomProvider(proxy, dao, args, this.entity);
             }
             throw new UnsupportedOperationException(String.format("方法 %s 未提供实现方法！", methodTraget.toGenericString()));
         } finally {
@@ -151,9 +152,9 @@ public class DaoMethodInvoke {
      * @param args
      * @return
      */
-    private Object invokeCustomProvider(Dao dao, Object[] args, Entity entity) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+    private Object invokeCustomProvider(Object proxy, Dao dao, Object[] args, Entity entity) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
         String executeSql = replaceConditionSql(args);
-        ProviderContext providerContext = ProviderContext.of(dao, this.methodSignature, executeSql, args, this.methodSignature.getEntityClass(), entity);
+        ProviderContext providerContext = ProviderContext.of(dao, this.methodSignature, executeSql, args, this.methodSignature.getEntityClass(), entity, proxy);
         Object[] parameterObject = Objects.nonNull(args) ? new Object[args.length + 1] : new Object[1];
         parameterObject[0] = providerContext;
         if (Objects.nonNull(args)) {

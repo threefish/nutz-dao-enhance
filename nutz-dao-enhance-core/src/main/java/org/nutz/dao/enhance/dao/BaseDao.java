@@ -4,10 +4,16 @@ import org.nutz.dao.Condition;
 import org.nutz.dao.FieldFilter;
 import org.nutz.dao.FieldMatcher;
 import org.nutz.dao.enhance.annotation.CustomProvider;
+import org.nutz.dao.enhance.dao.lambda.LambdaQueryWhere;
+import org.nutz.dao.enhance.dao.lambda.LambdaUpdate;
 import org.nutz.dao.enhance.method.provider.BaseDaoProvider;
+import org.nutz.dao.enhance.method.provider.LambdaQueryProvider;
+import org.nutz.dao.enhance.method.provider.LambdaUpdateProvider;
+import org.nutz.dao.enhance.pagination.PageRecord;
 import org.nutz.dao.pager.Pager;
 import org.nutz.lang.Each;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -583,6 +589,26 @@ public interface BaseDao<T> {
     List<T> queryByJoin(String regex, Condition cnd, Pager pager, Map<String, Condition> cnds);
 
     /**
+     * 分页查询
+     *
+     * @param cnd   条件
+     * @param pager 分页数
+     * @return
+     */
+    @CustomProvider(type = BaseDaoProvider.class)
+    PageRecord queryPage(Condition cnd, Pager pager);
+
+    /**
+     * 分页查询
+     *
+     * @param cnd   条件
+     * @param pager 分页数
+     * @return
+     */
+    @CustomProvider(type = BaseDaoProvider.class)
+    PageRecord queryPage(Condition cnd, int pageNumber, int pageSize);
+
+    /**
      * 根据查询条件获取分页对象.<b>注意: 条件语句需要加上主表名或关联属性的JAVA属性名!!!</b>
      *
      * @param regex 需要过滤的关联属性,可以是null,取出全部关联属性.
@@ -591,5 +617,37 @@ public interface BaseDao<T> {
      */
     @CustomProvider(type = BaseDaoProvider.class)
     int countByJoin(String regex, Condition cnd);
+
+    /**
+     * 批量更新
+     *
+     * @param objList 对象列表
+     * @return
+     */
+    @CustomProvider(type = BaseDaoProvider.class)
+    boolean updateBatchByPk(Collection<T> objList);
+
+    /**
+     * 批量保存
+     *
+     * @param objList 对象列表
+     * @return
+     */
+    @CustomProvider(type = BaseDaoProvider.class)
+    <Any> Any saveBatch(Collection<T> objList);
+
+    /**
+     * 执行链式查询操作
+     */
+    @CustomProvider(type = LambdaQueryProvider.class)
+    LambdaQueryWhere<T> lambdaQuery();
+
+
+    /**
+     * 执行链式更新操作
+     */
+    @CustomProvider(type = LambdaUpdateProvider.class)
+    LambdaUpdate<T> lambdaUpdate();
+
 
 }

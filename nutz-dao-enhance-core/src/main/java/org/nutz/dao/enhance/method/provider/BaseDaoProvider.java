@@ -1,11 +1,15 @@
 package org.nutz.dao.enhance.method.provider;
 
+
 import org.nutz.dao.Condition;
 import org.nutz.dao.FieldFilter;
 import org.nutz.dao.FieldMatcher;
+import org.nutz.dao.enhance.pagination.PageRecord;
 import org.nutz.dao.pager.Pager;
 import org.nutz.lang.Each;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -221,20 +225,71 @@ public class BaseDaoProvider {
         return providerContext.dao.countByJoin(providerContext.entityClass, regex, cnd);
     }
 
-    public List query(ProviderContext providerContext, Condition cnd, Pager pager, FieldMatcher matcher) {
-        return providerContext.dao.query(providerContext.entityClass, cnd, pager, matcher);
+    /**
+     * 批量更新
+     *
+     * @param objList 对象列表
+     * @return
+     */
+    public static <T> boolean updateBatchByPk(ProviderContext providerContext, Collection<T> objList) {
+        return providerContext.dao.update(objList) > 0;
     }
 
-    public List query(ProviderContext providerContext, Condition cnd, Pager pager, String regex) {
+    /**
+     * 批量保存
+     *
+     * @param objList 对象列表
+     * @return
+     */
+    public static <T> T saveBatch(ProviderContext providerContext, Collection<T> objList) {
+        return (T) providerContext.dao.insert(objList);
+    }
+
+    public static List query(ProviderContext providerContext, Condition cnd, Pager pager, String regex) {
         return providerContext.dao.query(providerContext.entityClass, cnd, pager, regex);
     }
 
-    public List query(ProviderContext providerContext, Condition cnd, Pager pager) {
+    public static List query(ProviderContext providerContext, Condition cnd, Pager pager) {
         return providerContext.dao.query(providerContext.entityClass, cnd, pager);
     }
 
-    public List query(ProviderContext providerContext, Condition cnd) {
+    public static List query(ProviderContext providerContext, Condition cnd) {
         return providerContext.dao.query(providerContext.entityClass, cnd);
     }
+
+    /**
+     * 分页查询
+     *
+     * @param cnd   条件
+     * @param pager 分页数
+     * @return
+     */
+    public static PageRecord queryPage(ProviderContext providerContext, Condition cnd, Pager pager) {
+        int count = providerContext.dao.count(providerContext.entityClass, cnd);
+        PageRecord pageRecord = new PageRecord();
+        pageRecord.setTotal(count);
+        pageRecord.setPager(pager);
+        pageRecord.setRecords(Collections.EMPTY_LIST);
+        if (count > 0) {
+            pageRecord.setRecords(providerContext.dao.query(providerContext.entityClass, cnd, pager));
+        }
+        return pageRecord;
+    }
+
+    /**
+     * 分页查询
+     *
+     * @param cnd   条件
+     * @param pager 分页数
+     * @return
+     */
+    public static PageRecord queryPage(ProviderContext providerContext, Condition cnd, int pageNumber, int pageSize) {
+        return BaseDaoProvider.queryPage(providerContext, cnd, providerContext.dao.createPager(pageNumber, pageSize));
+    }
+
+    public static List query(ProviderContext providerContext, Condition cnd, Pager pager, FieldMatcher matcher) {
+        return providerContext.dao.query(providerContext.entityClass, cnd, pager, matcher);
+    }
+
 
 }

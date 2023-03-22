@@ -44,9 +44,14 @@ public class SpringDaoTest {
     @Before
     public void before() {
         userDao.clear();
-        u1 = userDao.insert(UserDO.builder().age(15).realName("测试1").build());
-        u2 = userDao.insert(UserDO.builder().age(16).realName("测试2").build());
-        u3 = userDao.insert(UserDO.builder().age(17).realName("测试3").build());
+        u1 = UserDO.builder().age(15).realName("测试1").build();
+        u2 = UserDO.builder().age(16).realName("测试2").build();
+        u3 = UserDO.builder().age(17).realName("测试3").build();
+        List<UserDO> list = new ArrayList<>();
+        list.add(u1);
+        list.add(u2);
+        list.add(u3);
+        List<UserDO> newList = userDao.saveBatch(list);
     }
 
     @After
@@ -225,5 +230,38 @@ public class SpringDaoTest {
         Optional<UserVO> data = userDao.callOut(maxId);
         assert u3.getRealName().equals(data.get().getRealName());
     }
+
+    @Test
+    public void test_call_lambdaQuery_fetch() {
+        UserDO userDO = userDao.lambdaQuery().where(UserDO::getAge, "=", 15).fetch();
+        assert userDO != null;
+    }
+
+    @Test
+    public void test_call_lambdaQuery_query() {
+        List<UserDO> query = userDao.lambdaQuery().query();
+        assert query.size() == 3;
+    }
+
+    @Test
+    public void test_call_lambdaQuery_queryPage() {
+        PageRecord<UserDO> userDOPageRecord = userDao.lambdaQuery().limit(1, 10).queryPage();
+        assert userDOPageRecord.getTotal() == 3;
+        PageRecord<UserDO> userDOPageRecord1 = userDao.lambdaQuery().queryPage(1, 10);
+        assert userDOPageRecord1.getTotal() == 3;
+        PageRecord<UserDO> userDOPageRecord2 = userDao.lambdaQuery().queryPage(new Pager(1, 10));
+        assert userDOPageRecord2.getTotal() == 3;
+        PageRecord<UserDO> userDOPageRecord3 = userDao.lambdaQuery().where(UserDO::getAge, "=", 15).limit(1, 10).queryPage();
+        assert userDOPageRecord3.getTotal() == 1;
+        List<UserDO> userDOPageRecord4 = userDao.lambdaQuery().limit(1, 10).groupBy(UserDO::getId).list();
+        assert userDOPageRecord4.size() == 3;
+    }
+
+    @Test
+    public void test_call_lambda_update() {
+        int updateCount = userDao.lambdaUpdate().set(UserDO::getAge, 123).exp(UserDO::getAge, "=", 15).update();
+        assert updateCount == 1;
+    }
+
 
 }

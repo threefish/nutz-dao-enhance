@@ -26,6 +26,10 @@ public class ProviderContext<T> {
     public final Class<T> entityClass;
 
     public final Entity entity;
+    /**
+     * 当前代理类
+     */
+    public final Object proxy;
 
 
 }
