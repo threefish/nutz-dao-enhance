@@ -6,6 +6,7 @@ import org.nutz.dao.util.cri.SqlExpression;
 import org.nutz.dao.util.lambda.PFun;
 
 import java.util.Collection;
+import java.util.function.Consumer;
 
 /**
  * @author 黄川 huchuc@vip.qq.com

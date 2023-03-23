@@ -48,10 +48,12 @@ public class DaoMethodInvoke {
      * 源sql信息
      */
     private String sourceSql;
+    private String countSourceSql;
     /**
      * 动态条件信息，若入参为空或者null或个数为0则不参与sql执行
      */
     private List<ConditionMapping> conditions = Collections.EMPTY_LIST;
+    private List<ConditionMapping> countConditions = Collections.EMPTY_LIST;
 
 
     /**
@@ -154,7 +156,7 @@ public class DaoMethodInvoke {
      * @return
      */
     private Object invokeCustomProvider(Object proxy, Dao dao, Object[] args, Entity entity) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
-        String executeSql = replaceConditionSql(args);
+        String executeSql = replaceConditionSql(this.sourceSql, args);
         ProviderContext providerContext = ProviderContext.of(dao, this.methodSignature, executeSql, args, this.methodSignature.getEntityClass(), entity, proxy);
         Object[] parameterObject = Objects.nonNull(args) ? new Object[args.length + 1] : new Object[1];
         parameterObject[0] = providerContext;
@@ -171,10 +173,15 @@ public class DaoMethodInvoke {
      * 解析SQL，将sql中的实体类和字段解析为对应数据库字段
      */
     private void parseAndTranslationSql() {
-        if (Strings.isBlank(this.sourceSql)) {
+        if (Strings.isBlank(this.sourceSql) && Strings.isNotBlank(this.methodSignature.getSqlTemplate())) {
             SimpleSqlParser simpleSqlParserHelper = new SimpleSqlParser(this.methodSignature.getSqlTemplate()).parse();
             this.sourceSql = simpleSqlParserHelper.getSql();
             this.conditions = simpleSqlParserHelper.getConditions();
+        }
+        if (Strings.isBlank(this.countSourceSql) && Strings.isNotBlank(this.methodSignature.getCountSqlTemplate())) {
+            SimpleSqlParser countSqlParserHelper = new SimpleSqlParser(this.methodSignature.getCountSqlTemplate()).parse();
+            this.countSourceSql = countSqlParserHelper.getSql();
+            this.countConditions = countSqlParserHelper.getConditions();
         }
     }
 
@@ -184,8 +191,11 @@ public class DaoMethodInvoke {
      * @param args
      * @return
      */
-    private String replaceConditionSql(Object[] args) {
-        String sql = this.sourceSql;
+    private String replaceConditionSql(String sourceSql, Object[] args) {
+        if (Strings.isBlank(sourceSql)) {
+            return sourceSql;
+        }
+        String sql = sourceSql;
         final Context context = Lang.context();
         if (Lang.isNotEmpty(args)) {
             for (int i = 0; i < args.length; i++) {
@@ -237,7 +247,8 @@ public class DaoMethodInvoke {
      * @return
      */
     private Execute getCustomizeSqlExecute(Dao dao, Object[] args) {
-        String executeSql = replaceConditionSql(args);
+        String executeSql = replaceConditionSql(this.sourceSql, args);
+        String countExecuteSql = replaceConditionSql(this.countSourceSql, args);
         if (log.isDebugEnabled()) {
             log.debug("执行SQL:{}", executeSql);
         }
@@ -246,7 +257,7 @@ public class DaoMethodInvoke {
             case SELECT:
                 if (this.methodSignature.isPaginationQuery()) {
                     // 是分页查询
-                    execute = new PaginationQueryExecute(dao, executeSql, this.methodSignature, args);
+                    execute = new PaginationQueryExecute(dao, executeSql, countExecuteSql, this.methodSignature, args);
                 } else if (this.methodSignature.isMultipleRecords()) {
                     // 返回多条记录的情况下
                     execute = new MultipleQueryExecute(dao, executeSql, this.methodSignature, args);

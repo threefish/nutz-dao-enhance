@@ -124,7 +124,10 @@ public interface UserDao extends BaseDao<UserDO> {
      * @param pager
      * @return
      */
-    @Query("select * from user")
+    @Query(
+            value = "select * from user"
+            ,countSql = "select count(1) from user"
+    )
     PageRecord listUserPage(Pager pager);
 
     /**

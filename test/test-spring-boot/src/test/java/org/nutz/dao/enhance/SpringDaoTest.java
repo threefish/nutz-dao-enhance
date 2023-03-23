@@ -291,6 +291,7 @@ public class SpringDaoTest {
         List<UserDO> query5 = userDao.lambdaQuery().gte(UserDO::getAge, 17).list();
         assert query5.size() == count;
 
+
     }
 
     @Test

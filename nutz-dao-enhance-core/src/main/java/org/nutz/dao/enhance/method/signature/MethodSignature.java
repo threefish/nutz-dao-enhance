@@ -84,6 +84,10 @@ public class MethodSignature {
      */
     private String sqlTemplate;
     /**
+     * sql模板语句
+     */
+    private String countSqlTemplate;
+    /**
      * 当前类或者当前方法标注的实体类
      */
     private Class<?> entityClass;
@@ -261,6 +265,7 @@ public class MethodSignature {
             CallStoredProcedure callFunctionSql = method.getAnnotation(CallStoredProcedure.class);
             if (Objects.nonNull(querySql)) {
                 this.sqlTemplate = querySql.value();
+                this.countSqlTemplate = querySql.countSql();
             } else if (Objects.nonNull(updateSql)) {
                 this.sqlTemplate = updateSql.value();
                 this.sqlCommandType = SqlCommandType.UPDATE;
