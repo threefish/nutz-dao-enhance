@@ -12,6 +12,7 @@ import java.util.List;
  * @author 黄川 huchuc@vip.qq.com
  * date: 2022/12/28
  */
+@SuppressWarnings("all")
 public class LambdaQueryGroupBy<T> {
 
     private final BaseDao baseDao;
@@ -31,7 +32,7 @@ public class LambdaQueryGroupBy<T> {
      * 查询
      */
     public List<T> list() {
-        return this.baseDao.query(groupBy);
+        return this.baseDao.list(groupBy);
     }
 
     /**

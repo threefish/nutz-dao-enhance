@@ -6,10 +6,11 @@ import org.nutz.dao.enhance.dao.lambda.LambdaQueryWhere;
  * @author 黄川 huchuc@vip.qq.com
  * date: 2023/3/22
  */
+@SuppressWarnings("all")
 public class LambdaQueryProvider {
 
     public static <T> LambdaQueryWhere<T> lambdaQuery(ProviderContext providerContext) {
-        return new LambdaQueryWhere<T>(providerContext);
+        return new LambdaQueryWhere<>(providerContext);
     }
 
 }

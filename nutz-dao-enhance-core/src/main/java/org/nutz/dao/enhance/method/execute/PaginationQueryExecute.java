@@ -1,5 +1,6 @@
 package org.nutz.dao.enhance.method.execute;
 
+import lombok.extern.slf4j.Slf4j;
 import org.nutz.dao.Dao;
 import org.nutz.dao.Sqls;
 import org.nutz.dao.enhance.method.signature.MethodSignature;
@@ -15,6 +16,7 @@ import java.util.List;
  * @author 黄川 2020/12/15
  * 分页查询
  */
+@Slf4j
 public class PaginationQueryExecute extends AbstractExecute {
 
     /**
@@ -50,6 +52,7 @@ public class PaginationQueryExecute extends AbstractExecute {
         }
         pageRecord.setRecords(listData);
         pageRecord.setPager(this.pager);
+
         return this.returnIsOptionalVal(pageRecord);
     }
 

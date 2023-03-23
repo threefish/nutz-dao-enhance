@@ -245,15 +245,15 @@ public class BaseDaoProvider {
         return (T) providerContext.dao.insert(objList);
     }
 
-    public static List query(ProviderContext providerContext, Condition cnd, Pager pager, String regex) {
+    public static List list(ProviderContext providerContext, Condition cnd, Pager pager, String regex) {
         return providerContext.dao.query(providerContext.entityClass, cnd, pager, regex);
     }
 
-    public static List query(ProviderContext providerContext, Condition cnd, Pager pager) {
+    public static List list(ProviderContext providerContext, Condition cnd, Pager pager) {
         return providerContext.dao.query(providerContext.entityClass, cnd, pager);
     }
 
-    public static List query(ProviderContext providerContext, Condition cnd) {
+    public static List list(ProviderContext providerContext, Condition cnd) {
         return providerContext.dao.query(providerContext.entityClass, cnd);
     }
 
@@ -264,7 +264,7 @@ public class BaseDaoProvider {
      * @param pager 分页数
      * @return
      */
-    public static PageRecord queryPage(ProviderContext providerContext, Condition cnd, Pager pager) {
+    public static PageRecord listPage(ProviderContext providerContext, Condition cnd, Pager pager) {
         int count = providerContext.dao.count(providerContext.entityClass, cnd);
         PageRecord pageRecord = new PageRecord();
         pageRecord.setTotal(count);
@@ -283,11 +283,11 @@ public class BaseDaoProvider {
      * @param pager 分页数
      * @return
      */
-    public static PageRecord queryPage(ProviderContext providerContext, Condition cnd, int pageNumber, int pageSize) {
-        return BaseDaoProvider.queryPage(providerContext, cnd, providerContext.dao.createPager(pageNumber, pageSize));
+    public static PageRecord listPage(ProviderContext providerContext, Condition cnd, int pageNumber, int pageSize) {
+        return BaseDaoProvider.listPage(providerContext, cnd, providerContext.dao.createPager(pageNumber, pageSize));
     }
 
-    public static List query(ProviderContext providerContext, Condition cnd, Pager pager, FieldMatcher matcher) {
+    public static List list(ProviderContext providerContext, Condition cnd, Pager pager, FieldMatcher matcher) {
         return providerContext.dao.query(providerContext.entityClass, cnd, pager, matcher);
     }
 

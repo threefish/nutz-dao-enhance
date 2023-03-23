@@ -5,21 +5,22 @@ import org.nutz.dao.Cnd;
 import org.nutz.dao.enhance.method.provider.ProviderContext;
 import org.nutz.dao.util.lambda.LambdaQuery;
 import org.nutz.dao.util.lambda.PFun;
+import org.nutz.lang.Strings;
 
 /**
  * @author 黄川 huchuc@vip.qq.com
  * date: 2023/3/22
  */
-public class LambdaUpdate<T> {
+@SuppressWarnings("all")
+public class LambdaUpdate<T> extends LambdaCondition<LambdaUpdate<T>, T> {
 
     private final ProviderContext providerContext;
-    private final Cnd condition;
 
     private Chain chain;
 
     public LambdaUpdate(ProviderContext providerContext) {
+        super(Cnd.NEW());
         this.providerContext = providerContext;
-        this.condition = Cnd.NEW();
     }
 
     public LambdaUpdate<T> set(PFun<T, ?> name, Object value) {
@@ -31,14 +32,27 @@ public class LambdaUpdate<T> {
         return this;
     }
 
-    public LambdaUpdate<T> exp(PFun<T, ?> name, String op, Object value) {
-        condition.and(name, op, value);
-        return this;
+    public LambdaUpdate<T> setEx(PFun<T, ?> name, Object value) {
+        if (Cnd._ex(value)) {
+            return this;
+        }
+        return set(name, value);
     }
 
     public int update() {
-        return providerContext.dao.update(providerContext.entity, chain, condition);
+        return providerContext.dao.update(providerContext.entity, chain, cnd);
     }
 
+    public void insert() {
+        providerContext.dao.insert(providerContext.entityClass, chain);
+    }
+
+
+    public int delete() {
+        if (Strings.isBlank(this.cnd.toString())) {
+            throw new UnsupportedOperationException("删除时请传入条件，避免全表删除!!!");
+        }
+        return this.providerContext.dao.clear(providerContext.entity, this.cnd);
+    }
 
 }

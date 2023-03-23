@@ -235,10 +235,10 @@ public interface BaseDao<T> {
 
 
     @CustomProvider(type = BaseDaoProvider.class)
-    List<T> query(Condition cnd, Pager pager, FieldMatcher matcher);
+    List<T> list(Condition cnd, Pager pager, FieldMatcher matcher);
 
     @CustomProvider(type = BaseDaoProvider.class)
-    List<T> query(Condition cnd, Pager pager, String regex);
+    List<T> list(Condition cnd, Pager pager, String regex);
 
     /**
      * 查询一组对象。你可以为这次查询设定条件，并且只获取一部分对象（翻页）
@@ -248,7 +248,7 @@ public interface BaseDao<T> {
      * @return 对象列表
      */
     @CustomProvider(type = BaseDaoProvider.class)
-    List<T> query(Condition cnd, Pager pager);
+    List<T> list(Condition cnd, Pager pager);
 
     /**
      * 查询一组对象。你可以为这次查询设定条件
@@ -258,7 +258,7 @@ public interface BaseDao<T> {
      * @return 对象列表
      */
     @CustomProvider(type = BaseDaoProvider.class)
-    List<T> query(Condition cnd);
+    List<T> list(Condition cnd);
 
 
     /**
@@ -596,7 +596,7 @@ public interface BaseDao<T> {
      * @return
      */
     @CustomProvider(type = BaseDaoProvider.class)
-    PageRecord queryPage(Condition cnd, Pager pager);
+    PageRecord listPage(Condition cnd, Pager pager);
 
     /**
      * 分页查询
@@ -606,7 +606,7 @@ public interface BaseDao<T> {
      * @return
      */
     @CustomProvider(type = BaseDaoProvider.class)
-    PageRecord queryPage(Condition cnd, int pageNumber, int pageSize);
+    PageRecord listPage(Condition cnd, int pageNumber, int pageSize);
 
     /**
      * 根据查询条件获取分页对象.<b>注意: 条件语句需要加上主表名或关联属性的JAVA属性名!!!</b>

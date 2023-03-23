@@ -69,6 +69,7 @@ public class DaoMethodInvoke {
             throw new RuntimeException(String.format("dataSource '%s' is null.", dataSource));
         }
         this.initEntityInfo(dao);
+
     }
 
     private void initEntityInfo(Dao dao) {

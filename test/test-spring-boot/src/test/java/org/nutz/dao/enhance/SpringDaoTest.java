@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StopWatch;
 
 import java.util.*;
 
@@ -26,6 +27,7 @@ import java.util.*;
  * @author 黄川 huchuc@vip.qq.com
  * @date: 2020/7/31
  */
+@SuppressWarnings("all")
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = MainApplication.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -87,9 +89,19 @@ public class SpringDaoTest {
 
     @Test
     public void test_list_pagedata() {
+        StopWatch stopWatch = new StopWatch();
+        stopWatch.start("A");
         PageRecord<UserDO> pageRecord = userDao.listUserPage(new Pager(1, 10));
         assert pageRecord.getTotal() == 3;
         assert pageRecord.getRecords().size() == 3;
+        stopWatch.stop();
+        System.out.println(stopWatch.getTotalTimeMillis());
+        stopWatch.start("B");
+        PageRecord<UserDO> pageRecord2 = userDao.listUserPage(new Pager(1, 10));
+        assert pageRecord2.getTotal() == 3;
+        assert pageRecord2.getRecords().size() == 3;
+        stopWatch.stop();
+        System.out.println(stopWatch.getTotalTimeMillis());
     }
 
     @Test
@@ -233,34 +245,66 @@ public class SpringDaoTest {
 
     @Test
     public void test_call_lambdaQuery_fetch() {
-        UserDO userDO = userDao.lambdaQuery().where(UserDO::getAge, "=", 15).fetch();
+        UserDO userDO = userDao.lambdaQuery().where(UserDO::getAge, "=", 15).one();
         assert userDO != null;
     }
 
     @Test
     public void test_call_lambdaQuery_query() {
-        List<UserDO> query = userDao.lambdaQuery().query();
+        List<UserDO> query = userDao.lambdaQuery().list();
         assert query.size() == 3;
     }
 
     @Test
     public void test_call_lambdaQuery_queryPage() {
-        PageRecord<UserDO> userDOPageRecord = userDao.lambdaQuery().limit(1, 10).queryPage();
+        PageRecord<UserDO> userDOPageRecord = userDao.lambdaQuery().limit(1, 10).listPage();
         assert userDOPageRecord.getTotal() == 3;
-        PageRecord<UserDO> userDOPageRecord1 = userDao.lambdaQuery().queryPage(1, 10);
+        PageRecord<UserDO> userDOPageRecord1 = userDao.lambdaQuery().listPage(1, 10);
         assert userDOPageRecord1.getTotal() == 3;
-        PageRecord<UserDO> userDOPageRecord2 = userDao.lambdaQuery().queryPage(new Pager(1, 10));
+        PageRecord<UserDO> userDOPageRecord2 = userDao.lambdaQuery().listPage(new Pager(1, 10));
         assert userDOPageRecord2.getTotal() == 3;
-        PageRecord<UserDO> userDOPageRecord3 = userDao.lambdaQuery().where(UserDO::getAge, "=", 15).limit(1, 10).queryPage();
+        PageRecord<UserDO> userDOPageRecord3 = userDao.lambdaQuery().eq(UserDO::getAge, 15).limit(1, 10).listPage();
         assert userDOPageRecord3.getTotal() == 1;
         List<UserDO> userDOPageRecord4 = userDao.lambdaQuery().limit(1, 10).groupBy(UserDO::getId).list();
         assert userDOPageRecord4.size() == 3;
+        UserDO fetch = userDao.lambdaQuery().eq(UserDO::getAge, 15).one();
+        assert fetch.getAge() == 15;
+        List<UserDO> query = userDao.lambdaQuery().eq(UserDO::getAge, 15).list();
+        assert query.size() == 1;
+        List<UserDO> query1 = userDao.lambdaQuery().likeRight(UserDO::getRealName, "测试").list();
+        assert query1.size() == 3;
+
+        UserDO insert = userDao.insert(UserDO.builder().age(16).realName(null).build());
+        UserDO nullRealName = userDao.lambdaQuery().isNull(UserDO::getRealName).one();
+        assert insert.getId() == nullRealName.getId();
+
+        List<UserDO> query2 = userDao.lambdaQuery().isNotNull(UserDO::getRealName).list();
+        assert query2.size() == 3;
+
+        List<UserDO> query3 = userDao.lambdaQuery().isNull(UserDO::getRealName).list();
+        assert query3.size() == 1;
+
+        List<UserDO> query4 = userDao.lambdaQuery().isNotNull(UserDO::getRealName).in(UserDO::getAge, Arrays.asList(15, 16)).list();
+        assert query4.size() == 2;
+
+        int count = userDao.lambdaQuery().gte(UserDO::getAge, 17).count();
+        List<UserDO> query5 = userDao.lambdaQuery().gte(UserDO::getAge, 17).list();
+        assert query5.size() == count;
+
     }
 
     @Test
     public void test_call_lambda_update() {
-        int updateCount = userDao.lambdaUpdate().set(UserDO::getAge, 123).exp(UserDO::getAge, "=", 15).update();
-        assert updateCount == 1;
+        int updateCount = userDao.lambdaUpdate().set(UserDO::getAge, 123).eq(UserDO::getAge, 15).update();
+        int update = userDao.lambdaUpdate().set(UserDO::getAge, 15).eq(UserDO::getAge, 123).update();
+        assert updateCount == update;
+
+        userDao.lambdaUpdate().set(UserDO::getAge, 150).insert();
+        userDao.lambdaUpdate().set(UserDO::getAge, 250).insert();
+
+        int delCount = userDao.lambdaUpdate().gte(UserDO::getAge, 150).delete();
+        assert delCount == 2;
+
     }
 
 
