@@ -3,10 +3,12 @@ package org.nutz.dao.enhance.dao.lambda;
 import org.nutz.dao.Cnd;
 import org.nutz.dao.util.cri.IsNull;
 import org.nutz.dao.util.cri.SqlExpression;
+import org.nutz.dao.util.cri.SqlExpressionGroup;
 import org.nutz.dao.util.lambda.PFun;
 
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.function.Consumer;
+import java.util.function.Function;
 
 /**
  * @author 黄川 huchuc@vip.qq.com
@@ -291,6 +293,36 @@ public abstract class LambdaCondition<Children extends LambdaCondition, T> {
             return this.thisType;
         }
         this.cnd.and(exp);
+        return this.thisType;
+    }
+
+    /**
+     * and链接 组内采用OR
+     *
+     * @param exps
+     * @return
+     */
+    public Children and(Function<LambdaConditionWapper<T>, LambdaConditionWapper<T>>... exps) {
+        if (exps != null && exps.length > 0) {
+            SqlExpressionGroup sqlExpressionGroup = new SqlExpressionGroup();
+            Arrays.stream(exps).forEach(orPart -> sqlExpressionGroup.or(orPart.apply(new LambdaConditionWapper<T>(Cnd.NEW())).getSqlExpressionGroup()));
+            this.cnd.and(sqlExpressionGroup);
+        }
+        return this.thisType;
+    }
+
+    /**
+     * OR链接 组内采用OR
+     *
+     * @param exps
+     * @return
+     */
+    public Children or(Function<LambdaConditionWapper<T>, LambdaConditionWapper<T>>... exps) {
+        if (exps != null && exps.length > 0) {
+            SqlExpressionGroup sqlExpressionGroup = new SqlExpressionGroup();
+            Arrays.stream(exps).forEach(orPart -> sqlExpressionGroup.or(orPart.apply(new LambdaConditionWapper<T>(Cnd.NEW())).getSqlExpressionGroup()));
+            this.cnd.or(sqlExpressionGroup);
+        }
         return this.thisType;
     }
 

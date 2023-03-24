@@ -15,5 +15,8 @@ public @interface Query {
 
     String value();
 
+    /**
+     * 需要效率时请实现
+     */
     String countSql() default "";
 }

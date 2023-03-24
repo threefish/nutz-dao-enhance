@@ -17,6 +17,7 @@ public class NutSqlEnhance extends NutSql {
         this.rows.add(params);
     }
 
+
     public NutSqlEnhance(String source) {
         super(source, null);
         this.params = new ElVarSet();
@@ -31,4 +32,16 @@ public class NutSqlEnhance extends NutSql {
         this.rows.add(params);
     }
 
+    @Override
+    public void addBatch() {
+        params = new ElVarSet();
+        rows.add(params);
+    }
+
+    @Override
+    public void clearBatch() {
+        params = new ElVarSet();
+        rows.clear();
+        rows.add(params);
+    }
 }

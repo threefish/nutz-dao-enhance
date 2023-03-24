@@ -15,6 +15,7 @@ import org.nutz.dao.enhance.test.entity.UserDO;
 import org.nutz.dao.enhance.test.entity.UserVO;
 import org.nutz.dao.entity.Record;
 import org.nutz.dao.pager.Pager;
+import org.nutz.lang.util.NutMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -158,6 +159,7 @@ public class SpringDaoTest {
     @Test
     public void test_delect_by_id() {
         int insertId = userDao.insert("王五", 100, "张三");
+        List<UserDO> list = userDao.lambdaQuery().list();
         int delectCount = userDao.delectById(insertId);
         assert delectCount == 1;
     }
@@ -273,25 +275,22 @@ public class SpringDaoTest {
         assert query.size() == 1;
         List<UserDO> query1 = userDao.lambdaQuery().likeRight(UserDO::getRealName, "测试").list();
         assert query1.size() == 3;
-
         UserDO insert = userDao.insert(UserDO.builder().age(16).realName(null).build());
         UserDO nullRealName = userDao.lambdaQuery().isNull(UserDO::getRealName).one();
         assert insert.getId() == nullRealName.getId();
-
         List<UserDO> query2 = userDao.lambdaQuery().isNotNull(UserDO::getRealName).list();
         assert query2.size() == 3;
-
         List<UserDO> query3 = userDao.lambdaQuery().isNull(UserDO::getRealName).list();
         assert query3.size() == 1;
-
         List<UserDO> query4 = userDao.lambdaQuery().isNotNull(UserDO::getRealName).in(UserDO::getAge, Arrays.asList(15, 16)).list();
         assert query4.size() == 2;
-
         int count = userDao.lambdaQuery().gte(UserDO::getAge, 17).count();
         List<UserDO> query5 = userDao.lambdaQuery().gte(UserDO::getAge, 17).list();
         assert query5.size() == count;
-
-
+        List<UserDO> list = userDao.lambdaQuery().gte(UserDO::getAge, 17)
+                .and(c -> c.gte(UserDO::getAge, 15).lte(UserDO::getAge, 40), c -> c.gte(UserDO::getId, 10))
+                .list();
+        assert list.size() == 1;
     }
 
     @Test
@@ -299,13 +298,30 @@ public class SpringDaoTest {
         int updateCount = userDao.lambdaUpdate().set(UserDO::getAge, 123).eq(UserDO::getAge, 15).update();
         int update = userDao.lambdaUpdate().set(UserDO::getAge, 15).eq(UserDO::getAge, 123).update();
         assert updateCount == update;
-
         userDao.lambdaUpdate().set(UserDO::getAge, 150).insert();
         userDao.lambdaUpdate().set(UserDO::getAge, 250).insert();
-
         int delCount = userDao.lambdaUpdate().gte(UserDO::getAge, 150).delete();
         assert delCount == 2;
 
+    }
+
+    @Test
+    public void test_insert_loopfor_age() {
+        int count = userDao.insertLoopForAge("1", "张三", Arrays.asList(15, 12, 13, 19));
+        assert count == 4;
+    }
+
+    @Test
+    public void test_delect_loopfor_age() {
+        int count = userDao.insertLoopForAge("1", "张三", Arrays.asList(150, 120, 130, 190));
+        List<NutMap> nutMaps = Arrays.asList(
+                NutMap.NEW().setv("test", 150),
+                NutMap.NEW().setv("test", 120),
+                NutMap.NEW().setv("test", 130),
+                NutMap.NEW().setv("test", 190)
+        );
+        int deleteCount = userDao.deleteLoopForAge(nutMaps);
+        assert count == deleteCount;
     }
 
 

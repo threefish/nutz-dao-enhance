@@ -7,16 +7,20 @@ import org.nutz.dao.enhance.util.ValueTypeUtil;
 import org.nutz.dao.jdbc.ValueAdaptor;
 import org.nutz.dao.sql.Sql;
 import org.nutz.dao.util.Daos;
+import org.nutz.lang.Lang;
+import org.nutz.lang.util.NutMap;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.Collection;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * @author 黄川 2020/12/15
  * 自定义插入
  */
+@SuppressWarnings("all")
 public class InsertQueryExecute extends AbstractExecute {
 
     public InsertQueryExecute(Dao dao, String executeSql, MethodSignature methodSignature, Object[] args) {
@@ -25,12 +29,25 @@ public class InsertQueryExecute extends AbstractExecute {
 
     @Override
     public Object invoke() {
-        Sql sql = Sqls.create(executeSql).setParams(this.params);
+        Sql sql = Sqls.create(executeSql);
         this.setCondition(sql);
-        if (this.methodSignature.getReturnType() == void.class) {
-            dao.execute(sql);
+        if (!this.methodSignature.isReturnGeneratedKeys()) {
+            if (methodSignature.isLoop()) {
+                Collection<Object> collections = ((Collection) this.params.get(methodSignature.getLoopForField()));
+                if (Lang.isNotEmpty(collections)) {
+                    for (Object collection : collections) {
+                        sql.setParams(new NutMap(this.params).setv(methodSignature.getLoopForField(), collection));
+                        sql.addBatch();
+                    }
+                    dao.execute(sql);
+                }
+            } else {
+                sql.setParams(params);
+                dao.execute(sql);
+            }
             return this.returnIsOptionalVal(sql.getUpdateCount());
         } else {
+            sql.setParams(params);
             String originalSql = sql.toPreparedStatement();
             ValueAdaptor[] adaptors = sql.getAdaptors();
             Object[][] paramMatrix = sql.getParamMatrix();
@@ -58,4 +75,5 @@ public class InsertQueryExecute extends AbstractExecute {
             return this.returnIsOptionalVal(idGeneratedKey.get());
         }
     }
+
 }

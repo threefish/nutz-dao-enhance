@@ -40,10 +40,16 @@ public class LambdaUpdate<T> extends LambdaCondition<LambdaUpdate<T>, T> {
     }
 
     public int update() {
+        if (chain == null || chain.size() == 0) {
+            throw new UnsupportedOperationException("必须通过 set 方法设置更新的列和值");
+        }
         return providerContext.dao.update(providerContext.entity, chain, cnd);
     }
 
     public void insert() {
+        if (chain == null || chain.size() == 0) {
+            throw new UnsupportedOperationException("必须通过 set 方法设置更新的列和值");
+        }
         providerContext.dao.insert(providerContext.entityClass, chain);
     }
 

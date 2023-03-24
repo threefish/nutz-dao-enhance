@@ -16,6 +16,7 @@ import org.nutz.dao.entity.Record;
 import org.nutz.dao.pager.Pager;
 import org.nutz.ioc.loader.annotation.Inject;
 import org.nutz.ioc.loader.annotation.IocBean;
+import org.nutz.lang.util.NutMap;
 
 import java.util.*;
 
@@ -38,9 +39,14 @@ public class NutzDaoTest {
     @Before
     public void before() {
         userDao.clear();
-        u1 = userDao.insert(UserDO.builder().age(15).realName("测试1").build());
-        u2 = userDao.insert(UserDO.builder().age(16).realName("测试2").build());
-        u3 = userDao.insert(UserDO.builder().age(17).realName("测试3").build());
+        u1 = UserDO.builder().age(15).realName("测试1").build();
+        u2 = UserDO.builder().age(16).realName("测试2").build();
+        u3 = UserDO.builder().age(17).realName("测试3").build();
+        List<UserDO> list = new ArrayList<>();
+        list.add(u1);
+        list.add(u2);
+        list.add(u3);
+        List<UserDO> newList = userDao.saveBatch(list);
     }
 
     @After
@@ -242,6 +248,95 @@ public class NutzDaoTest {
         int maxId = userDao.getMaxId();
         Map map = userDao.callOut2(maxId);
         System.out.println(map);
+    }
+
+
+    @Test
+    public void test_call_lambdaQuery_fetch() {
+        UserDO userDO = userDao.lambdaQuery().where(UserDO::getAge, "=", 15).one();
+        assert userDO != null;
+    }
+
+    @Test
+    public void test_call_lambdaQuery_query() {
+        List<UserDO> query = userDao.lambdaQuery().list();
+        assert query.size() == 3;
+    }
+
+    @Test
+    public void test_call_lambdaQuery_queryPage() {
+        PageRecord<UserDO> userDOPageRecord = userDao.lambdaQuery().limit(1, 10).listPage();
+        assert userDOPageRecord.getTotal() == 3;
+        PageRecord<UserDO> userDOPageRecord1 = userDao.lambdaQuery().listPage(1, 10);
+        assert userDOPageRecord1.getTotal() == 3;
+        PageRecord<UserDO> userDOPageRecord2 = userDao.lambdaQuery().listPage(new Pager(1, 10));
+        assert userDOPageRecord2.getTotal() == 3;
+        PageRecord<UserDO> userDOPageRecord3 = userDao.lambdaQuery().eq(UserDO::getAge, 15).limit(1, 10).listPage();
+        assert userDOPageRecord3.getTotal() == 1;
+        List<UserDO> userDOPageRecord4 = userDao.lambdaQuery().limit(1, 10).groupBy(UserDO::getId).list();
+        assert userDOPageRecord4.size() == 3;
+        UserDO fetch = userDao.lambdaQuery().eq(UserDO::getAge, 15).one();
+        assert fetch.getAge() == 15;
+        List<UserDO> query = userDao.lambdaQuery().eq(UserDO::getAge, 15).list();
+        assert query.size() == 1;
+        List<UserDO> query1 = userDao.lambdaQuery().likeRight(UserDO::getRealName, "测试").list();
+        assert query1.size() == 3;
+
+        UserDO insert = userDao.insert(UserDO.builder().age(16).realName(null).build());
+        UserDO nullRealName = userDao.lambdaQuery().isNull(UserDO::getRealName).one();
+        assert insert.getId() == nullRealName.getId();
+
+        List<UserDO> query2 = userDao.lambdaQuery().isNotNull(UserDO::getRealName).list();
+        assert query2.size() == 3;
+
+        List<UserDO> query3 = userDao.lambdaQuery().isNull(UserDO::getRealName).list();
+        assert query3.size() == 1;
+
+        List<UserDO> query4 = userDao.lambdaQuery().isNotNull(UserDO::getRealName).in(UserDO::getAge, Arrays.asList(15, 16)).list();
+        assert query4.size() == 2;
+
+        int count = userDao.lambdaQuery().gte(UserDO::getAge, 17).count();
+        List<UserDO> query5 = userDao.lambdaQuery().gte(UserDO::getAge, 17).list();
+        assert query5.size() == count;
+
+        List<UserDO> list = userDao.lambdaQuery().gte(UserDO::getAge, 17)
+                .and(c -> c.gte(UserDO::getAge, 15).lte(UserDO::getAge, 40), c -> c.gte(UserDO::getId, 10))
+                .list();
+
+
+        assert list.size() == 1;
+
+    }
+
+    @Test
+    public void test_call_lambda_update() {
+        int updateCount = userDao.lambdaUpdate().set(UserDO::getAge, 123).eq(UserDO::getAge, 15).update();
+        int update = userDao.lambdaUpdate().set(UserDO::getAge, 15).eq(UserDO::getAge, 123).update();
+        assert updateCount == update;
+        userDao.lambdaUpdate().set(UserDO::getAge, 150).insert();
+        userDao.lambdaUpdate().set(UserDO::getAge, 250).insert();
+        int delCount = userDao.lambdaUpdate().gte(UserDO::getAge, 150).delete();
+        assert delCount == 2;
+
+    }
+
+    @Test
+    public void test_insert_loopfor_age() {
+        int count = userDao.insertLoopForAge("1", "张三", Arrays.asList(15, 12, 13, 19));
+        assert count == 4;
+    }
+
+    @Test
+    public void test_delect_loopfor_age() {
+        int count = userDao.insertLoopForAge("1", "张三", Arrays.asList(150, 120, 130, 190));
+        List<NutMap> nutMaps = Arrays.asList(
+                NutMap.NEW().setv("test", 150),
+                NutMap.NEW().setv("test", 120),
+                NutMap.NEW().setv("test", 130),
+                NutMap.NEW().setv("test", 190)
+        );
+        int deleteCount = userDao.deleteLoopForAge(nutMaps);
+        assert count == deleteCount;
     }
 
 

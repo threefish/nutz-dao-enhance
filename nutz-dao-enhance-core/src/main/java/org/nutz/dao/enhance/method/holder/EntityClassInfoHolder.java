@@ -1,6 +1,7 @@
 package org.nutz.dao.enhance.method.holder;
 
 import org.nutz.dao.entity.Entity;
+import org.nutz.dao.impl.EntityHolder;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -24,8 +25,10 @@ public class EntityClassInfoHolder {
      *
      * @param klass
      * @param entity
+     * @param entityHolder
      */
-    public static void setEntity(Class<?> klass, Entity<?> entity) {
+    public static void setEntity(Class<?> klass, Entity<?> entity, EntityHolder entityHolder) {
+        entityHolder.set(entity);
         STRING_CLASS_HASH_MAP.put(klass.getSimpleName(), klass);
         ENTITY_HASH_MAP.put(klass, entity);
     }

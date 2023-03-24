@@ -75,39 +75,37 @@ public class DaoMethodInvoke {
     }
 
     private void initEntityInfo(Dao dao) {
-        this.entity = Objects.isNull(this.entityClass) ? null : EntityClassInfoHolder.getEntity(this.entityClass);
-        if (Objects.nonNull(this.entityClass) && this.entity == null) {
-            // 缓存不存在
-            this.entity = dao.getEntity(this.entityClass);
-            if (Objects.nonNull(this.entity)) {
-                EntityClassInfoHolder.setEntity(this.entityClass, this.entity);
-                PojoInterceptor interceptor = this.entity.getInterceptor();
-                if (interceptor instanceof DefaultPojoInterceptor) {
-                    DefaultPojoInterceptor defaultPojoInterceptor = ((DefaultPojoInterceptor) interceptor);
-                    List<Field> declaredFields = MethodSignatureUtil.getAllFields(this.entityClass);
-                    for (Field declaredField : declaredFields) {
-                        MappingField mf = this.entity.getField(declaredField.getName());
-                        CreatedBy createdBy = declaredField.getAnnotation(CreatedBy.class);
-                        CreatedDate createdDate = declaredField.getAnnotation(CreatedDate.class);
-                        LastModifiedBy lastModifiedBy = declaredField.getAnnotation(LastModifiedBy.class);
-                        LastModifiedDate lastModifiedDate = declaredField.getAnnotation(LastModifiedDate.class);
-                        AutoID autoID = declaredField.getAnnotation(AutoID.class);
-                        if (Objects.nonNull(autoID)) {
-                            defaultPojoInterceptor.getList().add(new EnhanceNutDaoElPojoInterceptor(mf, IdentifierGeneratorRunMethod.FUN_NAME, "prevInsert", autoID.nullEffective()));
-                        } else if (Objects.nonNull(createdBy)) {
-                            defaultPojoInterceptor.getList().add(new EnhanceNutDaoElPojoInterceptor(mf, AuditingEntityRunMethod.FUN_NAME, "prevInsert", createdBy.nullEffective()));
-                        } else if (Objects.nonNull(lastModifiedBy)) {
-                            defaultPojoInterceptor.getList().add(new EnhanceNutDaoElPojoInterceptor(mf, AuditingEntityRunMethod.FUN_NAME, "prevUpdate", lastModifiedBy.nullEffective()));
-                        } else if (Objects.nonNull(createdDate)) {
-                            defaultPojoInterceptor.getList().add(new EnhanceNutDaoElPojoInterceptor(mf, "now()", "prevInsert", createdDate.nullEffective()));
-                        } else if (Objects.nonNull(lastModifiedDate)) {
-                            defaultPojoInterceptor.getList().add(new EnhanceNutDaoElPojoInterceptor(mf, "now()", "prevUpdate", lastModifiedDate.nullEffective()));
-                        }
+        this.entity = Objects.isNull(this.entityClass) ? null : dao.getEntity(this.entityClass);
+        boolean cacheEntityEquals = this.entity == EntityClassInfoHolder.getEntity(this.entityClass);
+        boolean nonNull = Objects.nonNull(this.entityClass) && Objects.nonNull(this.entity);
+        if (nonNull && !cacheEntityEquals) {
+            EntityClassInfoHolder.setEntity(this.entityClass, this.entity, dao.getEntityHolder());
+            PojoInterceptor interceptor = this.entity.getInterceptor();
+            if (interceptor instanceof DefaultPojoInterceptor) {
+                DefaultPojoInterceptor defaultPojoInterceptor = ((DefaultPojoInterceptor) interceptor);
+                List<Field> declaredFields = MethodSignatureUtil.getAllFields(this.entityClass);
+                for (Field declaredField : declaredFields) {
+                    MappingField mf = this.entity.getField(declaredField.getName());
+                    CreatedBy createdBy = declaredField.getAnnotation(CreatedBy.class);
+                    CreatedDate createdDate = declaredField.getAnnotation(CreatedDate.class);
+                    LastModifiedBy lastModifiedBy = declaredField.getAnnotation(LastModifiedBy.class);
+                    LastModifiedDate lastModifiedDate = declaredField.getAnnotation(LastModifiedDate.class);
+                    AutoID autoID = declaredField.getAnnotation(AutoID.class);
+                    if (Objects.nonNull(autoID)) {
+                        defaultPojoInterceptor.getList().add(new EnhanceNutDaoElPojoInterceptor(mf, IdentifierGeneratorRunMethod.FUN_NAME, "prevInsert", autoID.nullEffective()));
+                    } else if (Objects.nonNull(createdBy)) {
+                        defaultPojoInterceptor.getList().add(new EnhanceNutDaoElPojoInterceptor(mf, AuditingEntityRunMethod.FUN_NAME, "prevInsert", createdBy.nullEffective()));
+                    } else if (Objects.nonNull(lastModifiedBy)) {
+                        defaultPojoInterceptor.getList().add(new EnhanceNutDaoElPojoInterceptor(mf, AuditingEntityRunMethod.FUN_NAME, "prevUpdate", lastModifiedBy.nullEffective()));
+                    } else if (Objects.nonNull(createdDate)) {
+                        defaultPojoInterceptor.getList().add(new EnhanceNutDaoElPojoInterceptor(mf, "now()", "prevInsert", createdDate.nullEffective()));
+                    } else if (Objects.nonNull(lastModifiedDate)) {
+                        defaultPojoInterceptor.getList().add(new EnhanceNutDaoElPojoInterceptor(mf, "now()", "prevUpdate", lastModifiedDate.nullEffective()));
                     }
-                } else {
-                    if (log.isWarnEnabled()) {
-                        log.warn("'{}' PojoInterceptor is not DefaultPojoInterceptor,Will affect audit functionality!!!", this.entityClass);
-                    }
+                }
+            } else {
+                if (log.isWarnEnabled()) {
+                    log.warn("'{}' PojoInterceptor is not DefaultPojoInterceptor,Will affect audit functionality!!!", this.entityClass);
                 }
             }
         }
