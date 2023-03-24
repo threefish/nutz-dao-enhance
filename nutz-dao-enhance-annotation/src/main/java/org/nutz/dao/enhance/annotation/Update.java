@@ -12,5 +12,11 @@ import java.lang.annotation.Target;
 @Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Update {
+
     String value();
+
+    /**
+     * 根据指定字段批量执行SQL语句
+     */
+    String loopFor() default "";
 }

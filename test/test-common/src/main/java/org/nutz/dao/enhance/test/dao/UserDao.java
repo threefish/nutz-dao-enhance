@@ -9,6 +9,7 @@ import org.nutz.dao.enhance.test.entity.UserVO;
 import org.nutz.dao.enhance.test.provider.TestProvider;
 import org.nutz.dao.entity.Record;
 import org.nutz.dao.pager.Pager;
+import org.nutz.lang.util.NutMap;
 
 import java.sql.Types;
 import java.util.List;
@@ -126,7 +127,7 @@ public interface UserDao extends BaseDao<UserDO> {
      */
     @Query(
             value = "select * from user"
-            ,countSql = "select count(1) from user"
+            , countSql = "select count(1) from user"
     )
     PageRecord listUserPage(Pager pager);
 
@@ -138,7 +139,7 @@ public interface UserDao extends BaseDao<UserDO> {
      * @param create
      * @return
      */
-    @Insert("INSERT INTO user(`real_name`, `age`,`gmt_create`,`create_by`) VALUES (@name,@age, now(),@create)")
+    @Insert(value = "INSERT INTO user(`real_name`, `age`,`gmt_create`,`create_by`) VALUES (@name,@age, now(),@create)", returnGeneratedKeys = true)
     int insert(String name, int age, String create);
 
     /**
@@ -279,4 +280,18 @@ public interface UserDao extends BaseDao<UserDO> {
     Map callOut2(@Param("id") int id);
 
 
+    /**
+     * 插入
+     *
+     * @param name
+     * @param ages
+     * @param create
+     * @return
+     */
+    @Insert(value = "INSERT INTO user(`real_name`, `age`,`gmt_create`,`create_by`) VALUES (@name,@age, now(),@create)", loopFor = "age")
+    int insertLoopForAge(String name, String create, @Param("age") List<Integer> ages);
+
+
+    @Delete(value = "delete from user where age = @{object.test}", loopFor = "object")
+    int deleteLoopForAge(@Param("object") List<NutMap> ages);
 }

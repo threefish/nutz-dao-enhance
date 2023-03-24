@@ -13,4 +13,15 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Insert {
     String value();
+
+    /**
+     * 根据指定字段批量执行SQL语句
+     */
+    String loopFor() default "";
+
+    /**
+     * 返回自增ID
+     * loop 时不生效
+     */
+    boolean returnGeneratedKeys() default false;
 }

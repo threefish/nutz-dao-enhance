@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~  Copyright © 2020 - 2020 黄川 Rights Reserved.
+  ~  版权声明：黄川保留所有权利。
+  ~  免责声明：本规范是初步的，随时可能更改，恕不另行通知。黄川对此处包含的任何错误不承担任何责任。
+  ~  最后修改时间：2020/9/20 下午5:45
+  -->
+<configuration>
+    <!-- 读取spring.application.name中的属性来生成日志文件名 -->
+    <springProperty name="applicationName" source="spring.application.name" scope="context"/>
+    <!-- 变量配置 -->
+    <property name="encoder.pattern" value="[%-5level] [%date{yyyy-MM-dd HH:mm:ss}] [%t] %logger{36}:%line %X{method} - %msg%n"/>
+    <property name="LOG_HOME" value="${user.home}/logs/${applicationName}"/>
+
+    <!-- 输出目的地：控制台 -->
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>${encoder.pattern}</pattern>
+        </encoder>
+    </appender>
+
+    <!-- 输出目的地：滚动文件 -->
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <encoder>
+            <pattern>${encoder.pattern}</pattern>
+        </encoder>
+        <File>${LOG_HOME}/log.log</File>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_HOME}/log-%d{yyyy-MM-dd}-%i.log</fileNamePattern>
+            <MaxHistory>30</MaxHistory>
+            <TimeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <MaxFileSize>10MB</MaxFileSize>
+            </TimeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+    </appender>
+
+    <!-- 异步输出 -->
+    <appender name="ASYNC_FILE" class="ch.qos.logback.classic.AsyncAppender">
+        <!-- 不丢失日志.默认的,如果队列的80%已满,则会丢弃TRACT、DEBUG、INFO级别的日志 -->
+        <discardingThreshold>0</discardingThreshold>
+        <!-- 更改默认的队列的深度,该值会影响性能.默认值为256 -->
+        <queueSize>1024</queueSize>
+        <!-- 添加附加的appender,最多只能添加一个 -->
+        <appender-ref ref="FILE"/>
+    </appender>
+
+    <!-- 为防止进程退出时数据丢失，请记住添加此配置 -->
+    <shutdownHook class="ch.qos.logback.core.hook.DelayingShutdownHook"/>
+    <!-- 该监听器将在StatusManager中打印状态到控制台 -->
+    <statusListener class="ch.qos.logback.core.status.OnConsoleStatusListener"/>
+
+    <root level="INFO" additivity="false">
+        <appender-ref ref="STDOUT"/>
+    </root>
+    <logger name="org.nutz.spring.boot.dao" level="DEBUG" additivity="false">
+        <appender-ref ref="STDOUT"/>
+    </logger>
+    <logger name="org.nutz.dao" level="DEBUG" additivity="false">
+        <appender-ref ref="STDOUT"/>
+    </logger>
+</configuration>

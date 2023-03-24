@@ -11,14 +11,13 @@ import lombok.Getter;
 import org.nutz.dao.Sqls;
 import org.nutz.dao.enhance.annotation.*;
 import org.nutz.dao.enhance.pagination.PageRecord;
-import org.nutz.dao.enhance.util.MethodSignatureUtil;
-import org.nutz.dao.enhance.util.SqlCallbackMetaInfo;
-import org.nutz.dao.enhance.util.TypeParameterResolver;
-import org.nutz.dao.enhance.util.ValueTypeUtil;
+import org.nutz.dao.enhance.util.*;
 import org.nutz.dao.sql.SqlCallback;
 import org.nutz.lang.Lang;
 import org.nutz.lang.Strings;
+import org.nutz.lang.util.NutMap;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
@@ -79,6 +78,18 @@ public class MethodSignature {
      * 是自定义sql
      */
     private boolean customizeSql;
+    /***
+     * 是循环
+     */
+    private boolean loop;
+    /**
+     * 循环参数字段
+     */
+    private String loopForField;
+    /**
+     * 插入时返回自增ID
+     */
+    private boolean returnGeneratedKeys;
     /**
      * sql模板语句
      */
@@ -248,7 +259,7 @@ public class MethodSignature {
     }
 
     /**
-     * 设置自定义sql
+     * 设置自定义sql相关信息
      *
      * @param name
      * @param method
@@ -256,30 +267,36 @@ public class MethodSignature {
     private void initCustomizeSql(String name, Method method) {
         this.customizeSql = MethodSignatureUtil.isNeedSqlAnnotation(method);
         if (this.customizeSql) {
-            this.sqlCommandType = SqlCommandType.SELECT;
             // 需要Sql注解，则必须要获取自定义sql
-            Query querySql = method.getAnnotation(Query.class);
-            Update updateSql = method.getAnnotation(Update.class);
-            Insert insertSql = method.getAnnotation(Insert.class);
-            Delete delectSql = method.getAnnotation(Delete.class);
-            CallStoredProcedure callFunctionSql = method.getAnnotation(CallStoredProcedure.class);
-            if (Objects.nonNull(querySql)) {
-                this.sqlTemplate = querySql.value();
-                this.countSqlTemplate = querySql.countSql();
-            } else if (Objects.nonNull(updateSql)) {
-                this.sqlTemplate = updateSql.value();
-                this.sqlCommandType = SqlCommandType.UPDATE;
-            } else if (Objects.nonNull(insertSql)) {
-                this.sqlTemplate = insertSql.value();
-                this.sqlCommandType = SqlCommandType.INSERT;
-            } else if (Objects.nonNull(delectSql)) {
-                this.sqlTemplate = delectSql.value();
-                this.sqlCommandType = SqlCommandType.DELETE;
-            } else if (Objects.nonNull(callFunctionSql)) {
-                this.sqlTemplate = callFunctionSql.value();
-                this.sqlCommandType = SqlCommandType.CALL_STORED_PROCEDURE;
-            } else {
-                throw new RuntimeException(String.format("[%s] 缺失 QuerySql、UpdateSql、InsertSql 等任意注解", name));
+            Annotation[] annotations = method.getAnnotations();
+            NutMap attrMap = new NutMap();
+            for (Annotation annotation : annotations) {
+                attrMap = AnnotationUtil.getAttrMap(annotation);
+                if (Query.class.isAssignableFrom(annotation.getClass())) {
+                    this.sqlCommandType = SqlCommandType.SELECT;
+                    break;
+                } else if (Update.class.isAssignableFrom(annotation.getClass())) {
+                    this.sqlCommandType = SqlCommandType.UPDATE;
+                    break;
+                } else if (Insert.class.isAssignableFrom(annotation.getClass())) {
+                    this.sqlCommandType = SqlCommandType.INSERT;
+                    break;
+                } else if (Delete.class.isAssignableFrom(annotation.getClass())) {
+                    this.sqlCommandType = SqlCommandType.DELETE;
+                    break;
+                } else if (CallStoredProcedure.class.isAssignableFrom(annotation.getClass())) {
+                    this.sqlCommandType = SqlCommandType.CALL_STORED_PROCEDURE;
+                    break;
+                } else {
+                    throw new RuntimeException(String.format("[%s] 缺失 QuerySql、UpdateSql、InsertSql、CallStoredProcedure 等任意注解", name));
+                }
+            }
+            this.sqlTemplate = attrMap.getString("value");
+            this.countSqlTemplate = attrMap.getString("countSql");
+            this.loopForField = attrMap.getString("loopFor");
+            this.returnGeneratedKeys = attrMap.getBoolean("returnGeneratedKeys");
+            if (Strings.isNotBlank(this.loopForField)) {
+                this.loop = true;
             }
             if (Strings.isBlank(this.sqlTemplate)) {
                 throw new RuntimeException(String.format("自定义sql不能为空", name));
