@@ -1,6 +1,6 @@
 package org.nutz.dao.enhance.method.provider;
 
-import org.nutz.dao.enhance.dao.lambda.LambdaQueryWhere;
+import org.nutz.dao.enhance.dao.lambda.LambdaQuery;
 
 /**
  * @author 黄川 huchuc@vip.qq.com
@@ -9,8 +9,8 @@ import org.nutz.dao.enhance.dao.lambda.LambdaQueryWhere;
 @SuppressWarnings("all")
 public class LambdaQueryProvider {
 
-    public static <T> LambdaQueryWhere<T> lambdaQuery(ProviderContext providerContext) {
-        return new LambdaQueryWhere<>(providerContext);
+    public static <T> LambdaQuery<T> lambdaQuery(ProviderContext providerContext) {
+        return new LambdaQuery<>(providerContext);
     }
 
 }

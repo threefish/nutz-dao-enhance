@@ -4,6 +4,7 @@ import org.nutz.dao.Cnd;
 import org.nutz.dao.util.cri.IsNull;
 import org.nutz.dao.util.cri.SqlExpression;
 import org.nutz.dao.util.cri.SqlExpressionGroup;
+import org.nutz.dao.util.lambda.LambdaQuery;
 import org.nutz.dao.util.lambda.PFun;
 
 import java.util.Arrays;
@@ -26,20 +27,23 @@ public abstract class LambdaCondition<Children extends LambdaCondition, T> {
     }
 
 
-    public <T> Children eq(PFun<T, ?> name, Object value) {
+    public Children eq(PFun<T, ?> name, Object value) {
         cnd.and(name, "=", value);
+        checkValueForNull(name, value);
         return this.thisType;
     }
 
-    public <T> Children eq(boolean condition, PFun<T, ?> name, Object value) {
+    public Children eq(boolean condition, PFun<T, ?> name, Object value) {
         if (!condition) {
             return this.thisType;
         }
+        checkValueForNull(name, value);
         cnd.and(name, "=", value);
         return this.thisType;
     }
 
     public Children ne(PFun<T, ?> name, Object value) {
+        checkValueForNull(name, value);
         cnd.and(name, "!=", value);
         return this.thisType;
     }
@@ -48,6 +52,7 @@ public abstract class LambdaCondition<Children extends LambdaCondition, T> {
         if (!condition) {
             return this.thisType;
         }
+        checkValueForNull(name, value);
         cnd.and(name, "!=", value);
         return this.thisType;
     }
@@ -60,6 +65,7 @@ public abstract class LambdaCondition<Children extends LambdaCondition, T> {
      * @return
      */
     public Children gt(PFun<T, ?> name, Object value) {
+        checkValueForNull(name, value);
         cnd.and(name, ">", value);
         return this.thisType;
     }
@@ -68,6 +74,7 @@ public abstract class LambdaCondition<Children extends LambdaCondition, T> {
         if (!condition) {
             return this.thisType;
         }
+        checkValueForNull(name, value);
         cnd.and(name, ">", value);
         return this.thisType;
     }
@@ -80,6 +87,7 @@ public abstract class LambdaCondition<Children extends LambdaCondition, T> {
      * @return
      */
     public Children gte(PFun<T, ?> name, Object value) {
+        checkValueForNull(name, value);
         cnd.and(name, ">=", value);
         return this.thisType;
     }
@@ -88,6 +96,7 @@ public abstract class LambdaCondition<Children extends LambdaCondition, T> {
         if (!condition) {
             return this.thisType;
         }
+        checkValueForNull(name, value);
         cnd.and(name, ">=", value);
         return this.thisType;
     }
@@ -100,6 +109,7 @@ public abstract class LambdaCondition<Children extends LambdaCondition, T> {
      * @return
      */
     public Children lt(PFun<T, ?> name, Object value) {
+        checkValueForNull(name, value);
         cnd.and(name, "<", value);
         return this.thisType;
     }
@@ -108,6 +118,7 @@ public abstract class LambdaCondition<Children extends LambdaCondition, T> {
         if (!condition) {
             return this.thisType;
         }
+        checkValueForNull(name, value);
         cnd.and(name, "<", value);
         return this.thisType;
     }
@@ -120,6 +131,7 @@ public abstract class LambdaCondition<Children extends LambdaCondition, T> {
      * @return
      */
     public Children lte(PFun<T, ?> name, Object value) {
+        checkValueForNull(name, value);
         cnd.and(name, "<=", value);
         return this.thisType;
     }
@@ -128,6 +140,7 @@ public abstract class LambdaCondition<Children extends LambdaCondition, T> {
         if (!condition) {
             return this.thisType;
         }
+        checkValueForNull(name, value);
         cnd.and(name, "<=", value);
         return this.thisType;
     }
@@ -141,6 +154,7 @@ public abstract class LambdaCondition<Children extends LambdaCondition, T> {
      * @return
      */
     public Children between(PFun<T, ?> name, Object val1, Object val2) {
+        checkValueForNull(name, val1, val2);
         cnd.and(name, "between", new Object[]{val1, val2});
         return this.thisType;
     }
@@ -149,12 +163,14 @@ public abstract class LambdaCondition<Children extends LambdaCondition, T> {
         if (!condition) {
             return this.thisType;
         }
+        checkValueForNull(name, val1, val2);
         cnd.and(name, "between", new Object[]{val1, val2});
         return this.thisType;
     }
 
     public Children notBetween(PFun<T, ?> name, Object val1, Object val2) {
         cnd.andNot(name, "between", new Object[]{val1, val2});
+        checkValueForNull(name, val1, val2);
         return this.thisType;
     }
 
@@ -162,11 +178,13 @@ public abstract class LambdaCondition<Children extends LambdaCondition, T> {
         if (!condition) {
             return this.thisType;
         }
+        checkValueForNull(name, val1, val2);
         cnd.andNot(name, "between", new Object[]{val1, val2});
         return this.thisType;
     }
 
     public Children like(PFun<T, ?> name, Object value) {
+        checkValueForNull(name, value);
         cnd.and(name, "like", value);
         return this.thisType;
     }
@@ -175,11 +193,13 @@ public abstract class LambdaCondition<Children extends LambdaCondition, T> {
         if (!condition) {
             return this.thisType;
         }
+        checkValueForNull(name, value);
         cnd.and(name, "like", value);
         return this.thisType;
     }
 
     public Children notLike(PFun<T, ?> name, Object value) {
+        checkValueForNull(name, value);
         cnd.andNot(name, "like", value);
         return this.thisType;
     }
@@ -188,11 +208,13 @@ public abstract class LambdaCondition<Children extends LambdaCondition, T> {
         if (!condition) {
             return this.thisType;
         }
+        checkValueForNull(name, value);
         cnd.andNot(name, "like", value);
         return this.thisType;
     }
 
     public Children likeLeft(PFun<T, ?> name, Object value) {
+        checkValueForNull(name, value);
         cnd.and(Cnd.exp(name, "like", String.format("%%%s", value)));
         return this.thisType;
     }
@@ -201,11 +223,13 @@ public abstract class LambdaCondition<Children extends LambdaCondition, T> {
         if (!condition) {
             return this.thisType;
         }
+        checkValueForNull(name, value);
         cnd.and(Cnd.exp(name, "like", String.format("%%%s", value)));
         return this.thisType;
     }
 
     public Children likeRight(PFun<T, ?> name, Object value) {
+        checkValueForNull(name, value);
         cnd.and(Cnd.exp(name, "like", String.format("%s%%", value)));
         return this.thisType;
     }
@@ -214,6 +238,7 @@ public abstract class LambdaCondition<Children extends LambdaCondition, T> {
         if (!condition) {
             return this.thisType;
         }
+        checkValueForNull(name, value);
         cnd.and(Cnd.exp(name, "like", String.format("%s%%", value)));
         return this.thisType;
     }
@@ -324,6 +349,20 @@ public abstract class LambdaCondition<Children extends LambdaCondition, T> {
             this.cnd.or(sqlExpressionGroup);
         }
         return this.thisType;
+    }
+
+    /**
+     * 如果字段值是null将报错，阻止sql提交
+     */
+    private void checkValueForNull(PFun<T, ?> name, Object... values) {
+        if (values == null) {
+            throw new IllegalArgumentException(String.format("Value for [%s] cannot be null", LambdaQuery.resolve(name)));
+        }
+        for (int i = 0; i < values.length; i++) {
+            if (values[i] == null) {
+                throw new IllegalArgumentException(String.format("Value for [%s] cannot be null,index [%s]", LambdaQuery.resolve(name), i + 1));
+            }
+        }
     }
 
 }

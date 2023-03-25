@@ -4,7 +4,7 @@ import org.nutz.dao.Condition;
 import org.nutz.dao.FieldFilter;
 import org.nutz.dao.FieldMatcher;
 import org.nutz.dao.enhance.annotation.CustomProvider;
-import org.nutz.dao.enhance.dao.lambda.LambdaQueryWhere;
+import org.nutz.dao.enhance.dao.lambda.LambdaQuery;
 import org.nutz.dao.enhance.dao.lambda.LambdaUpdate;
 import org.nutz.dao.enhance.method.provider.BaseDaoProvider;
 import org.nutz.dao.enhance.method.provider.LambdaQueryProvider;
@@ -640,7 +640,7 @@ public interface BaseDao<T> {
      * 执行链式查询操作
      */
     @CustomProvider(type = LambdaQueryProvider.class)
-    LambdaQueryWhere<T> lambdaQuery();
+    LambdaQuery<T> lambdaQuery();
 
 
     /**
