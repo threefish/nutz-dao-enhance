@@ -48,30 +48,6 @@ public class SqlCallbackMetaInfo {
         }
     };
 
-    /**
-     * 对应的list返回类型
-     */
-    public static final HashMap<Class<?>, SqlCallback> LIST_SQL_CALLBACK_HASH_MAP = new HashMap() {
-        {
-            put(Integer.class, Sqls.callback.ints());
-            put(int.class, Sqls.callback.ints());
-            put(Long.class, Sqls.callback.longs());
-            put(long.class, Sqls.callback.longs());
-            put(String.class, Sqls.callback.strList());
-            put(Boolean.class, Sqls.callback.bools());
-            put(Record.class, Sqls.callback.records());
-            put(Map.class, Sqls.callback.maps());
-
-            put(String[].class, Sqls.callback.strs());
-            put(int[].class, Sqls.callback.ints());
-            put(Integer[].class, Sqls.callback.ints());
-            put(long[].class, Sqls.callback.longs());
-            put(Long[].class, Sqls.callback.longs());
-            put(boolean[].class, Sqls.callback.bools());
-            put(Boolean[].class, Sqls.callback.bools());
-        }
-    };
-
 
     /**
      * 获取callback类型
@@ -106,15 +82,6 @@ public class SqlCallbackMetaInfo {
         return null;
     }
 
-    /**
-     * 获取callback类型
-     *
-     * @param clazz
-     * @return
-     */
-    public static SqlCallback getCollectionSqlCallback(Class<?> clazz) {
-        return LIST_SQL_CALLBACK_HASH_MAP.get(clazz);
-    }
 
     public static class QueryObjectArrayCallback implements SqlCallback {
 
@@ -133,7 +100,7 @@ public class SqlCallbackMetaInfo {
 
         @Override
         public Object invoke(Connection conn, ResultSet rs, Sql sql) throws SQLException {
-            ArrayList<Object> list = new ArrayList(20);
+            Collection<Object> list = new ArrayList(20);
             while (rs.next()) {
                 list.add(rs.getObject(1));
             }
