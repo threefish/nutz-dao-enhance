@@ -142,6 +142,9 @@ public interface UserDao extends BaseDao<UserDO> {
     @Insert(value = "INSERT INTO user(`real_name`, `age`,`gmt_create`,`create_by`) VALUES (@name,@age, now(),@create)", returnGeneratedKeys = true)
     int insert(String name, int age, String create);
 
+
+
+
     /**
      * 插入
      *
@@ -290,7 +293,16 @@ public interface UserDao extends BaseDao<UserDO> {
      */
     @Insert(value = "INSERT INTO user(`real_name`, `age`,`gmt_create`,`create_by`) VALUES (@name,@age, now(),@create)", loopFor = "age")
     int insertLoopForAge(String name, String create, @Param("age") List<Integer> ages);
-
+    /**
+     * 插入返回主键ID
+     *
+     * @param name
+     * @param ages
+     * @param create
+     * @return
+     */
+    @Insert(value = "INSERT INTO user(`real_name`, `age`,`gmt_create`,`create_by`) VALUES (@name,@age, now(),@create)", loopFor = "age",returnGeneratedKeys = true)
+    List<Integer> insertLoopForAgeAndReturnId(String name, String create, @Param("age") List<Integer> ages);
 
     @Delete(value = "delete from user where age = @{object.test}", loopFor = "object")
     int deleteLoopForAge(@Param("object") List<NutMap> ages);
