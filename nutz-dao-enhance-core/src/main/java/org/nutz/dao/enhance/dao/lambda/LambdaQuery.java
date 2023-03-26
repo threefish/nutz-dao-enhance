@@ -19,8 +19,10 @@ public class LambdaQuery<T> extends LambdaCondition<LambdaQuery<T>, T> {
 
     private final BaseDao<T> baseDao;
 
-    public LambdaQuery(ProviderContext providerContext) {
-        super(Cnd.NEW());
+
+
+    public LambdaQuery(ProviderContext providerContext,boolean notNull, boolean notEmpty) {
+        super(Cnd.NEW(),notNull, notEmpty);
         this.baseDao = ((BaseDao) providerContext.proxy);
     }
 

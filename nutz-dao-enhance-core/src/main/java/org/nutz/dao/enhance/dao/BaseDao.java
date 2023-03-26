@@ -642,12 +642,32 @@ public interface BaseDao<T> {
     @CustomProvider(type = LambdaQueryProvider.class)
     LambdaQuery<T> lambdaQuery();
 
+    /**
+     * 执行链式查询操作
+     *
+     * @param notNull  普通条件值不能为null
+     * @param notEmpty 集合类型条件值不能为空
+     * @return
+     */
+    @CustomProvider(type = LambdaQueryProvider.class)
+    LambdaQuery<T> lambdaQuery(boolean notNull, boolean notEmpty);
+
 
     /**
      * 执行链式更新操作
      */
     @CustomProvider(type = LambdaUpdateProvider.class)
     LambdaUpdate<T> lambdaUpdate();
+
+    /**
+     * 执行链式更新操作
+     *
+     * @param notNull  普通条件值不能为null
+     * @param notEmpty 集合类型条件值不能为空
+     * @return
+     */
+    @CustomProvider(type = LambdaUpdateProvider.class)
+    LambdaUpdate<T> lambdaUpdate(boolean notNull, boolean notEmpty);
 
 
 }

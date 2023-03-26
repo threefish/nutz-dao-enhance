@@ -10,7 +10,11 @@ import org.nutz.dao.enhance.dao.lambda.LambdaQuery;
 public class LambdaQueryProvider {
 
     public static <T> LambdaQuery<T> lambdaQuery(ProviderContext providerContext) {
-        return new LambdaQuery<>(providerContext);
+        return new LambdaQuery<>(providerContext, true, true);
+    }
+
+    public static <T> LambdaQuery<T> lambdaQuery(ProviderContext providerContext, boolean notNull, boolean notEmpty) {
+        return new LambdaQuery<>(providerContext, notNull, notEmpty);
     }
 
 }

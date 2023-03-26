@@ -10,7 +10,12 @@ import org.nutz.dao.enhance.dao.lambda.LambdaUpdate;
 public class LambdaUpdateProvider {
 
     public static <T> LambdaUpdate<T> lambdaUpdate(ProviderContext providerContext) {
-        return new LambdaUpdate<T>(providerContext);
+        return new LambdaUpdate<T>(providerContext, true, true);
+
+    }
+
+    public static <T> LambdaUpdate<T> lambdaUpdate(ProviderContext providerContext, boolean notNull, boolean notEmpty) {
+        return new LambdaUpdate<T>(providerContext, notNull, notEmpty);
     }
 
 }

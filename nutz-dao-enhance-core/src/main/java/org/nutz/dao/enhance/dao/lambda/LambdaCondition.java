@@ -22,10 +22,16 @@ public abstract class LambdaCondition<Children extends LambdaCondition, T> {
 
     protected final Cnd cnd;
 
-    protected LambdaCondition(Cnd cnd) {
-        this.cnd = cnd;
-    }
+    protected final boolean notNull;
 
+    protected final boolean notEmpty;
+
+
+    public LambdaCondition(Cnd cnd, boolean notNull, boolean notEmpty) {
+        this.cnd = cnd;
+        this.notNull = notNull;
+        this.notEmpty = notEmpty;
+    }
 
     public Children eq(PFun<T, ?> name, Object value) {
         cnd.and(name, "=", value);
@@ -270,6 +276,7 @@ public abstract class LambdaCondition<Children extends LambdaCondition, T> {
     }
 
     public Children in(PFun<T, ?> name, Collection<?> coll) {
+        checkCollectionValueForEmpty(name, coll);
         cnd.and(name, "in", coll);
         return this.thisType;
     }
@@ -278,11 +285,13 @@ public abstract class LambdaCondition<Children extends LambdaCondition, T> {
         if (!condition) {
             return this.thisType;
         }
+        checkCollectionValueForEmpty(name, coll);
         cnd.and(name, "in", coll);
         return this.thisType;
     }
 
     public Children notIn(PFun<T, ?> name, Collection<?> coll) {
+        checkCollectionValueForEmpty(name, coll);
         cnd.and(name, "not in", coll);
         return this.thisType;
     }
@@ -291,9 +300,11 @@ public abstract class LambdaCondition<Children extends LambdaCondition, T> {
         if (!condition) {
             return this.thisType;
         }
+        checkCollectionValueForEmpty(name, coll);
         cnd.and(name, "not in", coll);
         return this.thisType;
     }
+
 
     public Children and(SqlExpression exp) {
         this.cnd.and(exp);
@@ -330,7 +341,7 @@ public abstract class LambdaCondition<Children extends LambdaCondition, T> {
     public Children and(Function<LambdaConditionWapper<T>, LambdaConditionWapper<T>>... exps) {
         if (exps != null && exps.length > 0) {
             SqlExpressionGroup sqlExpressionGroup = new SqlExpressionGroup();
-            Arrays.stream(exps).forEach(orPart -> sqlExpressionGroup.or(orPart.apply(new LambdaConditionWapper<T>(Cnd.NEW())).getSqlExpressionGroup()));
+            Arrays.stream(exps).forEach(orPart -> sqlExpressionGroup.or(orPart.apply(new LambdaConditionWapper<T>(Cnd.NEW(), this.notNull, this.notEmpty)).getSqlExpressionGroup()));
             this.cnd.and(sqlExpressionGroup);
         }
         return this.thisType;
@@ -345,24 +356,41 @@ public abstract class LambdaCondition<Children extends LambdaCondition, T> {
     public Children or(Function<LambdaConditionWapper<T>, LambdaConditionWapper<T>>... exps) {
         if (exps != null && exps.length > 0) {
             SqlExpressionGroup sqlExpressionGroup = new SqlExpressionGroup();
-            Arrays.stream(exps).forEach(orPart -> sqlExpressionGroup.or(orPart.apply(new LambdaConditionWapper<T>(Cnd.NEW())).getSqlExpressionGroup()));
+            Arrays.stream(exps).forEach(orPart -> sqlExpressionGroup.or(orPart.apply(new LambdaConditionWapper<T>(Cnd.NEW(), this.notNull, this.notEmpty)).getSqlExpressionGroup()));
             this.cnd.or(sqlExpressionGroup);
         }
         return this.thisType;
     }
 
     /**
+     * 检查集合值是否为空
+     *
+     * @param name
+     * @param coll
+     */
+    private void checkCollectionValueForEmpty(PFun<T, ?> name, Collection<?> coll) {
+        if (this.notEmpty) {
+            if (coll == null || coll.isEmpty()) {
+                throw new IllegalArgumentException(String.format("Value for [%s] cannot be empty", LambdaQuery.resolve(name)));
+            }
+        }
+    }
+
+    /**
      * 如果字段值是null将报错，阻止sql提交
      */
     private void checkValueForNull(PFun<T, ?> name, Object... values) {
-        if (values == null) {
-            throw new IllegalArgumentException(String.format("Value for [%s] cannot be null", LambdaQuery.resolve(name)));
-        }
-        for (int i = 0; i < values.length; i++) {
-            if (values[i] == null) {
-                throw new IllegalArgumentException(String.format("Value for [%s] cannot be null,index [%s]", LambdaQuery.resolve(name), i + 1));
+        if (this.notNull) {
+            if (values == null) {
+                throw new IllegalArgumentException(String.format("Value for [%s] cannot be null", LambdaQuery.resolve(name)));
+            }
+            for (int i = 0; i < values.length; i++) {
+                if (values[i] == null) {
+                    throw new IllegalArgumentException(String.format("Value for [%s] cannot be null,index [%s]", LambdaQuery.resolve(name), i + 1));
+                }
             }
         }
+
     }
 
 }
