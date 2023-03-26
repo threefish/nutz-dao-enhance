@@ -10,8 +10,12 @@ import org.nutz.dao.sql.SqlCallback;
 @SuppressWarnings("ALL")
 public class NutSqlEnhance extends NutSql {
 
+    public static final char[] PLACEHOLDER = new char[]{'#', '$'};
+
+
     public NutSqlEnhance() {
         super(null, null);
+        this.changePlaceholder(PLACEHOLDER[0], PLACEHOLDER[1]);
         this.params = new ElVarSet();
         this.rows.clear();
         this.rows.add(params);
@@ -20,6 +24,7 @@ public class NutSqlEnhance extends NutSql {
 
     public NutSqlEnhance(String source) {
         super(source, null);
+        this.changePlaceholder(PLACEHOLDER[0], PLACEHOLDER[1]);
         this.params = new ElVarSet();
         this.rows.clear();
         this.rows.add(params);
@@ -27,10 +32,12 @@ public class NutSqlEnhance extends NutSql {
 
     public NutSqlEnhance(String source, SqlCallback callback) {
         super(source, callback);
+        this.changePlaceholder(PLACEHOLDER[0], PLACEHOLDER[1]);
         this.params = new ElVarSet();
         this.rows.clear();
         this.rows.add(params);
     }
+
 
     @Override
     public void addBatch() {
