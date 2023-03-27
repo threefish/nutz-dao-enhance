@@ -312,6 +312,12 @@ public class SpringDaoTest {
     }
 
     @Test
+    public void test_insert_loopfor_age_and_returnid() {
+        List<Integer> list = userDao.insertLoopForAgeAndReturnId("1", "张三", Arrays.asList(15, 12, 13, 19));
+        assert list.size() == 4;
+    }
+
+    @Test
     public void test_delect_loopfor_age() {
         int count = userDao.insertLoopForAge("1", "张三", Arrays.asList(150, 120, 130, 190));
         List<NutMap> nutMaps = Arrays.asList(

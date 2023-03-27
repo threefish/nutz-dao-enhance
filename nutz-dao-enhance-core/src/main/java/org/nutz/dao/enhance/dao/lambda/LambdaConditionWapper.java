@@ -9,8 +9,8 @@ import org.nutz.dao.util.cri.SqlExpressionGroup;
  */
 public class LambdaConditionWapper<T> extends LambdaCondition<LambdaConditionWapper<T>, T> {
 
-    protected LambdaConditionWapper(Cnd cnd) {
-        super(cnd);
+    protected LambdaConditionWapper(Cnd cnd, boolean notNull, boolean notEmpty) {
+        super(cnd, notNull, notEmpty);
     }
 
     public SqlExpressionGroup getSqlExpressionGroup() {

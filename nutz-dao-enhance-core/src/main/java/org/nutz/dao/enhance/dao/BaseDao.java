@@ -4,7 +4,7 @@ import org.nutz.dao.Condition;
 import org.nutz.dao.FieldFilter;
 import org.nutz.dao.FieldMatcher;
 import org.nutz.dao.enhance.annotation.CustomProvider;
-import org.nutz.dao.enhance.dao.lambda.LambdaQueryWhere;
+import org.nutz.dao.enhance.dao.lambda.LambdaQuery;
 import org.nutz.dao.enhance.dao.lambda.LambdaUpdate;
 import org.nutz.dao.enhance.method.provider.BaseDaoProvider;
 import org.nutz.dao.enhance.method.provider.LambdaQueryProvider;
@@ -640,7 +640,17 @@ public interface BaseDao<T> {
      * 执行链式查询操作
      */
     @CustomProvider(type = LambdaQueryProvider.class)
-    LambdaQueryWhere<T> lambdaQuery();
+    LambdaQuery<T> lambdaQuery();
+
+    /**
+     * 执行链式查询操作
+     *
+     * @param notNull  普通条件值不能为null
+     * @param notEmpty 集合类型条件值不能为空
+     * @return
+     */
+    @CustomProvider(type = LambdaQueryProvider.class)
+    LambdaQuery<T> lambdaQuery(boolean notNull, boolean notEmpty);
 
 
     /**
@@ -648,6 +658,16 @@ public interface BaseDao<T> {
      */
     @CustomProvider(type = LambdaUpdateProvider.class)
     LambdaUpdate<T> lambdaUpdate();
+
+    /**
+     * 执行链式更新操作
+     *
+     * @param notNull  普通条件值不能为null
+     * @param notEmpty 集合类型条件值不能为空
+     * @return
+     */
+    @CustomProvider(type = LambdaUpdateProvider.class)
+    LambdaUpdate<T> lambdaUpdate(boolean notNull, boolean notEmpty);
 
 
 }

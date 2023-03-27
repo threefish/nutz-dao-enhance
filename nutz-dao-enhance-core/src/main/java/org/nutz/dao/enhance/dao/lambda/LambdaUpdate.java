@@ -18,8 +18,8 @@ public class LambdaUpdate<T> extends LambdaCondition<LambdaUpdate<T>, T> {
 
     private Chain chain;
 
-    public LambdaUpdate(ProviderContext providerContext) {
-        super(Cnd.NEW());
+    public LambdaUpdate(ProviderContext providerContext,boolean notNull, boolean notEmpty) {
+        super(Cnd.NEW(),notNull,notEmpty);
         this.providerContext = providerContext;
     }
 

@@ -21,7 +21,7 @@ public @interface Insert {
 
     /**
      * 返回自增ID
-     * loop 时不生效
+     * 采用 loop 时请用list接收
      */
     boolean returnGeneratedKeys() default false;
 }

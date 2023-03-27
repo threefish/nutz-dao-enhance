@@ -100,7 +100,7 @@ public class BaseDaoProvider {
 
 
     public static <T> int updateIgnoreNull(ProviderContext providerContext, T obj) {
-        return providerContext.dao.update(obj);
+        return providerContext.dao.updateIgnoreNull(obj);
     }
 
 

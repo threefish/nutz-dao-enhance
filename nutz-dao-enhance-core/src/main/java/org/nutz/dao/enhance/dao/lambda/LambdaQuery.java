@@ -15,51 +15,53 @@ import java.util.List;
  * date: 2022/12/28
  */
 @SuppressWarnings("all")
-public class LambdaQueryWhere<T> extends LambdaCondition<LambdaQueryWhere<T>, T> {
+public class LambdaQuery<T> extends LambdaCondition<LambdaQuery<T>, T> {
 
     private final BaseDao<T> baseDao;
 
-    public LambdaQueryWhere(ProviderContext providerContext) {
-        super(Cnd.NEW());
+
+
+    public LambdaQuery(ProviderContext providerContext,boolean notNull, boolean notEmpty) {
+        super(Cnd.NEW(),notNull, notEmpty);
         this.baseDao = ((BaseDao) providerContext.proxy);
     }
 
-    public LambdaQueryWhere<T> where(PFun<T, ?> name, String op, Object value) {
+    public LambdaQuery<T> where(PFun<T, ?> name, String op, Object value) {
         this.and(name, op, value);
         return this;
     }
 
-    public LambdaQueryWhere<T> whereEx(PFun<T, ?> name, String op, Object value) {
+    public LambdaQuery<T> whereEx(PFun<T, ?> name, String op, Object value) {
         this.andEX(name, op, value);
         return this;
     }
 
-    public LambdaQueryWhere<T> and(PFun<T, ?> name, String op, Object value) {
+    public LambdaQuery<T> and(PFun<T, ?> name, String op, Object value) {
         cnd.and(name, op, value);
         return this;
     }
 
-    public LambdaQueryWhere<T> or(PFun<T, ?> name, String op, Object value) {
+    public LambdaQuery<T> or(PFun<T, ?> name, String op, Object value) {
         cnd.or(name, op, value);
         return this;
     }
 
-    public LambdaQueryWhere<T> andEX(PFun<T, ?> name, String op, Object value) {
+    public LambdaQuery<T> andEX(PFun<T, ?> name, String op, Object value) {
         cnd.andEX(name, op, value);
         return this;
     }
 
-    public LambdaQueryWhere<T> orEx(PFun<T, ?> name, String op, Object value) {
+    public LambdaQuery<T> orEx(PFun<T, ?> name, String op, Object value) {
         cnd.orEX(name, op, value);
         return this;
     }
 
-    public LambdaQueryWhere<T> asc(PFun<T, ?> name) {
+    public LambdaQuery<T> asc(PFun<T, ?> name) {
         cnd.asc(name);
         return this;
     }
 
-    public LambdaQueryWhere<T> desc(PFun<T, ?> name) {
+    public LambdaQuery<T> desc(PFun<T, ?> name) {
         cnd.desc(name);
         return this;
     }
@@ -68,22 +70,22 @@ public class LambdaQueryWhere<T> extends LambdaCondition<LambdaQueryWhere<T>, T>
         return new LambdaQueryGroupBy(this.baseDao, cnd.groupBy(names));
     }
 
-    public LambdaQueryWhere<T> orderBy(PFun<T, ?> name, String dir) {
+    public LambdaQuery<T> orderBy(PFun<T, ?> name, String dir) {
         cnd.orderBy(name, dir);
         return this;
     }
 
-    public LambdaQueryWhere<T> orderByAsc(PFun<T, ?> name) {
+    public LambdaQuery<T> orderByAsc(PFun<T, ?> name) {
         cnd.orderBy(name, "asc");
         return this;
     }
 
-    public LambdaQueryWhere<T> orderByDesc(PFun<T, ?> name) {
+    public LambdaQuery<T> orderByDesc(PFun<T, ?> name) {
         cnd.orderBy(name, "desc");
         return this;
     }
 
-    public LambdaQueryWhere<T> limit(int pageNumber, int pageSize) {
+    public LambdaQuery<T> limit(int pageNumber, int pageSize) {
         cnd.limit(pageNumber, pageSize);
         return this;
     }

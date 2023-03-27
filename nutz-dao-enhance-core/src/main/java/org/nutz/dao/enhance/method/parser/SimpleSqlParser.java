@@ -22,8 +22,8 @@ public class SimpleSqlParser {
     private static final String WHITESPACE = " \n\r\f\t";
     private static final String ALL_COLUMN_KEY = "*";
     private static final Pattern CONDITION_PATTERN = Pattern.compile("#\\[.*?]");
-    private static final Pattern CONDITION_PARAMETER_PATTERN = Pattern.compile("@[a-zA-Z0-9-.]+");
-    private static final Pattern CONDITION_PARAMETER_PATTERN2 = Pattern.compile("@\\{[a-zA-Z0-9-.]+}");
+    private static final Pattern CONDITION_PARAMETER_PATTERN = Pattern.compile("#[a-zA-Z0-9-.]+");
+    private static final Pattern CONDITION_PARAMETER_PATTERN2 = Pattern.compile("#\\{[a-zA-Z0-9-.]+}");
     /**
      * 原始sql
      */

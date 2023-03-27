@@ -309,65 +309,31 @@ public class MethodSignature {
      * 设置sql回调类型
      */
     private void initSqlCallback() {
+        if (this.returnType == void.class || this.storedProcedure) {
+            // 是存储过程，存储过程是自定义实现的，无需设置callback
+            return;
+        }
         if (this.returnType == this.entityClass) {
             // 是返回的单独实体类
             this.sqlCallback = Sqls.callback.entity();
             return;
         }
-        this.sqlCallback = SqlCallbackMetaInfo.getCommonSqlCallback(this.returnType);
-        if (Objects.isNull(this.sqlCallback)) {
-            // 设置集合类型的回调
-            if (ValueTypeUtil.isCollection(this.returnType)) {
-                this.setCollectionSqlCallback();
-            } else if (ValueTypeUtil.isArray(this.returnType)) {
-                throw new RuntimeException("不支持设置List数组类型的回调！");
-            }
-        }
-        List<String> methodNames = Arrays.asList("getEntity", "getDao", "getEntityClass");
-        if (this.returnType != void.class) {
-            // 有返回值且方法名不是内部的
-            if (!methodNames.contains(this.methodName)) {
-                if (Objects.isNull(this.sqlCallback) && !this.storedProcedure) {
-                    throw new RuntimeException(String.format("方法[%s]无法获取设置Callback!!!请发ISSUSE", this.methodName));
+
+        if (Collection.class.isAssignableFrom(this.returnType)) {
+            // 在返回集合的时候有几种情况，1 有泛型返回类型（具体在细分） 2无泛型返回类型（默认为实体类）
+            if (Objects.nonNull(this.returnGenericType)) {
+                // 有泛型返回类型
+                if (this.entityClass == this.returnGenericType) {
+                    // 返回的是实体类
+                    this.sqlCallback = Sqls.callback.entities();
+                    return;
                 }
             }
         }
-    }
-
-    /**
-     * 设置集合类型的回调
-     */
-    private void setCollectionSqlCallback() {
-        // 在返回集合的时候有几种情况，1 有泛型返回类型（具体在细分） 2无泛型返回类型（默认为实体类）
-        if (Objects.nonNull(this.returnGenericType)) {
-            // 有泛型返回类型
-            if (this.entityClass == this.returnGenericType) {
-                // 返回的是实体类
-                this.sqlCallback = Sqls.callback.entities();
-                return;
-            }
-            if (Map.class.isAssignableFrom(this.returnGenericType)) {
-                // 返回的是map
-                this.sqlCallback = Sqls.callback.maps();
-                return;
-            }
-            final SqlCallback collectionSqlCallback = SqlCallbackMetaInfo.getCollectionSqlCallback(this.returnGenericType);
-            if (Objects.nonNull(collectionSqlCallback)) {
-                return;
-            }
-            if (this.storedProcedure) {
-                // 是存储过程，存储过程是自定义实现的，无需设置callback
-                return;
-            }
-            // collectionSqlCallback 还是null，那就是未识别的类型
-            throw new RuntimeException("未识别的返回类型，请提交ISSUSE");
-        }
-        if (Objects.nonNull(this.entityClass)) {
-            // 没有泛型，那就返回实体类型吧
-            this.sqlCallback = Sqls.callback.entities();
-            return;
+        this.sqlCallback = SqlCallbackMetaInfo.getCommonSqlCallback(this.returnType);
+        if (Objects.isNull(this.sqlCallback)) {
+            throw new RuntimeException(String.format("方法[%s]无法获取设置Callback!!!请发ISSUSE", this.methodName));
         }
     }
-
 
 }
