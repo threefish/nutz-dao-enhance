@@ -21,9 +21,15 @@ import java.util.regex.Pattern;
 public class SimpleSqlParser {
     private static final String WHITESPACE = " \n\r\f\t";
     private static final String ALL_COLUMN_KEY = "*";
+    /**
+     * 添加组判断
+     */
     private static final Pattern CONDITION_PATTERN = Pattern.compile("#\\[.*?]");
-    private static final Pattern CONDITION_PARAMETER_PATTERN = Pattern.compile("#[a-zA-Z0-9-.]+");
-    private static final Pattern CONDITION_PARAMETER_PATTERN2 = Pattern.compile("#\\{[a-zA-Z0-9-.]+}");
+
+    /**
+     * sql入参变量
+     */
+    private static final Pattern CONDITION_PARAMETER_PATTERN = Pattern.compile("#\\{[a-zA-Z0-9-.]+}");
     /**
      * 原始sql
      */
@@ -150,7 +156,7 @@ public class SimpleSqlParser {
         int i = 0;
         String tempSql = sql;
         while (matcher.find()) {
-            String key = String.format("$Condition%s$", i);
+            String key = String.format(" $Condition%s$ ", i);
             int start = matcher.start();
             int end = matcher.end();
             final String token = sql.substring(start + 2, end - 1);
@@ -170,17 +176,11 @@ public class SimpleSqlParser {
      * @return
      */
     private Set<String> getConditionParameter(String part) {
-        Matcher matcher = CONDITION_PARAMETER_PATTERN.matcher(part);
         Set<String> strings = new HashSet<>();
+        Matcher matcher = CONDITION_PARAMETER_PATTERN.matcher(part);
         while (matcher.find()) {
             int start = matcher.start();
             int end = matcher.end();
-            strings.add(part.substring(start + 1, end));
-        }
-        Matcher matcher2 = CONDITION_PARAMETER_PATTERN2.matcher(part);
-        while (matcher2.find()) {
-            int start = matcher2.start();
-            int end = matcher2.end();
             strings.add(part.substring(start + 2, end - 1));
         }
         return strings;

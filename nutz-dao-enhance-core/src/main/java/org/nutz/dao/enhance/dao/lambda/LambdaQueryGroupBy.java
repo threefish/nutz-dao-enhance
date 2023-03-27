@@ -2,7 +2,6 @@ package org.nutz.dao.enhance.dao.lambda;
 
 
 import org.nutz.dao.Condition;
-import org.nutz.dao.enhance.dao.BaseDao;
 import org.nutz.dao.sql.GroupBy;
 import org.nutz.lang.Each;
 
@@ -15,11 +14,11 @@ import java.util.List;
 @SuppressWarnings("all")
 public class LambdaQueryGroupBy<T> {
 
-    private final BaseDao baseDao;
+    private final LambdaQuery lambdaQuery;
     private final GroupBy groupBy;
 
-    public LambdaQueryGroupBy(BaseDao baseDao, org.nutz.dao.sql.GroupBy groupBy) {
-        this.baseDao = baseDao;
+    public LambdaQueryGroupBy(LambdaQuery lambdaQuery, org.nutz.dao.sql.GroupBy groupBy) {
+        this.lambdaQuery = lambdaQuery;
         this.groupBy = groupBy;
     }
 
@@ -32,14 +31,14 @@ public class LambdaQueryGroupBy<T> {
      * 查询
      */
     public List<T> list() {
-        return this.baseDao.list(groupBy);
+        return (List<T>) this.lambdaQuery._invoke(() -> lambdaQuery.baseDao.list(groupBy));
     }
 
     /**
      * 查询
      */
     public void eachRow(Each<T> each) {
-        this.baseDao.each(groupBy, each);
+        this.lambdaQuery._invoke(() -> this.lambdaQuery.baseDao.each(groupBy, each));
     }
 
 }

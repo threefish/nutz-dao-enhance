@@ -1,6 +1,6 @@
-package org.nutz.dao.enhance.enhance;
+package org.nutz.dao.impl.sql;
 
-import org.nutz.dao.impl.sql.NutSql;
+import org.nutz.dao.enhance.enhance.ElVarSet;
 import org.nutz.dao.sql.SqlCallback;
 
 /**
@@ -10,12 +10,13 @@ import org.nutz.dao.sql.SqlCallback;
 @SuppressWarnings("ALL")
 public class NutSqlEnhance extends NutSql {
 
-    public static final char[] PLACEHOLDER = new char[]{'#', '$'};
+    public static final char PARAM_CHAR = '#';
+
+    public static final char VAR_CHAR = '$';
 
 
     public NutSqlEnhance() {
         super(null, null);
-        this.changePlaceholder(PLACEHOLDER[0], PLACEHOLDER[1]);
         this.params = new ElVarSet();
         this.rows.clear();
         this.rows.add(params);
@@ -24,7 +25,6 @@ public class NutSqlEnhance extends NutSql {
 
     public NutSqlEnhance(String source) {
         super(source, null);
-        this.changePlaceholder(PLACEHOLDER[0], PLACEHOLDER[1]);
         this.params = new ElVarSet();
         this.rows.clear();
         this.rows.add(params);
@@ -32,12 +32,10 @@ public class NutSqlEnhance extends NutSql {
 
     public NutSqlEnhance(String source, SqlCallback callback) {
         super(source, callback);
-        this.changePlaceholder(PLACEHOLDER[0], PLACEHOLDER[1]);
         this.params = new ElVarSet();
         this.rows.clear();
         this.rows.add(params);
     }
-
 
     @Override
     public void addBatch() {
@@ -50,5 +48,10 @@ public class NutSqlEnhance extends NutSql {
         params = new ElVarSet();
         rows.clear();
         rows.add(params);
+    }
+
+    @Override
+    protected SqlLiteral literal() {
+        return new SqlLiteral(PARAM_CHAR, VAR_CHAR).valueOf(sourceSql);
     }
 }

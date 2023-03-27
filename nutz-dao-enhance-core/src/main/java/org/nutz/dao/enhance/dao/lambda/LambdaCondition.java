@@ -1,14 +1,18 @@
 package org.nutz.dao.enhance.dao.lambda;
 
 import org.nutz.dao.Cnd;
+import org.nutz.dao.FieldFilter;
+import org.nutz.dao.enhance.method.provider.ProviderContext;
 import org.nutz.dao.util.cri.IsNull;
 import org.nutz.dao.util.cri.SqlExpression;
 import org.nutz.dao.util.cri.SqlExpressionGroup;
 import org.nutz.dao.util.lambda.LambdaQuery;
 import org.nutz.dao.util.lambda.PFun;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.function.Function;
 
 /**
@@ -22,16 +26,70 @@ public abstract class LambdaCondition<Children extends LambdaCondition, T> {
 
     protected final Cnd cnd;
 
+    protected final ProviderContext providerContext;
+
     protected final boolean notNull;
 
     protected final boolean notEmpty;
+    /**
+     * 激活的字段
+     */
+    private List<String> activeds;
+    /**
+     * 排除的字段
+     */
+    private List<String> excludes;
 
 
-    public LambdaCondition(Cnd cnd, boolean notNull, boolean notEmpty) {
+    public LambdaCondition(Cnd cnd, ProviderContext providerContext, boolean notNull, boolean notEmpty) {
         this.cnd = cnd;
+        this.providerContext = providerContext;
         this.notNull = notNull;
         this.notEmpty = notEmpty;
     }
+
+    protected <T> T _invoke(MoleculeSupplier<T> supplier) {
+        FieldFilterMolecule<T> fieldFilterMolecule = new FieldFilterMolecule(() -> supplier.call());
+        FieldFilter.create(providerContext.entityClass, "^id|name$").run(fieldFilterMolecule);
+        return fieldFilterMolecule.getObj();
+    }
+
+    /**
+     * 激活的字段
+     *
+     * @param names
+     * @return
+     */
+    @SafeVarargs
+    public final Children activeds(PFun<T, ?>... names) {
+        if (names == null || names.length == 0) {
+            return this.thisType;
+        }
+        this.activeds = new ArrayList<>();
+        for (PFun<T, ?> name : names) {
+            this.activeds.add(LambdaQuery.resolve(name));
+        }
+        return this.thisType;
+    }
+
+    /**
+     * 排除的字段
+     *
+     * @param names
+     * @return
+     */
+    @SafeVarargs
+    public final Children excludes(PFun<T, ?>... names) {
+        if (names == null || names.length == 0) {
+            return this.thisType;
+        }
+        this.activeds = new ArrayList<>();
+        for (PFun<T, ?> name : names) {
+            this.activeds.add(LambdaQuery.resolve(name));
+        }
+        return this.thisType;
+    }
+
 
     public Children eq(PFun<T, ?> name, Object value) {
         cnd.and(name, "=", value);
@@ -338,10 +396,11 @@ public abstract class LambdaCondition<Children extends LambdaCondition, T> {
      * @param exps
      * @return
      */
-    public Children and(Function<LambdaConditionWapper<T>, LambdaConditionWapper<T>>... exps) {
+    @SafeVarargs
+    public final Children and(Function<LambdaConditionWapper<T>, LambdaConditionWapper<T>>... exps) {
         if (exps != null && exps.length > 0) {
             SqlExpressionGroup sqlExpressionGroup = new SqlExpressionGroup();
-            Arrays.stream(exps).forEach(orPart -> sqlExpressionGroup.or(orPart.apply(new LambdaConditionWapper<T>(Cnd.NEW(), this.notNull, this.notEmpty)).getSqlExpressionGroup()));
+            Arrays.stream(exps).forEach(orPart -> sqlExpressionGroup.or(orPart.apply(new LambdaConditionWapper<T>(Cnd.NEW(), this.providerContext, this.notNull, this.notEmpty)).getSqlExpressionGroup()));
             this.cnd.and(sqlExpressionGroup);
         }
         return this.thisType;
@@ -353,10 +412,11 @@ public abstract class LambdaCondition<Children extends LambdaCondition, T> {
      * @param exps
      * @return
      */
-    public Children or(Function<LambdaConditionWapper<T>, LambdaConditionWapper<T>>... exps) {
+    @SafeVarargs
+    public final Children or(Function<LambdaConditionWapper<T>, LambdaConditionWapper<T>>... exps) {
         if (exps != null && exps.length > 0) {
             SqlExpressionGroup sqlExpressionGroup = new SqlExpressionGroup();
-            Arrays.stream(exps).forEach(orPart -> sqlExpressionGroup.or(orPart.apply(new LambdaConditionWapper<T>(Cnd.NEW(), this.notNull, this.notEmpty)).getSqlExpressionGroup()));
+            Arrays.stream(exps).forEach(orPart -> sqlExpressionGroup.or(orPart.apply(new LambdaConditionWapper<T>(Cnd.NEW(), this.providerContext, this.notNull, this.notEmpty)).getSqlExpressionGroup()));
             this.cnd.or(sqlExpressionGroup);
         }
         return this.thisType;
@@ -379,7 +439,8 @@ public abstract class LambdaCondition<Children extends LambdaCondition, T> {
     /**
      * 如果字段值是null将报错，阻止sql提交
      */
-    private void checkValueForNull(PFun<T, ?> name, Object... values) {
+    @SafeVarargs
+    private final void checkValueForNull(PFun<T, ?> name, Object... values) {
         if (this.notNull) {
             if (values == null) {
                 throw new IllegalArgumentException(String.format("Value for [%s] cannot be null", LambdaQuery.resolve(name)));

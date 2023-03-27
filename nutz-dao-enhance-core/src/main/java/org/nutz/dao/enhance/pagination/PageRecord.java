@@ -7,6 +7,7 @@ import java.util.List;
 
 /**
  * @author 黄川 2020/12/16
+ * QueryResult
  */
 @Data
 public class PageRecord<T> implements java.io.Serializable {

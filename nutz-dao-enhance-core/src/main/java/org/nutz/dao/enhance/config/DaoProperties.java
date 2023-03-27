@@ -2,7 +2,7 @@ package org.nutz.dao.enhance.config;
 
 import lombok.Data;
 import org.nutz.dao.Sqls;
-import org.nutz.dao.enhance.enhance.NutSqlEnhance;
+import org.nutz.dao.impl.sql.NutSqlEnhance;
 
 /**
  * @author 黄川 huchuc@vip.qq.com

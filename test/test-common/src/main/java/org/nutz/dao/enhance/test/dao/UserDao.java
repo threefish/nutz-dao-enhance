@@ -33,8 +33,8 @@ public interface UserDao extends BaseDao<UserDO> {
      * @return
      */
     @Query("select u.* from UserDO as u where 1=1"
-            + "#[ and u.realName=#name and u.gmtCreate=#gmtCreate ] "
-            + "#[ and u.realName=#name ] ")
+            + "#[ and u.realName=#{name} and u.gmtCreate=#{gmtCreate} ] "
+            + "#[ and u.realName=#{name} ] ")
     UserDO queryByCndHql(String name);
 
     /**
@@ -53,7 +53,7 @@ public interface UserDao extends BaseDao<UserDO> {
      * @param id
      * @return
      */
-    @Query("select * from user where id=#id")
+    @Query("select * from user where id=#{id}")
     UserDO queryUserById(int id);
 
     /**
@@ -62,7 +62,7 @@ public interface UserDao extends BaseDao<UserDO> {
      * @param id
      * @return
      */
-    @Query("select * from user where id=#id")
+    @Query("select * from user where id=#{id}")
     Optional<UserDO> queryOptionalUserById(@Param("id") int id);
 
     /**
@@ -91,7 +91,7 @@ public interface UserDao extends BaseDao<UserDO> {
      * @param id
      * @return
      */
-    @Query("select * from user where id=#id")
+    @Query("select * from user where id=#{id}")
     Map queryMapById(int id);
 
     /**
@@ -108,7 +108,7 @@ public interface UserDao extends BaseDao<UserDO> {
      * @param id
      * @return
      */
-    @Query("select * from user where id=#id")
+    @Query("select * from user where id=#{id}")
     Record queryRecordById(int id);
 
     /**
@@ -139,7 +139,7 @@ public interface UserDao extends BaseDao<UserDO> {
      * @param create
      * @return
      */
-    @Insert(value = "INSERT INTO user(`real_name`, `age`,`gmt_create`,`create_by`) VALUES (#name,#age, now(),#create)", returnGeneratedKeys = true)
+    @Insert(value = "INSERT INTO user(`real_name`, `age`,`gmt_create`,`create_by`) VALUES (#{name},#{age}, now(),#{create})", returnGeneratedKeys = true)
     int insert(String name, int age, String create);
 
 
@@ -152,7 +152,7 @@ public interface UserDao extends BaseDao<UserDO> {
      * @param age
      * @param create
      */
-    @Insert("INSERT INTO user(`real_name`, `age`,`gmt_create`,`create_by`) VALUES (#name,#age, now(),#create)")
+    @Insert("INSERT INTO user(`real_name`, `age`,`gmt_create`,`create_by`) VALUES (#{name},#{age}, now(),#{create})")
     void insertVoid(String name, int age, String create);
 
     /**
@@ -162,7 +162,7 @@ public interface UserDao extends BaseDao<UserDO> {
      * @param id
      * @return
      */
-    @Update("UPDATE user SET age = #age WHERE id = #id")
+    @Update("UPDATE user SET age = #{age} WHERE id = #{id}")
     int updateAgeById(int age, int id);
 
     /**
@@ -171,7 +171,7 @@ public interface UserDao extends BaseDao<UserDO> {
      * @param id
      * @return
      */
-    @Delete("DELETE FROM user WHERE id=#id")
+    @Delete("DELETE FROM user WHERE id=#{id}")
     int delectById(int id);
 
 
@@ -210,7 +210,7 @@ public interface UserDao extends BaseDao<UserDO> {
      * @param create
      * @return
      */
-    @Insert("INSERT INTO user(`real_name`, `age`,`gmt_create`,`create_by`) VALUES (#name,#age, now(),#create)")
+    @Insert("INSERT INTO user(`real_name`, `age`,`gmt_create`,`create_by`) VALUES (#{name},#{age}, now(),#{create})")
     @CustomProvider(type = TestProvider.class, methodName = "insertWithCustomprovider")
     int insertWithCustomprovider(String name, int age, String create);
 
@@ -233,7 +233,7 @@ public interface UserDao extends BaseDao<UserDO> {
      * SELECT real_name,user.`age` INTO realName,age FROM `user`  WHERE `user`.id=id;
      * END
      */
-    @CallStoredProcedure(value = "call callOut(#id,#realName,#age)", out = {
+    @CallStoredProcedure(value = "call callOut(#{id},#realName,#{age})", out = {
             @CallStoredProcedure.Out(name = "realName"),
             @CallStoredProcedure.Out(name = "age", jdbcType = Types.INTEGER)
     })
@@ -259,7 +259,7 @@ public interface UserDao extends BaseDao<UserDO> {
      * SELECT real_name,user.`age` INTO realName,age FROM `user`  WHERE `user`.id=id;
      * END
      */
-    @CallStoredProcedure(value = "call callOut(#id,#realName,#age)", out = {
+    @CallStoredProcedure(value = "call callOut(#{id},#realName,#{age})", out = {
             @CallStoredProcedure.Out(name = "realName"),
             @CallStoredProcedure.Out(name = "age", jdbcType = Types.INTEGER)
     })
@@ -276,7 +276,7 @@ public interface UserDao extends BaseDao<UserDO> {
      * SELECT real_name,user.`age` INTO realName,age FROM `user`  WHERE `user`.id=id;
      * END
      */
-    @CallStoredProcedure(value = "call callOut(#id,#realName,#age)", out = {
+    @CallStoredProcedure(value = "call callOut(#{id},#realName,#{age})", out = {
             @CallStoredProcedure.Out(name = "realName"),
             @CallStoredProcedure.Out(name = "age", jdbcType = Types.INTEGER)
     })
@@ -291,7 +291,7 @@ public interface UserDao extends BaseDao<UserDO> {
      * @param create
      * @return
      */
-    @Insert(value = "INSERT INTO user(`real_name`, `age`,`gmt_create`,`create_by`) VALUES (#name,#age, now(),#create)", loopFor = "age")
+    @Insert(value = "INSERT INTO user(`real_name`, `age`,`gmt_create`,`create_by`) VALUES (#{name},#{age}, now(),#{create})", loopFor = "age")
     int insertLoopForAge(String name, String create, @Param("age") List<Integer> ages);
     /**
      * 插入返回主键ID
@@ -301,7 +301,7 @@ public interface UserDao extends BaseDao<UserDO> {
      * @param create
      * @return
      */
-    @Insert(value = "INSERT INTO user(`real_name`, `age`,`gmt_create`,`create_by`) VALUES (#name,#age, now(),#create)", loopFor = "age",returnGeneratedKeys = true)
+    @Insert(value = "INSERT INTO user(`real_name`, `age`,`gmt_create`,`create_by`) VALUES (#{name},#{age}, now(),#{create})", loopFor = "age", returnGeneratedKeys = true)
     List<Integer> insertLoopForAgeAndReturnId(String name, String create, @Param("age") List<Integer> ages);
 
     @Delete(value = "delete from user where age = #{object.test}", loopFor = "object")

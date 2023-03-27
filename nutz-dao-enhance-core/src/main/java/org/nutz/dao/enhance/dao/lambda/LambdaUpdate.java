@@ -18,8 +18,8 @@ public class LambdaUpdate<T> extends LambdaCondition<LambdaUpdate<T>, T> {
 
     private Chain chain;
 
-    public LambdaUpdate(ProviderContext providerContext,boolean notNull, boolean notEmpty) {
-        super(Cnd.NEW(),notNull,notEmpty);
+    public LambdaUpdate(ProviderContext providerContext, boolean notNull, boolean notEmpty) {
+        super(Cnd.NEW(), providerContext, notNull, notEmpty);
         this.providerContext = providerContext;
     }
 
@@ -43,14 +43,17 @@ public class LambdaUpdate<T> extends LambdaCondition<LambdaUpdate<T>, T> {
         if (chain == null || chain.size() == 0) {
             throw new UnsupportedOperationException("必须通过 set 方法设置更新的列和值");
         }
-        return providerContext.dao.update(providerContext.entity, chain, cnd);
+        return _invoke(() -> providerContext.dao.update(providerContext.entity, chain, cnd));
     }
 
     public void insert() {
         if (chain == null || chain.size() == 0) {
             throw new UnsupportedOperationException("必须通过 set 方法设置更新的列和值");
         }
-        providerContext.dao.insert(providerContext.entityClass, chain);
+        _invoke(() -> {
+            providerContext.dao.insert(providerContext.entityClass, chain);
+            return null;
+        });
     }
 
 
@@ -58,7 +61,7 @@ public class LambdaUpdate<T> extends LambdaCondition<LambdaUpdate<T>, T> {
         if (Strings.isBlank(this.cnd.toString())) {
             throw new UnsupportedOperationException("删除时请传入条件，避免全表删除!!!");
         }
-        return this.providerContext.dao.clear(providerContext.entity, this.cnd);
+        return _invoke(() -> this.providerContext.dao.clear(providerContext.entity, this.cnd));
     }
 
 }

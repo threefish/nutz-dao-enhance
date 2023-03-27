@@ -17,13 +17,16 @@ import java.util.List;
 @SuppressWarnings("all")
 public class LambdaQuery<T> extends LambdaCondition<LambdaQuery<T>, T> {
 
-    private final BaseDao<T> baseDao;
+    protected final BaseDao<T> baseDao;
 
-
-
-    public LambdaQuery(ProviderContext providerContext,boolean notNull, boolean notEmpty) {
-        super(Cnd.NEW(),notNull, notEmpty);
+    public LambdaQuery(ProviderContext providerContext, boolean notNull, boolean notEmpty) {
+        super(Cnd.NEW(), providerContext, notNull, notEmpty);
         this.baseDao = ((BaseDao) providerContext.proxy);
+    }
+
+    @SafeVarargs
+    public final LambdaQuery<T> select(PFun<T, ?>... names) {
+        return activeds(names);
     }
 
     public LambdaQuery<T> where(PFun<T, ?> name, String op, Object value) {
@@ -67,7 +70,7 @@ public class LambdaQuery<T> extends LambdaCondition<LambdaQuery<T>, T> {
     }
 
     public LambdaQueryGroupBy<T> groupBy(PFun<T, ?>... names) {
-        return new LambdaQueryGroupBy(this.baseDao, cnd.groupBy(names));
+        return new LambdaQueryGroupBy(this, cnd.groupBy(names));
     }
 
     public LambdaQuery<T> orderBy(PFun<T, ?> name, String dir) {
@@ -95,14 +98,14 @@ public class LambdaQuery<T> extends LambdaCondition<LambdaQuery<T>, T> {
      * 查询
      */
     public T one() {
-        return this.baseDao.fetch(cnd);
+        return _invoke(() -> this.baseDao.fetch(cnd));
     }
 
     /**
      * 查询
      */
     public List<T> list() {
-        return this.baseDao.list(cnd);
+        return _invoke(() -> this.baseDao.list(cnd));
     }
 
     /**
@@ -112,33 +115,33 @@ public class LambdaQuery<T> extends LambdaCondition<LambdaQuery<T>, T> {
         if (cnd.getPager() == null) {
             throw new IllegalArgumentException("请设置 limit 或 Pager");
         }
-        return this.baseDao.listPage(cnd, cnd.getPager());
+        return _invoke(() -> this.baseDao.listPage(cnd, cnd.getPager()));
     }
 
     /**
      * 分页查询
      */
     public PageRecord<T> listPage(Pager pager) {
-        return this.baseDao.listPage(cnd, pager);
+        return _invoke(() -> this.baseDao.listPage(cnd, pager));
     }
 
     /**
      * 分页查询
      */
     public PageRecord<T> listPage(int pageNumber, int pageSize) {
-        return this.baseDao.listPage(cnd, pageNumber, pageSize);
+        return _invoke(() -> this.baseDao.listPage(cnd, pageNumber, pageSize));
     }
 
     /**
      * 查询
      */
     public void eachRow(Each<T> each) {
-        this.baseDao.each(cnd, each);
+        _invoke(() -> this.baseDao.each(cnd, each));
     }
 
 
     public int count() {
-        return this.baseDao.count(cnd);
+        return _invoke(() -> this.baseDao.count(cnd));
     }
 
 }

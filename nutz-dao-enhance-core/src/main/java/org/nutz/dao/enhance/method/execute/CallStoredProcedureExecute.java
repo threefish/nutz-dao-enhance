@@ -3,9 +3,9 @@ package org.nutz.dao.enhance.method.execute;
 import lombok.extern.slf4j.Slf4j;
 import org.nutz.dao.Dao;
 import org.nutz.dao.Sqls;
-import org.nutz.dao.enhance.enhance.NutSqlEnhance;
 import org.nutz.dao.enhance.method.signature.MethodSignature;
 import org.nutz.dao.enhance.method.signature.OutParam;
+import org.nutz.dao.impl.sql.NutSqlEnhance;
 import org.nutz.dao.sql.Sql;
 import org.nutz.lang.Lang;
 import org.nutz.lang.util.NutMap;
@@ -70,8 +70,8 @@ public class CallStoredProcedureExecute extends AbstractExecute {
         String realSqlString = executeSql;
         for (OutParam storedProcedureOutParameter : this.methodSignature.getStoredProcedureOutParameters()) {
             realSqlString = realSqlString.replaceAll(
-                    NutSqlEnhance.PLACEHOLDER[0] + storedProcedureOutParameter.name,
-                    NutSqlEnhance.PLACEHOLDER[0] + "OUT" + storedProcedureOutParameter.name);
+                    NutSqlEnhance.PARAM_CHAR + storedProcedureOutParameter.name,
+                    NutSqlEnhance.PARAM_CHAR + "OUT" + storedProcedureOutParameter.name);
         }
         Sql sql = Sqls.create(realSqlString).setParams(this.params);
         this.setCondition(sql);
