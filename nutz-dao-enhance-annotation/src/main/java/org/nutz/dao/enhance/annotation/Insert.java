@@ -7,7 +7,7 @@ import java.lang.annotation.Target;
 
 /**
  * @author 黄川 huchuc@vip.qq.com
- * @date: 2020/12/12
+ *  2020/12/12
  */
 @Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)

@@ -4,7 +4,7 @@ import org.nutz.dao.enhance.dao.lambda.LambdaQuery;
 
 /**
  * @author 黄川 huchuc@vip.qq.com
- * date: 2023/3/22
+ *  2023/3/22
  */
 @SuppressWarnings("all")
 public class LambdaQueryProvider {

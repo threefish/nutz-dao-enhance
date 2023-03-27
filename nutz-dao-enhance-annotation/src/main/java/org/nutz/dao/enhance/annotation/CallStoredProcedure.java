@@ -8,7 +8,7 @@ import java.sql.Types;
 
 /**
  * @author 黄川 huchuc@vip.qq.com
- * date: 2023/3/15
+ *  2023/3/15
  * 调用存储过程
  */
 @Target({ElementType.METHOD})

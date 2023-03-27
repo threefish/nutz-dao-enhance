@@ -19,7 +19,7 @@ import java.util.Map;
 
 /**
  * @author 黄川 huchuc@vip.qq.com
- * @date: 2020/7/31
+ *  2020/7/31
  */
 @SuppressWarnings("all")
 public interface BaseDao<T> {

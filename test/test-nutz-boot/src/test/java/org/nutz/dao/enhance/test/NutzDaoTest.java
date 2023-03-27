@@ -22,7 +22,7 @@ import java.util.*;
 
 /**
  * @author 黄川 huchuc@vip.qq.com
- * @date: 2020/7/31
+ * 2020/7/31
  */
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @IocBean
@@ -317,7 +317,6 @@ public class NutzDaoTest {
         userDao.lambdaUpdate().set(UserDO::getAge, 250).insert();
         int delCount = userDao.lambdaUpdate().gte(UserDO::getAge, 150).delete();
         assert delCount == 2;
-
     }
 
     @Test
@@ -337,6 +336,31 @@ public class NutzDaoTest {
         );
         int deleteCount = userDao.deleteLoopForAge(nutMaps);
         assert count == deleteCount;
+    }
+
+
+    @Test
+    public void test_call_lambda_query_fields() {
+        userDao.lambdaUpdate()
+                .set(UserDO::getAge, 123)
+                .set(UserDO::getRealName, null)
+                .set(UserDO::getCreateBy, "张三")
+                //.ignoreNull()
+                .insert();
+        int maxId = userDao.getMaxId();
+        UserDO one = userDao.lambdaQuery().select(UserDO::getId).eq(UserDO::getId, maxId).one();
+        assert one.getRealName() == null;
+
+        UserDO one1 = userDao.lambdaQuery().excludes(UserDO::getCreateBy).eq(UserDO::getId, maxId).one();
+        assert one1.getCreateBy() == null;
+
+        userDao.lambdaUpdate()
+                .set(UserDO::getAge, 123)
+                .set(UserDO::getRealName, null)
+                .ignoreNull()
+                .eq(UserDO::getId, maxId)
+                .update();
+
     }
 
 

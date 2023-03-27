@@ -18,7 +18,7 @@ import java.util.Optional;
 
 /**
  * @author 黄川 huchuc@vip.qq.com
- * @date: 2020/7/30
+ *  2020/7/30
  * 自动建表，通过泛型 找到 UserDO 再根据 UserDO 信息进行建表。如果不需要自动建表，需要再UserDO上添加 @IgnoreAutoDDL 主键
  * 如果没有定义泛型但是也需要自动建表功能 则需要添加 @Entity(UserDO.class) 注解
  */

@@ -15,7 +15,7 @@ import java.util.HashSet;
 
 /**
  * @author 黄川 huchuc@vip.qq.com
- * @date: 2021/1/3
+ *  2021/1/3
  */
 public class ValueTypeUtil {
 

@@ -7,7 +7,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @author 黄川 huchuc@vip.qq.com
- * date: 2023/3/19
+ *  2023/3/19
  */
 @Component
 public class TestAutoIdentifierGenerator implements IdentifierGenerator {

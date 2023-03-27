@@ -12,7 +12,7 @@ import java.util.List;
 
 /**
  * @author 黄川 huchuc@vip.qq.com
- * date: 2022/12/28
+ *  2022/12/28
  */
 @SuppressWarnings("all")
 public class LambdaQuery<T> extends LambdaCondition<LambdaQuery<T>, T> {

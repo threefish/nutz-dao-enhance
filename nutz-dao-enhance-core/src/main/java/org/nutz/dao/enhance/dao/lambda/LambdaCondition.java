@@ -8,6 +8,7 @@ import org.nutz.dao.util.cri.SqlExpression;
 import org.nutz.dao.util.cri.SqlExpressionGroup;
 import org.nutz.dao.util.lambda.LambdaQuery;
 import org.nutz.dao.util.lambda.PFun;
+import org.nutz.lang.Lang;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -17,7 +18,7 @@ import java.util.function.Function;
 
 /**
  * @author 黄川 huchuc@vip.qq.com
- * date: 2023/3/23
+ * 2023/3/23
  */
 @SuppressWarnings("all")
 public abstract class LambdaCondition<Children extends LambdaCondition, T> {
@@ -40,6 +41,7 @@ public abstract class LambdaCondition<Children extends LambdaCondition, T> {
      */
     private List<String> excludes;
 
+    protected boolean ignoreNull;
 
     public LambdaCondition(Cnd cnd, ProviderContext providerContext, boolean notNull, boolean notEmpty) {
         this.cnd = cnd;
@@ -48,9 +50,14 @@ public abstract class LambdaCondition<Children extends LambdaCondition, T> {
         this.notEmpty = notEmpty;
     }
 
-    protected <T> T _invoke(MoleculeSupplier<T> supplier) {
-        FieldFilterMolecule<T> fieldFilterMolecule = new FieldFilterMolecule(() -> supplier.call());
-        FieldFilter.create(providerContext.entityClass, "^id|name$").run(fieldFilterMolecule);
+    protected <T> T _invoke(MoleculeSupplier<T> moleculeSupplier) {
+        if (Lang.isEmpty(activeds) && Lang.isEmpty(excludes)) {
+            return moleculeSupplier.call();
+        }
+        FieldFilterMolecule<T> fieldFilterMolecule = new FieldFilterMolecule(() -> moleculeSupplier.call());
+        String actived = Lang.isEmpty(activeds) ? null : String.format("^%s$", String.join("|", activeds));
+        String locked = Lang.isEmpty(excludes) ? null : String.format("^%s$", String.join("|", excludes));
+        FieldFilter.create(providerContext.entityClass, actived, locked, this.ignoreNull).run(fieldFilterMolecule);
         return fieldFilterMolecule.getObj();
     }
 
@@ -83,13 +90,17 @@ public abstract class LambdaCondition<Children extends LambdaCondition, T> {
         if (names == null || names.length == 0) {
             return this.thisType;
         }
-        this.activeds = new ArrayList<>();
+        this.excludes = new ArrayList<>();
         for (PFun<T, ?> name : names) {
-            this.activeds.add(LambdaQuery.resolve(name));
+            this.excludes.add(LambdaQuery.resolve(name));
         }
         return this.thisType;
     }
 
+    public Children ignoreNull() {
+        this.ignoreNull = true;
+        return this.thisType;
+    }
 
     public Children eq(PFun<T, ?> name, Object value) {
         cnd.and(name, "=", value);

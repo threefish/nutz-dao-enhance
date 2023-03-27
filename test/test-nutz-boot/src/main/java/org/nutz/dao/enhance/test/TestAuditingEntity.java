@@ -7,7 +7,7 @@ import java.util.Optional;
 
 /**
  * @author 黄川 huchuc@vip.qq.com
- * date: 2023/3/18
+ *  2023/3/18
  */
 @IocBean
 public class TestAuditingEntity implements AuditingEntity {

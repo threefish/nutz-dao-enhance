@@ -10,7 +10,7 @@ import java.util.List;
 
 /**
  * @author 黄川 huchuc@vip.qq.com
- * date: 2023/3/24
+ *  2023/3/24
  */
 public class AnnotationUtil {
 

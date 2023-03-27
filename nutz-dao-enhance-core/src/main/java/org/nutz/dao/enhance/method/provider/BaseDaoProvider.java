@@ -15,7 +15,7 @@ import java.util.Map;
 
 /**
  * @author 黄川 huchuc@vip.qq.com
- * date: 2023/3/13
+ *  2023/3/13
  */
 @SuppressWarnings("all")
 public class BaseDaoProvider {

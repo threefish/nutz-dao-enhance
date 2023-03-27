@@ -2,7 +2,7 @@ package org.nutz.dao.enhance.test;
 
 /**
  * @author 黄川 huchuc@vip.qq.com
- * date: 2023/3/20
+ *  2023/3/20
  */
 public class test {
     private static int x = 0, y = 0;

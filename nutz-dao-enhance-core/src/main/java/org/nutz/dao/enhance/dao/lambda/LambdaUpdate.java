@@ -7,16 +7,21 @@ import org.nutz.dao.util.lambda.LambdaQuery;
 import org.nutz.dao.util.lambda.PFun;
 import org.nutz.lang.Strings;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+
 /**
  * @author 黄川 huchuc@vip.qq.com
- * date: 2023/3/22
+ * 2023/3/22
  */
 @SuppressWarnings("all")
 public class LambdaUpdate<T> extends LambdaCondition<LambdaUpdate<T>, T> {
 
     private final ProviderContext providerContext;
 
-    private Chain chain;
+
+    private Map<String, Object> data;
 
     public LambdaUpdate(ProviderContext providerContext, boolean notNull, boolean notEmpty) {
         super(Cnd.NEW(), providerContext, notNull, notEmpty);
@@ -24,11 +29,10 @@ public class LambdaUpdate<T> extends LambdaCondition<LambdaUpdate<T>, T> {
     }
 
     public LambdaUpdate<T> set(PFun<T, ?> name, Object value) {
-        if (chain == null) {
-            chain = Chain.make(LambdaQuery.resolve(name), value);
-        } else {
-            chain.add(LambdaQuery.resolve(name), value);
+        if (data == null) {
+            data = new HashMap();
         }
+        data.put(LambdaQuery.resolve(name), value);
         return this;
     }
 
@@ -39,19 +43,28 @@ public class LambdaUpdate<T> extends LambdaCondition<LambdaUpdate<T>, T> {
         return set(name, value);
     }
 
+
+    private void convertData() {
+        if (this.ignoreNull) {
+            this.data.entrySet().removeIf(entry -> Objects.isNull(entry.getValue()));
+        }
+    }
+
     public int update() {
-        if (chain == null || chain.size() == 0) {
+        convertData();
+        if (data == null || data.isEmpty()) {
             throw new UnsupportedOperationException("必须通过 set 方法设置更新的列和值");
         }
-        return _invoke(() -> providerContext.dao.update(providerContext.entity, chain, cnd));
+        return _invoke(() -> providerContext.dao.update(providerContext.entity, Chain.from(data), cnd));
     }
 
     public void insert() {
-        if (chain == null || chain.size() == 0) {
+        convertData();
+        if (data == null || data.isEmpty()) {
             throw new UnsupportedOperationException("必须通过 set 方法设置更新的列和值");
         }
         _invoke(() -> {
-            providerContext.dao.insert(providerContext.entityClass, chain);
+            providerContext.dao.insert(providerContext.entityClass, Chain.from(data));
             return null;
         });
     }
