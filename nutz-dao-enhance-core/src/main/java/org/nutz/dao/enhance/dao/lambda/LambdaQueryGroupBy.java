@@ -9,7 +9,7 @@ import java.util.List;
 
 /**
  * @author 黄川 huchuc@vip.qq.com
- *  2022/12/28
+ * 2022/12/28
  */
 @SuppressWarnings("all")
 public class LambdaQueryGroupBy<T> {

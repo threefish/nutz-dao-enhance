@@ -56,6 +56,13 @@ public abstract class LambdaCondition<Children extends LambdaCondition, T> {
         this.notEmpty = notEmpty;
     }
 
+    /**
+     * 执行
+     *
+     * @param moleculeSupplier
+     * @param <T>
+     * @return
+     */
     protected <T> T _invoke(MoleculeSupplier<T> moleculeSupplier) {
         if (Lang.isEmpty(activeds) && Lang.isEmpty(excludes)) {
             return moleculeSupplier.call();
@@ -78,9 +85,27 @@ public abstract class LambdaCondition<Children extends LambdaCondition, T> {
         if (names == null || names.length == 0) {
             return this.thisType;
         }
-        this.activeds = new ArrayList<>();
+        this.activeds = this.activeds == null ? new ArrayList<>() : this.activeds;
         for (PFun<T, ?> name : names) {
             this.activeds.add(LambdaQuery.resolve(name));
+        }
+        return this.thisType;
+    }
+
+    /**
+     * 激活的字段
+     *
+     * @param names
+     * @return
+     */
+    @SafeVarargs
+    public final Children activeds(String... names) {
+        if (names == null || names.length == 0) {
+            return this.thisType;
+        }
+        this.activeds = this.activeds == null ? new ArrayList<>() : this.activeds;
+        for (String name : names) {
+            this.activeds.add(name);
         }
         return this.thisType;
     }
@@ -96,15 +121,39 @@ public abstract class LambdaCondition<Children extends LambdaCondition, T> {
         if (names == null || names.length == 0) {
             return this.thisType;
         }
-        this.excludes = new ArrayList<>();
+        this.excludes = this.excludes == null ? new ArrayList<>() : this.excludes;
         for (PFun<T, ?> name : names) {
             this.excludes.add(LambdaQuery.resolve(name));
         }
         return this.thisType;
     }
 
+    /**
+     * 排除的字段
+     *
+     * @param names
+     * @return
+     */
+    @SafeVarargs
+    public final Children excludes(String... names) {
+        if (names == null || names.length == 0) {
+            return this.thisType;
+        }
+        this.excludes = this.excludes == null ? new ArrayList<>() : this.excludes;
+        for (String name : names) {
+            this.excludes.add(name);
+        }
+        return this.thisType;
+    }
+
 
     public Children eq(PFun<T, ?> name, Object value) {
+        cnd.and(name, "=", value);
+        checkValueForNull(name, value);
+        return this.thisType;
+    }
+
+    public Children eq(String name, Object value) {
         cnd.and(name, "=", value);
         checkValueForNull(name, value);
         return this.thisType;
@@ -119,13 +168,37 @@ public abstract class LambdaCondition<Children extends LambdaCondition, T> {
         return this.thisType;
     }
 
+    public Children eq(boolean condition, String name, Object value) {
+        if (!condition) {
+            return this.thisType;
+        }
+        checkValueForNull(name, value);
+        cnd.and(name, "=", value);
+        return this.thisType;
+    }
+
     public Children ne(PFun<T, ?> name, Object value) {
         checkValueForNull(name, value);
         cnd.and(name, "!=", value);
         return this.thisType;
     }
 
+    public Children ne(String name, Object value) {
+        checkValueForNull(name, value);
+        cnd.and(name, "!=", value);
+        return this.thisType;
+    }
+
     public Children ne(boolean condition, PFun<T, ?> name, Object value) {
+        if (!condition) {
+            return this.thisType;
+        }
+        checkValueForNull(name, value);
+        cnd.and(name, "!=", value);
+        return this.thisType;
+    }
+
+    public Children ne(boolean condition, String name, Object value) {
         if (!condition) {
             return this.thisType;
         }
@@ -147,7 +220,22 @@ public abstract class LambdaCondition<Children extends LambdaCondition, T> {
         return this.thisType;
     }
 
+    public Children gt(String name, Object value) {
+        checkValueForNull(name, value);
+        cnd.and(name, ">", value);
+        return this.thisType;
+    }
+
     public Children gt(boolean condition, PFun<T, ?> name, Object value) {
+        if (!condition) {
+            return this.thisType;
+        }
+        checkValueForNull(name, value);
+        cnd.and(name, ">", value);
+        return this.thisType;
+    }
+
+    public Children gt(boolean condition, String name, Object value) {
         if (!condition) {
             return this.thisType;
         }
@@ -169,7 +257,22 @@ public abstract class LambdaCondition<Children extends LambdaCondition, T> {
         return this.thisType;
     }
 
+    public Children gte(String name, Object value) {
+        checkValueForNull(name, value);
+        cnd.and(name, ">=", value);
+        return this.thisType;
+    }
+
     public Children gte(boolean condition, PFun<T, ?> name, Object value) {
+        if (!condition) {
+            return this.thisType;
+        }
+        checkValueForNull(name, value);
+        cnd.and(name, ">=", value);
+        return this.thisType;
+    }
+
+    public Children gte(boolean condition, String name, Object value) {
         if (!condition) {
             return this.thisType;
         }
@@ -191,7 +294,22 @@ public abstract class LambdaCondition<Children extends LambdaCondition, T> {
         return this.thisType;
     }
 
+    public Children lt(String name, Object value) {
+        checkValueForNull(name, value);
+        cnd.and(name, "<", value);
+        return this.thisType;
+    }
+
     public Children lt(boolean condition, PFun<T, ?> name, Object value) {
+        if (!condition) {
+            return this.thisType;
+        }
+        checkValueForNull(name, value);
+        cnd.and(name, "<", value);
+        return this.thisType;
+    }
+
+    public Children lt(boolean condition, String name, Object value) {
         if (!condition) {
             return this.thisType;
         }
@@ -213,7 +331,22 @@ public abstract class LambdaCondition<Children extends LambdaCondition, T> {
         return this.thisType;
     }
 
+    public Children lte(String name, Object value) {
+        checkValueForNull(name, value);
+        cnd.and(name, "<=", value);
+        return this.thisType;
+    }
+
     public Children lte(boolean condition, PFun<T, ?> name, Object value) {
+        if (!condition) {
+            return this.thisType;
+        }
+        checkValueForNull(name, value);
+        cnd.and(name, "<=", value);
+        return this.thisType;
+    }
+
+    public Children lte(boolean condition, String name, Object value) {
         if (!condition) {
             return this.thisType;
         }
@@ -236,7 +369,22 @@ public abstract class LambdaCondition<Children extends LambdaCondition, T> {
         return this.thisType;
     }
 
+    public Children between(String name, Object val1, Object val2) {
+        checkValueForNull(name, val1, val2);
+        cnd.and(name, "between", new Object[]{val1, val2});
+        return this.thisType;
+    }
+
     public Children between(boolean condition, PFun<T, ?> name, Object val1, Object val2) {
+        if (!condition) {
+            return this.thisType;
+        }
+        checkValueForNull(name, val1, val2);
+        cnd.and(name, "between", new Object[]{val1, val2});
+        return this.thisType;
+    }
+
+    public Children between(boolean condition, String name, Object val1, Object val2) {
         if (!condition) {
             return this.thisType;
         }
@@ -251,7 +399,22 @@ public abstract class LambdaCondition<Children extends LambdaCondition, T> {
         return this.thisType;
     }
 
+    public Children notBetween(String name, Object val1, Object val2) {
+        cnd.andNot(name, "between", new Object[]{val1, val2});
+        checkValueForNull(name, val1, val2);
+        return this.thisType;
+    }
+
     public Children notBetween(boolean condition, PFun<T, ?> name, Object val1, Object val2) {
+        if (!condition) {
+            return this.thisType;
+        }
+        checkValueForNull(name, val1, val2);
+        cnd.andNot(name, "between", new Object[]{val1, val2});
+        return this.thisType;
+    }
+
+    public Children notBetween(boolean condition, String name, Object val1, Object val2) {
         if (!condition) {
             return this.thisType;
         }
@@ -266,7 +429,22 @@ public abstract class LambdaCondition<Children extends LambdaCondition, T> {
         return this.thisType;
     }
 
+    public Children like(String name, Object value) {
+        checkValueForNull(name, value);
+        cnd.and(name, "like", value);
+        return this.thisType;
+    }
+
     public Children like(boolean condition, PFun<T, ?> name, Object value) {
+        if (!condition) {
+            return this.thisType;
+        }
+        checkValueForNull(name, value);
+        cnd.and(name, "like", value);
+        return this.thisType;
+    }
+
+    public Children like(boolean condition, String name, Object value) {
         if (!condition) {
             return this.thisType;
         }
@@ -281,7 +459,22 @@ public abstract class LambdaCondition<Children extends LambdaCondition, T> {
         return this.thisType;
     }
 
+    public Children notLike(String name, Object value) {
+        checkValueForNull(name, value);
+        cnd.andNot(name, "like", value);
+        return this.thisType;
+    }
+
     public Children notLike(boolean condition, PFun<T, ?> name, Object value) {
+        if (!condition) {
+            return this.thisType;
+        }
+        checkValueForNull(name, value);
+        cnd.andNot(name, "like", value);
+        return this.thisType;
+    }
+
+    public Children notLike(boolean condition, String name, Object value) {
         if (!condition) {
             return this.thisType;
         }
@@ -296,7 +489,22 @@ public abstract class LambdaCondition<Children extends LambdaCondition, T> {
         return this.thisType;
     }
 
+    public Children likeLeft(String name, Object value) {
+        checkValueForNull(name, value);
+        cnd.and(Cnd.exp(name, "like", String.format("%%%s", value)));
+        return this.thisType;
+    }
+
     public Children likeLeft(boolean condition, PFun<T, ?> name, Object value) {
+        if (!condition) {
+            return this.thisType;
+        }
+        checkValueForNull(name, value);
+        cnd.and(Cnd.exp(name, "like", String.format("%%%s", value)));
+        return this.thisType;
+    }
+
+    public Children likeLeft(boolean condition, String name, Object value) {
         if (!condition) {
             return this.thisType;
         }
@@ -311,7 +519,22 @@ public abstract class LambdaCondition<Children extends LambdaCondition, T> {
         return this.thisType;
     }
 
+    public Children likeRight(String name, Object value) {
+        checkValueForNull(name, value);
+        cnd.and(Cnd.exp(name, "like", String.format("%s%%", value)));
+        return this.thisType;
+    }
+
     public Children likeRight(boolean condition, PFun<T, ?> name, Object value) {
+        if (!condition) {
+            return this.thisType;
+        }
+        checkValueForNull(name, value);
+        cnd.and(Cnd.exp(name, "like", String.format("%s%%", value)));
+        return this.thisType;
+    }
+
+    public Children likeRight(boolean condition, String name, Object value) {
         if (!condition) {
             return this.thisType;
         }
@@ -325,7 +548,20 @@ public abstract class LambdaCondition<Children extends LambdaCondition, T> {
         return this.thisType;
     }
 
+    public Children isNull(String name) {
+        cnd.and(new IsNull(name));
+        return this.thisType;
+    }
+
     public Children isNull(boolean condition, PFun<T, ?> name) {
+        if (!condition) {
+            return this.thisType;
+        }
+        cnd.and(new IsNull(name));
+        return this.thisType;
+    }
+
+    public Children isNull(boolean condition, String name) {
         if (!condition) {
             return this.thisType;
         }
@@ -338,6 +574,11 @@ public abstract class LambdaCondition<Children extends LambdaCondition, T> {
         return this.thisType;
     }
 
+    public Children isNotNull(String name) {
+        cnd.and(new IsNull(name).setNot(true));
+        return this.thisType;
+    }
+
     public Children isNotNull(boolean condition, PFun<T, ?> name) {
         if (!condition) {
             return this.thisType;
@@ -346,7 +587,21 @@ public abstract class LambdaCondition<Children extends LambdaCondition, T> {
         return this.thisType;
     }
 
+    public Children isNotNull(boolean condition, String name) {
+        if (!condition) {
+            return this.thisType;
+        }
+        cnd.and(new IsNull(name).setNot(true));
+        return this.thisType;
+    }
+
     public Children in(PFun<T, ?> name, Collection<?> coll) {
+        checkCollectionValueForEmpty(name, coll);
+        cnd.and(name, "in", coll);
+        return this.thisType;
+    }
+
+    public Children in(String name, Collection<?> coll) {
         checkCollectionValueForEmpty(name, coll);
         cnd.and(name, "in", coll);
         return this.thisType;
@@ -361,13 +616,37 @@ public abstract class LambdaCondition<Children extends LambdaCondition, T> {
         return this.thisType;
     }
 
+    public Children in(boolean condition, String name, Collection<?> coll) {
+        if (!condition) {
+            return this.thisType;
+        }
+        checkCollectionValueForEmpty(name, coll);
+        cnd.and(name, "in", coll);
+        return this.thisType;
+    }
+
     public Children notIn(PFun<T, ?> name, Collection<?> coll) {
         checkCollectionValueForEmpty(name, coll);
         cnd.and(name, "not in", coll);
         return this.thisType;
     }
 
+    public Children notIn(String name, Collection<?> coll) {
+        checkCollectionValueForEmpty(name, coll);
+        cnd.and(name, "not in", coll);
+        return this.thisType;
+    }
+
     public Children notIn(boolean condition, PFun<T, ?> name, Collection<?> coll) {
+        if (!condition) {
+            return this.thisType;
+        }
+        checkCollectionValueForEmpty(name, coll);
+        cnd.and(name, "not in", coll);
+        return this.thisType;
+    }
+
+    public Children notIn(boolean condition, String name, Collection<?> coll) {
         if (!condition) {
             return this.thisType;
         }
@@ -442,9 +721,19 @@ public abstract class LambdaCondition<Children extends LambdaCondition, T> {
      * @param coll
      */
     private void checkCollectionValueForEmpty(PFun<T, ?> name, Collection<?> coll) {
+        checkCollectionValueForEmpty(LambdaQuery.resolve(name), coll);
+    }
+
+    /**
+     * 检查集合值是否为空
+     *
+     * @param name
+     * @param coll
+     */
+    private void checkCollectionValueForEmpty(String name, Collection<?> coll) {
         if (this.notEmpty) {
             if (coll == null || coll.isEmpty()) {
-                throw new IllegalArgumentException(String.format("Value for [%s] cannot be empty", LambdaQuery.resolve(name)));
+                throw new IllegalArgumentException(String.format("Value for [%s] cannot be empty", name));
             }
         }
     }
@@ -454,13 +743,21 @@ public abstract class LambdaCondition<Children extends LambdaCondition, T> {
      */
     @SafeVarargs
     private final void checkValueForNull(PFun<T, ?> name, Object... values) {
+        checkValueForNull(LambdaQuery.resolve(name), values);
+    }
+
+    /**
+     * 如果字段值是null将报错，阻止sql提交
+     */
+    @SafeVarargs
+    private final void checkValueForNull(String name, Object... values) {
         if (this.notNull) {
             if (values == null) {
-                throw new IllegalArgumentException(String.format("Value for [%s] cannot be null", LambdaQuery.resolve(name)));
+                throw new IllegalArgumentException(String.format("Value for [%s] cannot be null", name));
             }
             for (int i = 0; i < values.length; i++) {
                 if (values[i] == null) {
-                    throw new IllegalArgumentException(String.format("Value for [%s] cannot be null,index [%s]", LambdaQuery.resolve(name), i + 1));
+                    throw new IllegalArgumentException(String.format("Value for [%s] cannot be null,index [%s]", name, i + 1));
                 }
             }
         }

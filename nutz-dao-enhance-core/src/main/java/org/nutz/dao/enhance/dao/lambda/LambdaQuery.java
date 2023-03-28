@@ -12,7 +12,7 @@ import java.util.List;
 
 /**
  * @author 黄川 huchuc@vip.qq.com
- *  2022/12/28
+ * 2022/12/28
  */
 @SuppressWarnings("all")
 public class LambdaQuery<T> extends LambdaCondition<LambdaQuery<T>, T> {
@@ -64,7 +64,17 @@ public class LambdaQuery<T> extends LambdaCondition<LambdaQuery<T>, T> {
         return this;
     }
 
+    public LambdaQuery<T> asc(String name) {
+        cnd.asc(name);
+        return this;
+    }
+
     public LambdaQuery<T> desc(PFun<T, ?> name) {
+        cnd.desc(name);
+        return this;
+    }
+
+    public LambdaQuery<T> desc(String name) {
         cnd.desc(name);
         return this;
     }
@@ -73,7 +83,16 @@ public class LambdaQuery<T> extends LambdaCondition<LambdaQuery<T>, T> {
         return new LambdaQueryGroupBy(this, cnd.groupBy(names));
     }
 
+    public LambdaQueryGroupBy<T> groupBy(String... names) {
+        return new LambdaQueryGroupBy(this, cnd.groupBy(names));
+    }
+
     public LambdaQuery<T> orderBy(PFun<T, ?> name, String dir) {
+        cnd.orderBy(name, dir);
+        return this;
+    }
+
+    public LambdaQuery<T> orderBy(String name, String dir) {
         cnd.orderBy(name, dir);
         return this;
     }
@@ -83,7 +102,17 @@ public class LambdaQuery<T> extends LambdaCondition<LambdaQuery<T>, T> {
         return this;
     }
 
+    public LambdaQuery<T> orderByAsc(String name) {
+        cnd.orderBy(name, "asc");
+        return this;
+    }
+
     public LambdaQuery<T> orderByDesc(PFun<T, ?> name) {
+        cnd.orderBy(name, "desc");
+        return this;
+    }
+
+    public LambdaQuery<T> orderByDesc(String name) {
         cnd.orderBy(name, "desc");
         return this;
     }

@@ -6,7 +6,7 @@ import java.util.function.Supplier;
 
 /**
  * @author 黄川 huchuc@vip.qq.com
- *  2023/3/27
+ * 2023/3/27
  */
 public class FieldFilterMolecule<T> extends Molecule<T> {
 

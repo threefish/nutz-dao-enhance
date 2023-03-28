@@ -29,11 +29,23 @@ public class LambdaUpdate<T> extends LambdaCondition<LambdaUpdate<T>, T> {
     }
 
     public LambdaUpdate<T> set(PFun<T, ?> name, Object value) {
+        set(LambdaQuery.resolve(name), value);
+        return this;
+    }
+
+    public LambdaUpdate<T> set(String name, Object value) {
         if (data == null) {
             data = new HashMap();
         }
-        data.put(LambdaQuery.resolve(name), value);
+        data.put(name, value);
         return this;
+    }
+
+    public LambdaUpdate<T> setEx(String name, Object value) {
+        if (Cnd._ex(value)) {
+            return this;
+        }
+        return set(name, value);
     }
 
     public LambdaUpdate<T> setEx(PFun<T, ?> name, Object value) {
