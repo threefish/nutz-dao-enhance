@@ -28,10 +28,18 @@ public abstract class LambdaCondition<Children extends LambdaCondition, T> {
     protected final Cnd cnd;
 
     protected final ProviderContext providerContext;
-
+    /**
+     * 入参条件不允许null值
+     */
     protected final boolean notNull;
-
+    /**
+     * 入参条件不允许空集合
+     */
     protected final boolean notEmpty;
+    /**
+     * 使用lambda更新、插入时是否忽略null值
+     */
+    protected boolean ignoreNull;
     /**
      * 激活的字段
      */
@@ -40,8 +48,6 @@ public abstract class LambdaCondition<Children extends LambdaCondition, T> {
      * 排除的字段
      */
     private List<String> excludes;
-
-    protected boolean ignoreNull;
 
     public LambdaCondition(Cnd cnd, ProviderContext providerContext, boolean notNull, boolean notEmpty) {
         this.cnd = cnd;
@@ -97,10 +103,6 @@ public abstract class LambdaCondition<Children extends LambdaCondition, T> {
         return this.thisType;
     }
 
-    public Children ignoreNull() {
-        this.ignoreNull = true;
-        return this.thisType;
-    }
 
     public Children eq(PFun<T, ?> name, Object value) {
         cnd.and(name, "=", value);

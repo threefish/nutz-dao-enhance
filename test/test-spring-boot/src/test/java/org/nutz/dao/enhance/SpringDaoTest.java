@@ -336,7 +336,7 @@ public class SpringDaoTest {
                 .set(UserDO::getAge, 123)
                 .set(UserDO::getRealName, null)
                 .set(UserDO::getCreateBy, "张三")
-                //.ignoreNull()
+                .ignoreNull()
                 .insert();
         int maxId = userDao.getMaxId();
         UserDO one = userDao.lambdaQuery().select(UserDO::getId).eq(UserDO::getId, maxId).one();

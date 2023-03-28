@@ -32,7 +32,7 @@ import java.util.*;
 
 /**
  * @author 黄川 huchuc@vip.qq.com
- *  2020/7/31
+ * 2020/7/31
  */
 @Slf4j
 public class DaoMethodInvoke {
@@ -53,6 +53,9 @@ public class DaoMethodInvoke {
      * 动态条件信息，若入参为空或者null或个数为0则不参与sql执行
      */
     private List<ConditionMapping> conditions = Collections.EMPTY_LIST;
+    /**
+     * 统计语句条件组
+     */
     private List<ConditionMapping> countConditions = Collections.EMPTY_LIST;
 
 

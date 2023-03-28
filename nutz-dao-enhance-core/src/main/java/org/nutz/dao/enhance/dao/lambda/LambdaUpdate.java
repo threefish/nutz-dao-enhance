@@ -43,6 +43,10 @@ public class LambdaUpdate<T> extends LambdaCondition<LambdaUpdate<T>, T> {
         return set(name, value);
     }
 
+    public LambdaUpdate<T> ignoreNull() {
+        this.ignoreNull = true;
+        return this;
+    }
 
     private void convertData() {
         if (this.ignoreNull) {
