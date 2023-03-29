@@ -4,6 +4,7 @@ import org.nutz.dao.enhance.audit.AuditingEntity;
 import org.nutz.dao.enhance.config.DaoProperties;
 import org.nutz.dao.enhance.el.AuditingEntityRunMethod;
 import org.nutz.dao.enhance.el.IdentifierGeneratorRunMethod;
+import org.nutz.dao.enhance.el.NowDateRunMethod;
 import org.nutz.dao.enhance.factory.DaoFactory;
 import org.nutz.dao.enhance.incrementer.IdentifierGenerator;
 import org.nutz.dao.enhance.registrar.factory.DefaualtNutDaoFactory;
@@ -39,6 +40,7 @@ public class RegistrarAutoConfig {
         this.daoProperties = DaoPropertiesUtil.toDaoProperties(propertiesProxy);
         CustomMake.me().register(AuditingEntityRunMethod.NAME, new AuditingEntityRunMethod(auditingEntity));
         CustomMake.me().register(IdentifierGeneratorRunMethod.NAME, new IdentifierGeneratorRunMethod(identifierGenerator));
+        CustomMake.me().register(NowDateRunMethod.NAME, new NowDateRunMethod());
     }
 
     @IocBean

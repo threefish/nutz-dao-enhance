@@ -39,7 +39,7 @@ public class InsertQueryExecute extends AbstractExecute {
         if (methodSignature.isLoop()) {
             Collection<Object> collections = ((Collection) this.params.get(methodSignature.getLoopForField()));
             if (Lang.isEmpty(collections)) {
-                return this.returnIsOptionalVal(null);
+                return this.returnIsOptionalVal(0);
             }
             boolean returnMultipleRecords = this.methodSignature.isMultipleRecords();
             if (this.methodSignature.isReturnGeneratedKeys() && returnMultipleRecords) {

@@ -36,6 +36,9 @@ public interface BaseDao<T> {
     @CustomProvider(type = BaseDaoProvider.class)
     T insert(T t);
 
+    @CustomProvider(type = BaseDaoProvider.class)
+    T save(T t);
+
     /**
      * 以特殊规则执行insert
      *
@@ -47,6 +50,9 @@ public interface BaseDao<T> {
      */
     @CustomProvider(type = BaseDaoProvider.class)
     T insert(T t, boolean ignoreNull, boolean ignoreZero, boolean ignoreBlankStr);
+
+    @CustomProvider(type = BaseDaoProvider.class)
+    T save(T t, boolean ignoreNull, boolean ignoreZero, boolean ignoreBlankStr);
 
     /**
      * 将对象插入数据库同时，也将符合一个正则表达式的所有关联字段关联的对象统统插入相应的数据库
@@ -97,6 +103,9 @@ public interface BaseDao<T> {
      */
     @CustomProvider(type = BaseDaoProvider.class)
     T insertOrUpdate(T t);
+
+    @CustomProvider(type = BaseDaoProvider.class)
+    T saveOrUpdate(T t);
 
     /**
      * 根据对象的主键(@Id/@Name/@Pk)先查询, 如果存在就更新, 不存在就插入
@@ -634,7 +643,7 @@ public interface BaseDao<T> {
      * @return
      */
     @CustomProvider(type = BaseDaoProvider.class)
-    <Any> Any saveBatch(Collection<T> objList);
+    Collection<T> saveBatch(Collection<T> objList);
 
     /**
      * 执行链式查询操作

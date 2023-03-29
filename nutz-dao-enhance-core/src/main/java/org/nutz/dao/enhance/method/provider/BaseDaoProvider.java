@@ -15,7 +15,7 @@ import java.util.Map;
 
 /**
  * @author 黄川 huchuc@vip.qq.com
- *  2023/3/13
+ * 2023/3/13
  */
 @SuppressWarnings("all")
 public class BaseDaoProvider {
@@ -24,8 +24,16 @@ public class BaseDaoProvider {
         return providerContext.dao.insert(obj);
     }
 
+    public static <T> T save(ProviderContext providerContext, T obj) {
+        return insert(providerContext, obj);
+    }
+
     public static <T> T insert(ProviderContext providerContext, T obj, boolean ignoreNull, boolean ignoreZero, boolean ignoreBlankStr) {
         return providerContext.dao.insert(obj, ignoreNull, ignoreZero, ignoreBlankStr);
+    }
+
+    public static <T> T save(ProviderContext providerContext, T obj, boolean ignoreNull, boolean ignoreZero, boolean ignoreBlankStr) {
+        return insert(providerContext, obj, ignoreNull, ignoreZero, ignoreBlankStr);
     }
 
 
@@ -46,6 +54,10 @@ public class BaseDaoProvider {
 
     public static <T> T insertOrUpdate(ProviderContext providerContext, T obj) {
         return providerContext.dao.insertOrUpdate(obj);
+    }
+
+    public static <T> T saveOrUpdate(ProviderContext providerContext, T obj) {
+        return insertOrUpdate(providerContext, obj);
     }
 
 
@@ -241,8 +253,8 @@ public class BaseDaoProvider {
      * @param objList 对象列表
      * @return
      */
-    public static <T> T saveBatch(ProviderContext providerContext, Collection<T> objList) {
-        return (T) providerContext.dao.insert(objList);
+    public static <T> Collection<T> saveBatch(ProviderContext providerContext, Collection<T> objList) {
+        return providerContext.dao.insert(objList);
     }
 
     public static List list(ProviderContext providerContext, Condition cnd, Pager pager, String regex) {

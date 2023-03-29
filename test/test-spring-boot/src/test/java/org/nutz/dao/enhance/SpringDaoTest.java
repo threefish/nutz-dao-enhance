@@ -26,7 +26,7 @@ import java.util.*;
 
 /**
  * @author 黄川 huchuc@vip.qq.com
- *  2020/7/31
+ * 2020/7/31
  */
 @SuppressWarnings("all")
 @RunWith(SpringRunner.class)
@@ -54,7 +54,7 @@ public class SpringDaoTest {
         list.add(u1);
         list.add(u2);
         list.add(u3);
-        List<UserDO> newList = userDao.saveBatch(list);
+        userDao.saveBatch(list);
     }
 
     @After
@@ -353,4 +353,5 @@ public class SpringDaoTest {
                 .update();
 
     }
+
 }

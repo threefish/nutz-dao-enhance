@@ -6,6 +6,7 @@ import org.nutz.dao.Dao;
 import org.nutz.dao.enhance.annotation.*;
 import org.nutz.dao.enhance.el.AuditingEntityRunMethod;
 import org.nutz.dao.enhance.el.IdentifierGeneratorRunMethod;
+import org.nutz.dao.enhance.el.NowDateRunMethod;
 import org.nutz.dao.enhance.enhance.EnhanceNutDaoElPojoInterceptor;
 import org.nutz.dao.enhance.factory.DaoFactory;
 import org.nutz.dao.enhance.method.execute.*;
@@ -101,9 +102,9 @@ public class DaoMethodInvoke {
                     } else if (Objects.nonNull(lastModifiedBy)) {
                         defaultPojoInterceptor.getList().add(new EnhanceNutDaoElPojoInterceptor(mf, AuditingEntityRunMethod.FUN_NAME, "prevUpdate", lastModifiedBy.nullEffective()));
                     } else if (Objects.nonNull(createdDate)) {
-                        defaultPojoInterceptor.getList().add(new EnhanceNutDaoElPojoInterceptor(mf, "now()", "prevInsert", createdDate.nullEffective()));
+                        defaultPojoInterceptor.getList().add(new EnhanceNutDaoElPojoInterceptor(mf, String.format(NowDateRunMethod.FUN_NAME, declaredField.getType().getName()), "prevInsert", createdDate.nullEffective()));
                     } else if (Objects.nonNull(lastModifiedDate)) {
-                        defaultPojoInterceptor.getList().add(new EnhanceNutDaoElPojoInterceptor(mf, "now()", "prevUpdate", lastModifiedDate.nullEffective()));
+                        defaultPojoInterceptor.getList().add(new EnhanceNutDaoElPojoInterceptor(mf, String.format(NowDateRunMethod.FUN_NAME, declaredField.getType().getName()), "prevUpdate", lastModifiedDate.nullEffective()));
                     }
                 }
             } else {

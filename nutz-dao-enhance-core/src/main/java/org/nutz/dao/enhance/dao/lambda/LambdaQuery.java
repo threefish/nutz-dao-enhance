@@ -9,6 +9,7 @@ import org.nutz.dao.util.lambda.PFun;
 import org.nutz.lang.Each;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author 黄川 huchuc@vip.qq.com
@@ -128,6 +129,13 @@ public class LambdaQuery<T> extends LambdaCondition<LambdaQuery<T>, T> {
      */
     public T one() {
         return _invoke(() -> this.baseDao.fetch(cnd));
+    }
+
+    /**
+     * 查询
+     */
+    public Optional<T> oneOpt() {
+        return Optional.ofNullable(_invoke(() -> this.baseDao.fetch(cnd)));
     }
 
     /**

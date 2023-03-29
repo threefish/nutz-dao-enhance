@@ -46,7 +46,7 @@ public class NutzDaoTest {
         list.add(u1);
         list.add(u2);
         list.add(u3);
-        List<UserDO> newList = userDao.saveBatch(list);
+        userDao.saveBatch(list);
     }
 
     @After
