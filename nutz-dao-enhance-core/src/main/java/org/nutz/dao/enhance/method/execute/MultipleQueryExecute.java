@@ -5,9 +5,13 @@ import org.nutz.dao.Sqls;
 import org.nutz.dao.enhance.method.signature.MethodSignature;
 import org.nutz.dao.sql.Sql;
 
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 /**
  * @author 黄川 2020/12/15
- * 分页查询
+ * 多记录查询
  */
 public class MultipleQueryExecute extends AbstractExecute {
 
@@ -22,6 +26,10 @@ public class MultipleQueryExecute extends AbstractExecute {
         sql.setEntity(dao.getEntity(this.methodSignature.getEntityClass()));
         sql.setCallback(methodSignature.getSqlCallback());
         dao.execute(sql);
-        return this.returnIsOptionalVal(sql.getList(methodSignature.getEntityClass()));
+        List<?> listData = sql.getList(methodSignature.getEntityClass());
+        if (Set.class.isAssignableFrom(methodSignature.getReturnType())) {
+            return this.returnIsOptionalVal(listData.stream().collect(Collectors.toSet()));
+        }
+        return this.returnIsOptionalVal(listData);
     }
 }

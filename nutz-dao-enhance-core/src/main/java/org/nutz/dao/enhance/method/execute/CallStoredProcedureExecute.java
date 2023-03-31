@@ -10,6 +10,10 @@ import org.nutz.dao.sql.Sql;
 import org.nutz.lang.Lang;
 import org.nutz.lang.util.NutMap;
 
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 /**
  * @author 黄川 2020/12/15
  * 存储过程
@@ -63,7 +67,11 @@ public class CallStoredProcedureExecute extends AbstractExecute {
         if (this.methodSignature.isReturnsVoid()) {
             return null;
         }
-        return sql.getList(this.methodSignature.getReturnGenericType());
+        List<?> listData = sql.getList(this.methodSignature.getReturnGenericType());
+        if (Set.class.isAssignableFrom(methodSignature.getReturnType())) {
+            return this.returnIsOptionalVal(listData.stream().collect(Collectors.toSet()));
+        }
+        return listData;
     }
 
     private Sql getSql() {
