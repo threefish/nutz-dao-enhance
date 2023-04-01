@@ -637,4 +637,5 @@ public class UserDO {
 
 ```
 mvn clean package -P releasse
+mvn clean install -P releasse
 ```

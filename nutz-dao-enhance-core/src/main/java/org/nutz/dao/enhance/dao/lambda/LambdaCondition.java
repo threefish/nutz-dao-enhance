@@ -425,13 +425,13 @@ public abstract class LambdaCondition<Children extends LambdaCondition, T> {
 
     public Children like(PFun<T, ?> name, Object value) {
         checkValueForNull(name, value);
-        cnd.and(name, "like", value);
+        cnd.and(name, "like", String.format("%%%s%%", value));
         return this.thisType;
     }
 
     public Children like(String name, Object value) {
         checkValueForNull(name, value);
-        cnd.and(name, "like", value);
+        cnd.and(name, "like", String.format("%%%s%%", value));
         return this.thisType;
     }
 
@@ -440,7 +440,7 @@ public abstract class LambdaCondition<Children extends LambdaCondition, T> {
             return this.thisType;
         }
         checkValueForNull(name, value);
-        cnd.and(name, "like", value);
+        cnd.and(name, "like", String.format("%%%s%%", value));
         return this.thisType;
     }
 
@@ -449,19 +449,19 @@ public abstract class LambdaCondition<Children extends LambdaCondition, T> {
             return this.thisType;
         }
         checkValueForNull(name, value);
-        cnd.and(name, "like", value);
+        cnd.and(name, "like", String.format("%%%s%%", value));
         return this.thisType;
     }
 
     public Children notLike(PFun<T, ?> name, Object value) {
         checkValueForNull(name, value);
-        cnd.andNot(name, "like", value);
+        cnd.andNot(name, "like", String.format("%%%s%%", value));
         return this.thisType;
     }
 
     public Children notLike(String name, Object value) {
         checkValueForNull(name, value);
-        cnd.andNot(name, "like", value);
+        cnd.andNot(name, "like", String.format("%%%s%%", value));
         return this.thisType;
     }
 
@@ -470,7 +470,7 @@ public abstract class LambdaCondition<Children extends LambdaCondition, T> {
             return this.thisType;
         }
         checkValueForNull(name, value);
-        cnd.andNot(name, "like", value);
+        cnd.andNot(name, "like", String.format("%%%s%%", value));
         return this.thisType;
     }
 
@@ -479,7 +479,7 @@ public abstract class LambdaCondition<Children extends LambdaCondition, T> {
             return this.thisType;
         }
         checkValueForNull(name, value);
-        cnd.andNot(name, "like", value);
+        cnd.andNot(name, "like", String.format("%%%s%%", value));
         return this.thisType;
     }
 
