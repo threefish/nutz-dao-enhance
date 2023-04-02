@@ -204,9 +204,19 @@ public class BaseDaoProvider {
         return providerContext.dao.fetchLinks(obj, regex);
     }
 
+    public static <T> T fetchLinks(ProviderContext<T> providerContext, T obj) {
+        AssertUtils.notNull(obj);
+        return providerContext.dao.fetchLinks(obj, null);
+    }
+
     public static <T> T fetchLinks(ProviderContext providerContext, T obj, String regex, Condition cnd) {
         AssertUtils.notNull(obj);
         return providerContext.dao.fetchLinks(obj, regex, cnd);
+    }
+
+    public static <T> T fetchLinks(ProviderContext providerContext, T obj, Condition cnd) {
+        AssertUtils.notNull(obj);
+        return providerContext.dao.fetchLinks(obj, null, cnd);
     }
 
     public static <T> int clear(ProviderContext providerContext, Condition cnd) {
@@ -275,7 +285,9 @@ public class BaseDaoProvider {
      * @return
      */
     public static <T> boolean updateBatchByPk(ProviderContext providerContext, Collection<T> objList) {
-        AssertUtils.notEmpty(objList, "Collection can't be null or empty");
+        if (objList == null || objList.isEmpty()) {
+            return false;
+        }
         return providerContext.dao.update(objList) > 0;
     }
 

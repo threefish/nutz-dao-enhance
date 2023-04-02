@@ -9,6 +9,7 @@ import org.nutz.dao.enhance.dao.lambda.LambdaUpdate;
 import org.nutz.dao.enhance.method.provider.BaseDaoProvider;
 import org.nutz.dao.enhance.method.provider.LambdaQueryProvider;
 import org.nutz.dao.enhance.method.provider.LambdaUpdateProvider;
+import org.nutz.dao.enhance.method.provider.ProviderContext;
 import org.nutz.dao.enhance.pagination.PageRecord;
 import org.nutz.dao.pager.Pager;
 import org.nutz.lang.Each;
@@ -19,7 +20,7 @@ import java.util.Map;
 
 /**
  * @author 黄川 huchuc@vip.qq.com
- *  2020/7/31
+ * 2020/7/31
  */
 @SuppressWarnings("all")
 public interface BaseDao<T> {
@@ -448,6 +449,9 @@ public interface BaseDao<T> {
     @CustomProvider(type = BaseDaoProvider.class)
     T fetchLinks(T obj, String regex);
 
+    @CustomProvider(type = BaseDaoProvider.class)
+    T fetchLinks(T obj);
+
 
     /**
      * 根据一个正则表达式，获取对象所有的关联字段, 并按Condition进行数据过滤排序
@@ -462,6 +466,8 @@ public interface BaseDao<T> {
     @CustomProvider(type = BaseDaoProvider.class)
     T fetchLinks(T obj, String regex, Condition cnd);
 
+    @CustomProvider(type = BaseDaoProvider.class)
+    T fetchLinks(ProviderContext providerContext, T obj, Condition cnd);
 
     /**
      * 根据一个 WHERE 条件，清除一组对象。只包括对象本身，不包括关联字段
