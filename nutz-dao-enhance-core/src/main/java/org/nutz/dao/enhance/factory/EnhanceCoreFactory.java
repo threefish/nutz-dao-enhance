@@ -8,12 +8,13 @@
 package org.nutz.dao.enhance.factory;
 
 import org.nutz.dao.Dao;
+import org.nutz.dao.enhance.audit.AuditHandler;
 
 /**
  * @author 黄川 huchuc@vip.qq.com
  *  2020/12/12
  */
-public interface DaoFactory {
+public interface EnhanceCoreFactory {
     /**
      * 默认DaoFactory bean名称
      */
@@ -33,5 +34,11 @@ public interface DaoFactory {
      * @return
      */
     Dao getDao(String dataSource);
+
+    /**
+     * 获取审计处理程序
+     * @return
+     */
+    AuditHandler getAuditHandler();
 
 }

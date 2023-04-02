@@ -8,6 +8,7 @@ import org.nutz.dao.enhance.method.provider.ProviderContext;
 import org.nutz.dao.pager.Pager;
 import org.nutz.lang.Lang;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.*;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -270,6 +271,25 @@ public class MethodSignatureUtil {
             cls = cls.getSuperclass();
         }
         return fieldList;
+    }
+
+    /**
+     * 获取注解信息
+     * @param entityClass
+     * @param annotationClass
+     * @param <A>
+     * @return
+     */
+    public static <A extends Annotation> A getAnnotation(Class<?> entityClass, Class<A> annotationClass) {
+        Class<?> tempClass = entityClass;
+        A annotation = tempClass.getAnnotation(annotationClass);
+        do {
+            if (annotation == null) {
+                tempClass = tempClass.getSuperclass();
+                annotation = tempClass.getAnnotation(annotationClass);
+            }
+        } while (annotation == null && entityClass != null);
+        return annotation;
     }
 
 }

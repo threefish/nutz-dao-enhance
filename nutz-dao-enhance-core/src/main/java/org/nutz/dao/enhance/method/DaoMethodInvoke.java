@@ -3,12 +3,12 @@ package org.nutz.dao.enhance.method;
 
 import lombok.extern.slf4j.Slf4j;
 import org.nutz.dao.Dao;
-import org.nutz.dao.enhance.annotation.*;
-import org.nutz.dao.enhance.el.AuditingEntityRunMethod;
+import org.nutz.dao.enhance.annotation.AutoID;
+import org.nutz.dao.enhance.annotation.EntityListener;
 import org.nutz.dao.enhance.el.IdentifierGeneratorRunMethod;
-import org.nutz.dao.enhance.el.NowDateRunMethod;
+import org.nutz.dao.enhance.enhance.AuditingEntityPojoInterceptor;
 import org.nutz.dao.enhance.enhance.EnhanceNutDaoElPojoInterceptor;
-import org.nutz.dao.enhance.factory.DaoFactory;
+import org.nutz.dao.enhance.factory.EnhanceCoreFactory;
 import org.nutz.dao.enhance.method.execute.*;
 import org.nutz.dao.enhance.method.holder.EntityClassInfoHolder;
 import org.nutz.dao.enhance.method.parser.ConditionMapping;
@@ -42,7 +42,7 @@ public class DaoMethodInvoke {
      * 方法信息
      */
     private final MethodSignature methodSignature;
-    private final DaoFactory daoFactory;
+    private final EnhanceCoreFactory enhanceCoreFactory;
     private final Class<?> entityClass;
     private Entity<?> entity;
     /**
@@ -66,11 +66,11 @@ public class DaoMethodInvoke {
      * @param mapperInterface
      * @param method
      */
-    public DaoMethodInvoke(DaoFactory daoFactory, String dataSource, Class<?> mapperInterface, Method method) {
-        this.daoFactory = daoFactory;
+    public DaoMethodInvoke(EnhanceCoreFactory enhanceCoreFactory, String dataSource, Class<?> mapperInterface, Method method) {
+        this.enhanceCoreFactory = enhanceCoreFactory;
         this.methodSignature = new MethodSignature(mapperInterface, method);
         this.entityClass = this.methodSignature.getEntityClass();
-        final Dao dao = daoFactory.getDao(dataSource);
+        final Dao dao = enhanceCoreFactory.getDao(dataSource);
         if (Objects.isNull(dao)) {
             throw new RuntimeException(String.format("dataSource '%s' is null.", dataSource));
         }
@@ -87,24 +87,16 @@ public class DaoMethodInvoke {
             PojoInterceptor interceptor = this.entity.getInterceptor();
             if (interceptor instanceof DefaultPojoInterceptor) {
                 DefaultPojoInterceptor defaultPojoInterceptor = ((DefaultPojoInterceptor) interceptor);
+                EntityListener entityListener = MethodSignatureUtil.getAnnotation(this.entityClass,EntityListener.class);
+                if (entityListener != null) {
+                    defaultPojoInterceptor.getList().add(new AuditingEntityPojoInterceptor(enhanceCoreFactory.getAuditHandler()));
+                }
                 List<Field> declaredFields = MethodSignatureUtil.getAllFields(this.entityClass);
                 for (Field declaredField : declaredFields) {
                     MappingField mf = this.entity.getField(declaredField.getName());
-                    CreatedBy createdBy = declaredField.getAnnotation(CreatedBy.class);
-                    CreatedDate createdDate = declaredField.getAnnotation(CreatedDate.class);
-                    LastModifiedBy lastModifiedBy = declaredField.getAnnotation(LastModifiedBy.class);
-                    LastModifiedDate lastModifiedDate = declaredField.getAnnotation(LastModifiedDate.class);
                     AutoID autoID = declaredField.getAnnotation(AutoID.class);
                     if (Objects.nonNull(autoID)) {
                         defaultPojoInterceptor.getList().add(new EnhanceNutDaoElPojoInterceptor(mf, IdentifierGeneratorRunMethod.FUN_NAME, "prevInsert", autoID.nullEffective()));
-                    } else if (Objects.nonNull(createdBy)) {
-                        defaultPojoInterceptor.getList().add(new EnhanceNutDaoElPojoInterceptor(mf, AuditingEntityRunMethod.FUN_NAME, "prevInsert", createdBy.nullEffective()));
-                    } else if (Objects.nonNull(lastModifiedBy)) {
-                        defaultPojoInterceptor.getList().add(new EnhanceNutDaoElPojoInterceptor(mf, AuditingEntityRunMethod.FUN_NAME, "prevUpdate", lastModifiedBy.nullEffective()));
-                    } else if (Objects.nonNull(createdDate)) {
-                        defaultPojoInterceptor.getList().add(new EnhanceNutDaoElPojoInterceptor(mf, String.format(NowDateRunMethod.FUN_NAME, declaredField.getType().getName()), "prevInsert", createdDate.nullEffective()));
-                    } else if (Objects.nonNull(lastModifiedDate)) {
-                        defaultPojoInterceptor.getList().add(new EnhanceNutDaoElPojoInterceptor(mf, String.format(NowDateRunMethod.FUN_NAME, declaredField.getType().getName()), "prevUpdate", lastModifiedDate.nullEffective()));
                     }
                 }
             } else {
@@ -129,7 +121,7 @@ public class DaoMethodInvoke {
         Stopwatch stopWatch = new Stopwatch();
         try {
             stopWatch.start();
-            Dao dao = daoFactory.getDao(dataSource);
+            Dao dao = enhanceCoreFactory.getDao(dataSource);
             if (this.methodSignature.isCustomizeSql()) {
                 this.parseAndTranslationSql();
                 // 是自定义sql，且有自定义提供方法处理

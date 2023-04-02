@@ -1,9 +1,10 @@
 package org.nutz.dao.enhance.registrar.factory;
 
 import org.nutz.dao.Dao;
+import org.nutz.dao.enhance.audit.AuditHandler;
 import org.nutz.dao.enhance.config.DaoEnhanceConstant;
 import org.nutz.dao.enhance.config.DaoProperties;
-import org.nutz.dao.enhance.factory.DaoFactory;
+import org.nutz.dao.enhance.factory.EnhanceCoreFactory;
 import org.nutz.dao.enhance.method.holder.AutoCreateTableHolder;
 import org.nutz.dao.impl.NutDao;
 import org.nutz.ioc.Ioc;
@@ -17,7 +18,7 @@ import java.util.HashMap;
  * 默认实现
  */
 @SuppressWarnings("all")
-public class DefaualtNutDaoFactory implements DaoFactory {
+public class DefaualtNutEnhanceCoreFactory implements EnhanceCoreFactory {
     /**
      * 数据源缓存
      */
@@ -27,7 +28,7 @@ public class DefaualtNutDaoFactory implements DaoFactory {
 
     private final DaoProperties daoProperties;
 
-    public DefaualtNutDaoFactory(Ioc ioc, DaoProperties daoProperties) {
+    public DefaualtNutEnhanceCoreFactory(Ioc ioc, DaoProperties daoProperties) {
         this.ioc = ioc;
         this.daoProperties = daoProperties;
     }
@@ -41,6 +42,12 @@ public class DefaualtNutDaoFactory implements DaoFactory {
     public Dao getDao(String dataSource) {
         return daoCache.get(dataSource);
     }
+
+    @Override
+    public AuditHandler getAuditHandler() {
+        return ioc.getByType(AuditHandler.class);
+    }
+
 
     /**
      * 初始化

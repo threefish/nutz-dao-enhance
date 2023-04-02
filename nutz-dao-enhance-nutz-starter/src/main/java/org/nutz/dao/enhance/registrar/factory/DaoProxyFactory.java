@@ -1,6 +1,6 @@
 package org.nutz.dao.enhance.registrar.factory;
 
-import org.nutz.dao.enhance.factory.DaoFactory;
+import org.nutz.dao.enhance.factory.EnhanceCoreFactory;
 import org.nutz.dao.enhance.method.DaoMethodInvoker;
 import org.nutz.dao.enhance.method.proxy.DaoProxy;
 
@@ -17,10 +17,10 @@ public class DaoProxyFactory {
 
     private static final Map<Method, DaoMethodInvoker> METHOD_CACHE = new ConcurrentHashMap<>();
 
-    public static <T> T getObject(Class<T> mapperInterface, DaoFactory daoFactory, String dataSource) {
+    public static <T> T getObject(Class<T> mapperInterface, EnhanceCoreFactory enhanceCoreFactory, String dataSource) {
         return (T) Proxy.newProxyInstance(mapperInterface.getClassLoader(),
                 new Class[]{mapperInterface},
-                new DaoProxy<>(daoFactory, dataSource, mapperInterface, METHOD_CACHE)
+                new DaoProxy<>(enhanceCoreFactory, dataSource, mapperInterface, METHOD_CACHE)
         );
     }
 

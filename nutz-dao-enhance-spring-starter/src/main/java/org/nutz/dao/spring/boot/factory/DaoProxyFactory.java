@@ -2,7 +2,7 @@ package org.nutz.dao.spring.boot.factory;
 
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
-import org.nutz.dao.enhance.factory.DaoFactory;
+import org.nutz.dao.enhance.factory.EnhanceCoreFactory;
 import org.nutz.dao.enhance.method.DaoMethodInvoker;
 import org.nutz.dao.enhance.method.proxy.DaoProxy;
 import org.springframework.beans.factory.FactoryBean;
@@ -23,7 +23,7 @@ public class DaoProxyFactory<T> implements FactoryBean<T> {
 
     private final Map<Method, DaoMethodInvoker> methodCache = new ConcurrentHashMap<>();
     private final Class<T> mapperInterface;
-    private final DaoFactory daoFactory;
+    private final EnhanceCoreFactory enhanceCoreFactory;
     private final String dataSource;
 
     @SuppressWarnings("unchecked")
@@ -34,14 +34,14 @@ public class DaoProxyFactory<T> implements FactoryBean<T> {
         );
     }
 
-    public T newInstance(DaoFactory daoFactory) {
-        return newInstance(new DaoProxy<>(daoFactory, dataSource, mapperInterface, methodCache));
+    public T newInstance(EnhanceCoreFactory enhanceCoreFactory) {
+        return newInstance(new DaoProxy<>(enhanceCoreFactory, dataSource, mapperInterface, methodCache));
     }
 
 
     @Override
     public T getObject() {
-        return newInstance(this.daoFactory);
+        return newInstance(this.enhanceCoreFactory);
     }
 
     @Override

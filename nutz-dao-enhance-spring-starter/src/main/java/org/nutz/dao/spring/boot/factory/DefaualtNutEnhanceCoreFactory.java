@@ -2,8 +2,9 @@ package org.nutz.dao.spring.boot.factory;
 
 import lombok.RequiredArgsConstructor;
 import org.nutz.dao.Dao;
+import org.nutz.dao.enhance.audit.AuditHandler;
 import org.nutz.dao.enhance.config.DaoEnhanceConstant;
-import org.nutz.dao.enhance.factory.DaoFactory;
+import org.nutz.dao.enhance.factory.EnhanceCoreFactory;
 import org.nutz.dao.impl.NutDao;
 import org.nutz.dao.spring.boot.runner.SpringDaoRunner;
 import org.springframework.beans.BeansException;
@@ -21,10 +22,10 @@ import java.util.HashMap;
  * @author 黄川 2020/12/16
  * 默认实现
  */
-@Component(value = DaoFactory.DEFAUALT_DAO_FACTORY_BEAN_NAME)
-@ConditionalOnBean(DaoFactory.class)
+@Component(value = EnhanceCoreFactory.DEFAUALT_DAO_FACTORY_BEAN_NAME)
+@ConditionalOnBean(EnhanceCoreFactory.class)
 @RequiredArgsConstructor
-public class DefaualtNutDaoFactory implements DaoFactory, InitializingBean, ApplicationContextAware {
+public class DefaualtNutEnhanceCoreFactory implements EnhanceCoreFactory, InitializingBean, ApplicationContextAware {
 
     /**
      * 数据源缓存
@@ -41,6 +42,11 @@ public class DefaualtNutDaoFactory implements DaoFactory, InitializingBean, Appl
     @Override
     public Dao getDao(String dataSource) {
         return daoHashMap.get(dataSource);
+    }
+
+    @Override
+    public AuditHandler getAuditHandler() {
+        return applicationContext.getBean(AuditHandler.class);
     }
 
     @Override

@@ -2,7 +2,7 @@ package org.nutz.dao.enhance.registrar.loader;
 
 import lombok.extern.slf4j.Slf4j;
 import org.nutz.dao.enhance.annotation.Dao;
-import org.nutz.dao.enhance.factory.DaoFactory;
+import org.nutz.dao.enhance.factory.EnhanceCoreFactory;
 import org.nutz.dao.enhance.method.holder.AutoCreateTableHolder;
 import org.nutz.dao.enhance.registrar.annotation.DaoScan;
 import org.nutz.dao.enhance.registrar.annotation.DaoScans;
@@ -94,7 +94,7 @@ public class DaoIocLoader implements IocLoader {
             IocObject iocObject = new IocObject();
             iocObject.setType(classZ);
             iocObject.addArg(new IocValue(IocValue.TYPE_NORMAL, classZ));
-            iocObject.addArg(Iocs.convert(DaoFactory.DEFAUALT_DAO_FACTORY_BEAN_NAME, true));
+            iocObject.addArg(Iocs.convert(EnhanceCoreFactory.DEFAUALT_DAO_FACTORY_BEAN_NAME, true));
             iocObject.addArg(new IocValue(IocValue.TYPE_NORMAL, dataSourceName));
             iocObject.setFactory(DaoProxyFactory.class.getName() + "#getObject");
             iocBeanNameObject.put(beanName, iocObject);

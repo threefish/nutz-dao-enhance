@@ -1,7 +1,7 @@
 package org.nutz.dao.enhance.method.proxy;
 
 
-import org.nutz.dao.enhance.factory.DaoFactory;
+import org.nutz.dao.enhance.factory.EnhanceCoreFactory;
 import org.nutz.dao.enhance.method.DaoMethodInvoke;
 import org.nutz.dao.enhance.method.DaoMethodInvoker;
 
@@ -55,14 +55,14 @@ public class DaoProxy<T> implements InvocationHandler, Serializable {
 
     private final Class<T> mapperInterface;
     private final Map<Method, DaoMethodInvoker> methodCache;
-    private final DaoFactory daoFactory;
+    private final EnhanceCoreFactory enhanceCoreFactory;
     private final String dataSource;
 
-    public DaoProxy(DaoFactory daoFactory, String dataSource, Class<T> mapperInterface, Map<Method, DaoMethodInvoker> methodCache) {
+    public DaoProxy(EnhanceCoreFactory enhanceCoreFactory, String dataSource, Class<T> mapperInterface, Map<Method, DaoMethodInvoker> methodCache) {
         this.mapperInterface = mapperInterface;
         this.dataSource = dataSource;
         this.methodCache = methodCache;
-        this.daoFactory = daoFactory;
+        this.enhanceCoreFactory = enhanceCoreFactory;
     }
 
     @Override
@@ -101,7 +101,7 @@ public class DaoProxy<T> implements InvocationHandler, Serializable {
                         throw new RuntimeException(e);
                     }
                 } else {
-                    return new PlainMethodInvoker(new DaoMethodInvoke(daoFactory, dataSource, mapperInterface, method));
+                    return new PlainMethodInvoker(new DaoMethodInvoke(enhanceCoreFactory, dataSource, mapperInterface, method));
                 }
             });
         } catch (RuntimeException re) {

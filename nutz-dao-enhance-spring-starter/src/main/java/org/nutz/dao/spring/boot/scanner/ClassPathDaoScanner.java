@@ -3,7 +3,7 @@ package org.nutz.dao.spring.boot.scanner;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.nutz.dao.enhance.annotation.Dao;
-import org.nutz.dao.enhance.factory.DaoFactory;
+import org.nutz.dao.enhance.factory.EnhanceCoreFactory;
 import org.nutz.dao.enhance.method.holder.AutoCreateTableHolder;
 import org.nutz.dao.spring.boot.factory.DaoProxyFactory;
 import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
@@ -36,7 +36,7 @@ public class ClassPathDaoScanner extends ClassPathBeanDefinitionScanner {
     @Override
     public Set<BeanDefinitionHolder> doScan(String... basePackages) {
         AutoCreateTableHolder.addDataSourceEntityPackages(dataSource, Arrays.asList(basePackages).stream().collect(Collectors.toSet()));
-        final RuntimeBeanReference runtimeBeanReference = new RuntimeBeanReference(DaoFactory.DEFAUALT_DAO_FACTORY_BEAN_NAME);
+        final RuntimeBeanReference runtimeBeanReference = new RuntimeBeanReference(EnhanceCoreFactory.DEFAUALT_DAO_FACTORY_BEAN_NAME);
         Set<BeanDefinitionHolder> beanDefinitions = super.doScan(basePackages);
         for (BeanDefinitionHolder definitionHolder : beanDefinitions) {
             GenericBeanDefinition beanDefinition = (GenericBeanDefinition) definitionHolder.getBeanDefinition();
