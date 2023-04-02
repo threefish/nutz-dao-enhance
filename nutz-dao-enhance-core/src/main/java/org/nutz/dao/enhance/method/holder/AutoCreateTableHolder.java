@@ -24,7 +24,6 @@ public class AutoCreateTableHolder {
      */
     private static transient HashMap<String, Set<String>> DATA_SOURCE_ENTITY_PACKAGE = new HashMap<>();
 
-
     /**
      * 批量建表,优先建立带@ManyMany的表
      *
@@ -83,7 +82,6 @@ public class AutoCreateTableHolder {
             });
         });
         DATA_SOURCE_ENTITY_PACKAGE.clear();
-        DATA_SOURCE_ENTITY_PACKAGE = null;
     }
 
 
