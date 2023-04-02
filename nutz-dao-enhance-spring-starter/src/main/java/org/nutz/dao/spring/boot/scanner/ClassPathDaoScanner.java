@@ -14,7 +14,9 @@ import org.springframework.beans.factory.support.GenericBeanDefinition;
 import org.springframework.context.annotation.ClassPathBeanDefinitionScanner;
 import org.springframework.core.type.filter.AnnotationTypeFilter;
 
+import java.util.Arrays;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @author 黄川 huchuc@vip.qq.com
@@ -33,6 +35,7 @@ public class ClassPathDaoScanner extends ClassPathBeanDefinitionScanner {
 
     @Override
     public Set<BeanDefinitionHolder> doScan(String... basePackages) {
+        AutoCreateTableHolder.addDataSourceEntityPackages(dataSource, Arrays.asList(basePackages).stream().collect(Collectors.toSet()));
         final RuntimeBeanReference runtimeBeanReference = new RuntimeBeanReference(DaoFactory.DEFAUALT_DAO_FACTORY_BEAN_NAME);
         Set<BeanDefinitionHolder> beanDefinitions = super.doScan(basePackages);
         for (BeanDefinitionHolder definitionHolder : beanDefinitions) {
@@ -42,7 +45,6 @@ public class ClassPathDaoScanner extends ClassPathBeanDefinitionScanner {
             beanDefinition.getConstructorArgumentValues().addGenericArgumentValue(beanClassName);
             beanDefinition.getConstructorArgumentValues().addGenericArgumentValue(dataSource);
             beanDefinition.getConstructorArgumentValues().addGenericArgumentValue(runtimeBeanReference);
-            AutoCreateTableHolder.addDataSourceEntityClassMapping(dataSource, beanClassName);
             if (log.isDebugEnabled()) {
                 log.debug("自动生成'{}'代理类 beanName:{}", beanClassName, definitionHolder.getBeanName());
             }

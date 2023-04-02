@@ -12,6 +12,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * @author 黄川 huchuc@vip.qq.com
  */
+@SuppressWarnings("all")
 public class DaoProxyFactory {
 
     private static final Map<Method, DaoMethodInvoker> METHOD_CACHE = new ConcurrentHashMap<>();

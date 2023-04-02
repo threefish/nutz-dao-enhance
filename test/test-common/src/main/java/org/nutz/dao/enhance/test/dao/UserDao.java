@@ -18,9 +18,7 @@ import java.util.Optional;
 
 /**
  * @author 黄川 huchuc@vip.qq.com
- *  2020/7/30
- * 自动建表，通过泛型 找到 UserDO 再根据 UserDO 信息进行建表。如果不需要自动建表，需要再UserDO上添加 @IgnoreAutoDDL 主键
- * 如果没有定义泛型但是也需要自动建表功能 则需要添加 @Entity(UserDO.class) 注解
+ * 2020/7/30
  */
 @Dao
 public interface UserDao extends BaseDao<UserDO> {
@@ -141,8 +139,6 @@ public interface UserDao extends BaseDao<UserDO> {
      */
     @Insert(value = "INSERT INTO user(`real_name`, `age`,`gmt_create`,`create_by`) VALUES (#{name},#{age}, now(),#{create})", returnGeneratedKeys = true)
     int insert(String name, int age, String create);
-
-
 
 
     /**
@@ -293,6 +289,7 @@ public interface UserDao extends BaseDao<UserDO> {
      */
     @Insert(value = "INSERT INTO user(`real_name`, `age`,`gmt_create`,`create_by`) VALUES (#{name},#{age}, now(),#{create})", loopFor = "age")
     int insertLoopForAge(String name, String create, @Param("age") List<Integer> ages);
+
     /**
      * 插入返回主键ID
      *

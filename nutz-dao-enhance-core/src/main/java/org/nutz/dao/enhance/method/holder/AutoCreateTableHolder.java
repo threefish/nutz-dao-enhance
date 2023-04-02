@@ -5,9 +5,11 @@ import org.nutz.dao.Dao;
 import org.nutz.dao.enhance.annotation.IgnoreAutoDDL;
 import org.nutz.dao.enhance.config.DaoProperties;
 import org.nutz.dao.enhance.factory.DaoFactory;
-import org.nutz.dao.enhance.util.MethodSignatureUtil;
 import org.nutz.dao.entity.annotation.Table;
 import org.nutz.dao.util.Daos;
+import org.nutz.lang.Mirror;
+import org.nutz.lang.Strings;
+import org.nutz.resource.Scans;
 
 import java.util.*;
 
@@ -18,32 +20,40 @@ import java.util.*;
 public class AutoCreateTableHolder {
 
     /**
-     * 需要自动建表的数据源名称对应实体类映射,建完表就会清空
+     * 需要自动建表的数据源名称对应实体类映射
      */
-    private static final HashMap<String, Set<Class<?>>> DATA_SOURCE_ENTITY_CLASS_MAPPING = new HashMap<>();
+    private static transient HashMap<String, Set<String>> DATA_SOURCE_ENTITY_PACKAGE = new HashMap<>();
 
-    public static void addDataSourceEntityClassMapping(String dataSourceName, String className) {
-        try {
-            addDataSourceEntityClassMapping(dataSourceName, Class.forName(className));
-        } catch (ClassNotFoundException e) {
-            log.error("扫描添加class失败：{}", className);
-        }
-    }
 
-    public static void addDataSourceEntityClassMapping(String dataSourceName, Class<?> classZ) {
-        // 当前dao上找到实体类
-        final Class<?> classEntityType = MethodSignatureUtil.getClassEntityType(classZ);
-        if (Objects.nonNull(classEntityType)) {
-            Table table = classEntityType.getAnnotation(Table.class);
-            IgnoreAutoDDL ignoreAutoCreateTable = classEntityType.getAnnotation(IgnoreAutoDDL.class);
-            if (Objects.nonNull(table) && Objects.isNull(ignoreAutoCreateTable)) {
-                // 是实体表定义类,并且没做忽略
-                if (Objects.nonNull(classEntityType)) {
-                    final Set<Class<?>> entityClassSets = DATA_SOURCE_ENTITY_CLASS_MAPPING.getOrDefault(dataSourceName, new HashSet<>());
-                    entityClassSets.add(classEntityType);
-                    DATA_SOURCE_ENTITY_CLASS_MAPPING.put(dataSourceName, entityClassSets);
-                }
+    /**
+     * 批量建表,优先建立带@ManyMany的表
+     *
+     * @param dao   Dao实例
+     * @param list  需要自动创建的表
+     * @param force 如果表存在,是否先删后建
+     */
+    private static void createTables(final Dao dao, List<Class<?>> list, boolean force) {
+        Collections.sort(list, (prev, next) -> {
+            int links_prev = dao.getEntity(prev).getLinkFields(null).size();
+            int links_next = dao.getEntity(next).getLinkFields(null).size();
+            if (links_prev == links_next) {
+                return 0;
             }
+            return links_prev > links_next ? 1 : -1;
+        });
+        ArrayList<Exception> es = new ArrayList<>();
+        for (Class<?> klass : list) {
+            try {
+                dao.create(klass, force);
+            } catch (Exception e) {
+                es.add(new RuntimeException("class=" + klass.getName(), e));
+            }
+        }
+        if (es.size() > 0) {
+            for (Exception exception : es) {
+                log.debug(exception.getMessage(), exception);
+            }
+            throw (RuntimeException) es.get(0);
         }
     }
 
@@ -59,18 +69,25 @@ public class AutoCreateTableHolder {
         if (!properties.isEnableDdl()) {
             return;
         }
-        Optional.ofNullable(DATA_SOURCE_ENTITY_CLASS_MAPPING).ifPresent(stringSetHashMap -> {
-            stringSetHashMap.forEach((dataSource, classes) -> {
-                final Dao dao = daoFactory.getDao(dataSource);
-                classes.parallelStream().forEach(tableEntityClass -> Daos.createTablesInPackage(dao, tableEntityClass, false));
-                classes.parallelStream().forEach(tableEntityClass ->
-                        Daos.migration(dao,
-                                tableEntityClass,
-                                properties.isMigrationAdd(),
-                                properties.isMigrationDel(),
-                                properties.isMigrationCheckIndex()));
+        DATA_SOURCE_ENTITY_PACKAGE.forEach((dataSource, classes) -> {
+            final Dao dao = daoFactory.getDao(dataSource);
+            classes.stream().filter(Strings::isNotBlank).distinct().forEach(packageName -> {
+                List<Class<?>> list = new ArrayList<Class<?>>();
+                for (Class<?> klass : Scans.me().scanPackage(packageName)) {
+                    if (Mirror.me(klass).getAnnotation(Table.class) != null && Mirror.me(klass).getAnnotation(IgnoreAutoDDL.class) == null) {
+                        list.add(klass);
+                    }
+                }
+                createTables(dao, list, false);
+                list.forEach(clazz -> Daos.migration(dao, clazz, properties.isMigrationAdd(), properties.isMigrationDel(), properties.isMigrationCheckIndex(), null));
             });
-            DATA_SOURCE_ENTITY_CLASS_MAPPING.clear();
         });
+        DATA_SOURCE_ENTITY_PACKAGE.clear();
+        DATA_SOURCE_ENTITY_PACKAGE = null;
+    }
+
+
+    public static void addDataSourceEntityPackages(String dataSource, Set<String> basePackages) {
+        DATA_SOURCE_ENTITY_PACKAGE.put(dataSource, basePackages);
     }
 }

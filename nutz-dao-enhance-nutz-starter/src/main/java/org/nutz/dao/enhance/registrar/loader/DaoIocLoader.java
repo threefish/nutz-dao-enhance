@@ -55,6 +55,7 @@ public class DaoIocLoader implements IocLoader {
     public void addDaoClass() {
         dataSourcePackagesMapping.forEach((dataSourceName, packages) -> {
             log.info(" > scan '{}'", packages);
+            AutoCreateTableHolder.addDataSourceEntityPackages(dataSourceName, packages);
             for (String pkg : packages) {
                 for (Class<?> classZ : Scans.me().scanPackage(pkg)) {
                     addClass(dataSourceName, classZ);
@@ -97,7 +98,6 @@ public class DaoIocLoader implements IocLoader {
             iocObject.addArg(new IocValue(IocValue.TYPE_NORMAL, dataSourceName));
             iocObject.setFactory(DaoProxyFactory.class.getName() + "#getObject");
             iocBeanNameObject.put(beanName, iocObject);
-            AutoCreateTableHolder.addDataSourceEntityClassMapping(dataSourceName, classZ);
             log.info("   > add '{}' - {}", beanName, classZ.getName());
         }
     }

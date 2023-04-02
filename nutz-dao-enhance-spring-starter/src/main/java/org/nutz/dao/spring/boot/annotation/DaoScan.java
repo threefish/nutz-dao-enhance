@@ -15,6 +15,7 @@ import java.lang.annotation.*;
 @Documented
 @Import(DaoScannerRegistrar.class)
 @Repeatable(DaoScans.class)
+@SuppressWarnings("all")
 public @interface DaoScan {
     /**
      * Alias for the {@link #basePackages()} attribute. Allows for more concise annotation declarations e.g.:
@@ -44,7 +45,7 @@ public @interface DaoScan {
     Class<?>[] basePackageClasses() default {};
 
     /**
-     * 数据源,采用默认数据源
+     * Data source, using the default data source
      */
     String dataSource() default DaoEnhanceConstant.DEFAUALT_DATASOURCE_KEY;
 }

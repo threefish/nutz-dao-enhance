@@ -11,6 +11,7 @@ import java.lang.annotation.*;
 @Target(ElementType.TYPE)
 @Documented
 @Repeatable(DaoScans.class)
+@SuppressWarnings("all")
 public @interface DaoScan {
 
     /**

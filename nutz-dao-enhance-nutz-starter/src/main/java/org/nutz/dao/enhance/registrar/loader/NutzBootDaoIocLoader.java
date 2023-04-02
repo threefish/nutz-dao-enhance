@@ -12,7 +12,6 @@ public class NutzBootDaoIocLoader implements IocLoaderProvider {
 
     @Override
     public IocLoader getIocLoader() {
-        AppContext defaultContext = AppContext.getDefault();
-        return new DaoIocLoader(defaultContext.getPackage());
+        return new DaoIocLoader(AppContext.getDefault().getPackage());
     }
 }
