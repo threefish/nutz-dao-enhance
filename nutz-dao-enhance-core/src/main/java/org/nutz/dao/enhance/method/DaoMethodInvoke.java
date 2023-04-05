@@ -166,7 +166,7 @@ public class DaoMethodInvoke {
      * @return
      */
     private Object invokeCustomProvider(Object proxy, Dao dao, Object[] args, Entity entity) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
-        String executeSql = replaceConditionSql(this.sourceSql, args);
+        String executeSql = replaceConditionSql(this.sourceSql, args, this.conditions);
         ProviderContext providerContext = ProviderContext.of(dao, this.methodSignature, executeSql, args, this.methodSignature.getEntityClass(), entity, proxy);
         Object[] parameterObject = Objects.nonNull(args) ? new Object[args.length + 1] : new Object[1];
         parameterObject[0] = providerContext;
@@ -197,11 +197,12 @@ public class DaoMethodInvoke {
 
     /**
      * 替换条件sql
-     *
+     * @param sourceSql
      * @param args
+     * @param conditionMappingList
      * @return
      */
-    private String replaceConditionSql(String sourceSql, Object[] args) {
+    private String replaceConditionSql(String sourceSql, Object[] args, List<ConditionMapping> conditionMappingList) {
         if (Strings.isBlank(sourceSql)) {
             return sourceSql;
         }
@@ -212,7 +213,7 @@ public class DaoMethodInvoke {
                 context.set(methodSignature.getParameterNames().get(i), args[i]);
             }
         }
-        for (ConditionMapping condition : this.conditions) {
+        for (ConditionMapping condition : conditionMappingList) {
             final Set<String> conditionParameter = condition.getConditionParameter();
             // 有参数的情况下，默认加入条件，在看是否满足条件
             boolean status = conditionParameter.size() > 0;
@@ -257,8 +258,8 @@ public class DaoMethodInvoke {
      * @return
      */
     private Execute getCustomizeSqlExecute(Dao dao, Object[] args) {
-        String executeSql = replaceConditionSql(this.sourceSql, args);
-        String countExecuteSql = replaceConditionSql(this.countSourceSql, args);
+        String executeSql = replaceConditionSql(this.sourceSql, args, this.conditions);
+        String countExecuteSql = replaceConditionSql(this.countSourceSql, args, this.countConditions);
         if (log.isDebugEnabled()) {
             log.debug("执行SQL:{}", executeSql);
         }
@@ -289,7 +290,7 @@ public class DaoMethodInvoke {
             default:
         }
         if (Objects.isNull(execute)) {
-            throw new RuntimeException("不支持的方法");
+            throw new UnsupportedOperationException("不支持的方法");
         }
         return execute;
     }
