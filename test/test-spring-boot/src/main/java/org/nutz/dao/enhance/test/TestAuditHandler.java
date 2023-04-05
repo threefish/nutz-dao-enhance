@@ -5,6 +5,7 @@ import org.nutz.dao.entity.Entity;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 /**
  * @author 黄川 huchuc@vip.qq.com
@@ -22,5 +23,9 @@ public class TestAuditHandler implements AuditHandler {
     @Override
     public void preUpdate(Object object, Entity entity) {
 
+    }
+    @Override
+    public Optional<String> getCurrentAuditor() {
+        return Optional.of("spring-test");
     }
 }

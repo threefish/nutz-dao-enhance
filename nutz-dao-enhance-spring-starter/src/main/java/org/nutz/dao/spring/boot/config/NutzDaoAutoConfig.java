@@ -1,7 +1,9 @@
 package org.nutz.dao.spring.boot.config;
 
 import org.nutz.dao.enhance.audit.AuditHandler;
+import org.nutz.dao.enhance.el.AuditingEntityRunMethod;
 import org.nutz.dao.enhance.el.IdentifierGeneratorRunMethod;
+import org.nutz.dao.enhance.el.NowDateRunMethod;
 import org.nutz.dao.enhance.incrementer.IdentifierGenerator;
 import org.nutz.el.opt.custom.CustomMake;
 import org.springframework.beans.factory.InitializingBean;
@@ -26,7 +28,8 @@ public class NutzDaoAutoConfig implements InitializingBean {
 
     @Override
     public void afterPropertiesSet() {
+        CustomMake.me().register(AuditingEntityRunMethod.NAME, new AuditingEntityRunMethod(auditHandler));
         CustomMake.me().register(IdentifierGeneratorRunMethod.NAME, new IdentifierGeneratorRunMethod(identifierGenerator));
+        CustomMake.me().register(NowDateRunMethod.NAME, new NowDateRunMethod());
     }
-
 }

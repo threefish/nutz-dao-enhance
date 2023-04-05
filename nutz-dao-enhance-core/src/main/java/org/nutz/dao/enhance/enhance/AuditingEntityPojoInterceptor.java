@@ -8,6 +8,7 @@ import org.nutz.dao.interceptor.impl.BasicPojoInterceptor;
  * @author 黄川 huchuc@vip.qq.com
  * date: 2023/4/2
  */
+@SuppressWarnings("all")
 public class AuditingEntityPojoInterceptor extends BasicPojoInterceptor {
 
     private final AuditHandler auditHandler;

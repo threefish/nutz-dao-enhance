@@ -5,6 +5,7 @@ import org.nutz.dao.entity.Entity;
 import org.nutz.ioc.loader.annotation.IocBean;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 /**
  * @author 黄川 huchuc@vip.qq.com
@@ -25,4 +26,8 @@ public class TestAuditHandler implements AuditHandler {
     }
 
 
+    @Override
+    public Optional<String> getCurrentAuditor() {
+        return Optional.of("nutz-test");
+    }
 }
