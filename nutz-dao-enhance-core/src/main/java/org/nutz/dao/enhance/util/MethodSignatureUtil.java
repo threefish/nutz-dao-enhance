@@ -281,15 +281,17 @@ public class MethodSignatureUtil {
      * @return
      */
     public static <A extends Annotation> A getAnnotation(Class<?> entityClass, Class<A> annotationClass) {
+        if (entityClass == null || annotationClass == null) {
+            return null;
+        }
         Class<?> tempClass = entityClass;
-        A annotation = tempClass.getAnnotation(annotationClass);
-        do {
-            if (annotation == null) {
-                tempClass = tempClass.getSuperclass();
-                annotation = tempClass.getAnnotation(annotationClass);
-            }
-        } while (annotation == null && entityClass != null);
+        A annotation = null;
+        while (tempClass != null && annotation == null) {
+            annotation = tempClass.getAnnotation(annotationClass);
+            tempClass = tempClass.getSuperclass();
+        }
         return annotation;
     }
+
 
 }
