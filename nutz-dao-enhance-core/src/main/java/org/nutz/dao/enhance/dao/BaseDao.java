@@ -684,5 +684,41 @@ public interface BaseDao<T> {
     @CustomProvider(type = LambdaUpdateProvider.class)
     LambdaUpdate<T> lambdaUpdate(boolean notNull, boolean notEmpty);
 
+    /**
+     * 按组进行字段计算
+     *
+     * @param t
+     * @param group
+     */
+    @CustomProvider(type = BaseDaoProvider.class)
+    void fieldCalculation(T t, String group);
+
+    /**
+     * 按组进行字段计算
+     *
+     * @param t
+     * @param group
+     */
+    @CustomProvider(type = BaseDaoProvider.class)
+    void fieldCalculation(Collection<T> collection, String group);
+
+    /**
+     * 按组进行字段计算
+     *
+     * @param t
+     * @param group
+     */
+    @CustomProvider(type = BaseDaoProvider.class)
+    void fieldCalculation(T t);
+
+    /**
+     * 按组进行字段计算
+     *
+     * @param t
+     * @param group
+     */
+    @CustomProvider(type = BaseDaoProvider.class)
+    void fieldCalculation(Collection<T> collection);
+
 
 }
