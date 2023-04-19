@@ -354,45 +354,6 @@ public class BaseDaoProvider {
     }
 
 
-    /**
-     * 按组进行字段计算
-     *
-     * @param t
-     * @param group
-     */
-    public static <T> void fieldCalculation(ProviderContext providerContext, T t, String group) {
-
-    }
-
-    /**
-     * 按组进行字段计算
-     *
-     * @param t
-     * @param group
-     */
-    public static <T> void fieldCalculation(ProviderContext providerContext, Collection<T> collection, String group) {
-
-    }
-
-    /**
-     * 按组进行字段计算
-     *
-     * @param t
-     * @param group
-     */
-    public static <T> void fieldCalculation(ProviderContext providerContext, T t) {
-
-    }
-
-    /**
-     * 按组进行字段计算
-     *
-     * @param t
-     * @param group
-     */
-    public static <T> void fieldCalculation(ProviderContext providerContext, Collection<T> collection) {
-
-    }
 
 
 }

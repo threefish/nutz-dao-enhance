@@ -21,7 +21,7 @@ public @interface FieldCalculation {
     /**
      * 顺序 越小越先执行
      */
-    int order();
+    int order() default  0 ;
 
     /**
      * 分组计算

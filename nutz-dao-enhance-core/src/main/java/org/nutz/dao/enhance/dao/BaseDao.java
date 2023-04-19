@@ -6,10 +6,7 @@ import org.nutz.dao.FieldMatcher;
 import org.nutz.dao.enhance.annotation.CustomProvider;
 import org.nutz.dao.enhance.dao.lambda.LambdaQuery;
 import org.nutz.dao.enhance.dao.lambda.LambdaUpdate;
-import org.nutz.dao.enhance.method.provider.BaseDaoProvider;
-import org.nutz.dao.enhance.method.provider.LambdaQueryProvider;
-import org.nutz.dao.enhance.method.provider.LambdaUpdateProvider;
-import org.nutz.dao.enhance.method.provider.ProviderContext;
+import org.nutz.dao.enhance.method.provider.*;
 import org.nutz.dao.enhance.pagination.PageRecord;
 import org.nutz.dao.pager.Pager;
 import org.nutz.lang.Each;
@@ -690,7 +687,7 @@ public interface BaseDao<T> {
      * @param t
      * @param group
      */
-    @CustomProvider(type = BaseDaoProvider.class)
+    @CustomProvider(type = FieldCalculationProvider.class)
     void fieldCalculation(T t, String group);
 
     /**
@@ -699,7 +696,7 @@ public interface BaseDao<T> {
      * @param t
      * @param group
      */
-    @CustomProvider(type = BaseDaoProvider.class)
+    @CustomProvider(type = FieldCalculationProvider.class)
     void fieldCalculation(Collection<T> collection, String group);
 
     /**
@@ -708,7 +705,7 @@ public interface BaseDao<T> {
      * @param t
      * @param group
      */
-    @CustomProvider(type = BaseDaoProvider.class)
+    @CustomProvider(type = FieldCalculationProvider.class)
     void fieldCalculation(T t);
 
     /**
@@ -717,7 +714,7 @@ public interface BaseDao<T> {
      * @param t
      * @param group
      */
-    @CustomProvider(type = BaseDaoProvider.class)
+    @CustomProvider(type = FieldCalculationProvider.class)
     void fieldCalculation(Collection<T> collection);
 
 

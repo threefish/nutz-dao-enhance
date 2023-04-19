@@ -355,4 +355,13 @@ public class SpringDaoTest {
 
     }
 
+    @Test
+    public void test_field_calc() {
+        List<UserDO> list = userDao.lambdaQuery().list();
+        for (UserDO userDO : list) {
+            userDao.fieldCalculation(userDO,"test");
+        }
+
+    }
+
 }

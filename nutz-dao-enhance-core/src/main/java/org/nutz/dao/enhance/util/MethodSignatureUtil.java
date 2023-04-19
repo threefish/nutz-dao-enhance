@@ -275,6 +275,7 @@ public class MethodSignatureUtil {
 
     /**
      * 获取注解信息
+     *
      * @param entityClass
      * @param annotationClass
      * @param <A>
@@ -291,6 +292,21 @@ public class MethodSignatureUtil {
             tempClass = tempClass.getSuperclass();
         }
         return annotation;
+    }
+
+    /**
+     * 获取注解信息
+     *
+     * @param field
+     * @param annotationClass
+     * @param <A>
+     * @return
+     */
+    public static <A extends Annotation> A getAnnotation(Field field, Class<A> annotationClass) {
+        if (field == null || annotationClass == null) {
+            return null;
+        }
+        return field.getAnnotation(annotationClass);
     }
 
 
