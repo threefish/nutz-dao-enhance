@@ -1,12 +1,14 @@
 package org.nutz.dao.enhance.util;
 
+import org.nutz.lang.Strings;
+
 import java.util.Collection;
 
 /**
  * @author 黄川 huchuc@vip.qq.com
  * date: 2023/4/1
  */
-public class AssertUtils {
+public class AssertUtil {
 
     public static void isNotTrue(boolean expression, String message) {
         if (expression) {
@@ -41,6 +43,17 @@ public class AssertUtils {
     public static void notEmpty(Collection<?> collection, String message) {
         if (collection == null || collection.isEmpty()) {
             throw new IllegalArgumentException(message);
+        }
+    }
+    public static void notBlank(String str, String message) {
+        if (Strings.isBlank(str)) {
+            throw new IllegalArgumentException(message);
+        }
+    }
+
+    public static void notBlank(String str) {
+        if (Strings.isBlank(str)) {
+            throw new IllegalArgumentException("string cant't be empty");
         }
     }
 }

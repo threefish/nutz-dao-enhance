@@ -5,7 +5,7 @@ import org.nutz.dao.Condition;
 import org.nutz.dao.FieldFilter;
 import org.nutz.dao.FieldMatcher;
 import org.nutz.dao.enhance.pagination.PageRecord;
-import org.nutz.dao.enhance.util.AssertUtils;
+import org.nutz.dao.enhance.util.AssertUtil;
 import org.nutz.dao.pager.Pager;
 import org.nutz.lang.Each;
 
@@ -22,46 +22,46 @@ import java.util.Map;
 public class BaseDaoProvider {
 
     public static <T> T insert(ProviderContext providerContext, T obj) {
-        AssertUtils.notNull(obj);
+        AssertUtil.notNull(obj);
         return providerContext.dao.insert(obj);
     }
 
     public static <T> T save(ProviderContext providerContext, T obj) {
-        AssertUtils.notNull(obj);
+        AssertUtil.notNull(obj);
         return insert(providerContext, obj);
     }
 
     public static <T> T insert(ProviderContext providerContext, T obj, boolean ignoreNull, boolean ignoreZero, boolean ignoreBlankStr) {
-        AssertUtils.notNull(obj);
+        AssertUtil.notNull(obj);
         return providerContext.dao.insert(obj, ignoreNull, ignoreZero, ignoreBlankStr);
     }
 
     public static <T> T save(ProviderContext providerContext, T obj, boolean ignoreNull, boolean ignoreZero, boolean ignoreBlankStr) {
-        AssertUtils.notNull(obj);
+        AssertUtil.notNull(obj);
         return insert(providerContext, obj, ignoreNull, ignoreZero, ignoreBlankStr);
     }
 
 
     public static <T> T insertWith(ProviderContext providerContext, T obj, String regex) {
-        AssertUtils.notNull(obj);
+        AssertUtil.notNull(obj);
         return providerContext.dao.insert(obj, regex);
     }
 
 
     public static <T> T insertLinks(ProviderContext providerContext, T obj, String regex) {
-        AssertUtils.notNull(obj);
+        AssertUtil.notNull(obj);
         return providerContext.dao.insertLinks(obj, regex);
     }
 
 
     public static <T> T insertRelation(ProviderContext providerContext, T obj, String regex) {
-        AssertUtils.notNull(obj);
+        AssertUtil.notNull(obj);
         return providerContext.dao.insertRelation(obj, regex);
     }
 
 
     public static <T> T insertOrUpdate(ProviderContext providerContext, T obj) {
-        AssertUtils.notNull(obj);
+        AssertUtil.notNull(obj);
         return providerContext.dao.insertOrUpdate(obj);
     }
 
@@ -71,79 +71,79 @@ public class BaseDaoProvider {
 
 
     public static <T> T insertOrUpdate(ProviderContext providerContext, T obj, FieldFilter insertFieldFilter, FieldFilter updateFieldFilter) {
-        AssertUtils.notNull(obj);
+        AssertUtil.notNull(obj);
         return providerContext.dao.insertOrUpdate(obj, insertFieldFilter, updateFieldFilter);
     }
 
 
     public static <T> int updateAndIncrIfMatch(ProviderContext providerContext, T obj, FieldFilter fieldFilter, String fieldName) {
-        AssertUtils.notNull(obj);
+        AssertUtil.notNull(obj);
         return providerContext.dao.updateAndIncrIfMatch(obj, fieldFilter, fieldName);
     }
 
 
     public static <T> int updateWithVersion(ProviderContext providerContext, T obj) {
-        AssertUtils.notNull(obj);
+        AssertUtil.notNull(obj);
         return providerContext.dao.updateWithVersion(obj);
     }
 
 
     public static <T> int updateWithVersion(ProviderContext providerContext, T obj, FieldFilter fieldFilter) {
-        AssertUtils.notNull(obj);
+        AssertUtil.notNull(obj);
         return providerContext.dao.updateWithVersion(obj, fieldFilter);
     }
 
 
     public static <T> int update(ProviderContext providerContext, T obj) {
-        AssertUtils.notNull(obj);
+        AssertUtil.notNull(obj);
         return providerContext.dao.update(obj);
     }
 
 
     public static <T> int update(ProviderContext providerContext, T obj, String actived) {
-        AssertUtils.notNull(obj);
+        AssertUtil.notNull(obj);
         return providerContext.dao.update(obj, actived);
     }
 
 
     public static <T> int update(ProviderContext providerContext, T obj, String actived, String locked, boolean ignoreNull) {
-        AssertUtils.notNull(obj);
+        AssertUtil.notNull(obj);
         return providerContext.dao.update(obj, actived, locked, ignoreNull);
     }
 
 
     public static <T> int update(ProviderContext providerContext, T obj, FieldFilter fieldFilter) {
-        AssertUtils.notNull(obj);
+        AssertUtil.notNull(obj);
         return providerContext.dao.update(obj, fieldFilter);
     }
 
 
     public static <T> int update(ProviderContext providerContext, T obj, FieldFilter fieldFilter, Condition cnd) {
-        AssertUtils.notNull(obj);
+        AssertUtil.notNull(obj);
         return providerContext.dao.update(obj, fieldFilter, cnd);
     }
 
 
     public static <T> int update(ProviderContext providerContext, T obj, Condition cnd) {
-        AssertUtils.notNull(obj);
+        AssertUtil.notNull(obj);
         return providerContext.dao.update(obj, cnd);
     }
 
 
     public static <T> int updateIgnoreNull(ProviderContext providerContext, T obj) {
-        AssertUtils.notNull(obj);
+        AssertUtil.notNull(obj);
         return providerContext.dao.updateIgnoreNull(obj);
     }
 
 
     public static <T> T updateWith(ProviderContext providerContext, T obj, String regex) {
-        AssertUtils.notNull(obj);
+        AssertUtil.notNull(obj);
         return providerContext.dao.updateWith(obj, regex);
     }
 
 
     public static <T> T updateLinks(ProviderContext providerContext, T obj, String regex) {
-        AssertUtils.notNull(obj);
+        AssertUtil.notNull(obj);
         return providerContext.dao.updateLinks(obj, regex);
     }
 
@@ -164,7 +164,7 @@ public class BaseDaoProvider {
     }
 
     public static <T> int delete(ProviderContext providerContext, T obj) {
-        AssertUtils.notNull(obj);
+        AssertUtil.notNull(obj);
         return providerContext.dao.delete(obj);
     }
 
@@ -173,12 +173,12 @@ public class BaseDaoProvider {
     }
 
     public static <T> int deleteWith(ProviderContext providerContext, T obj, String regex) {
-        AssertUtils.notNull(obj);
+        AssertUtil.notNull(obj);
         return providerContext.dao.deleteWith(obj, regex);
     }
 
     public static <T> int deleteLinks(ProviderContext providerContext, T obj, String regex) {
-        AssertUtils.notNull(obj);
+        AssertUtil.notNull(obj);
         return providerContext.dao.deleteLinks(obj, regex);
     }
 
@@ -191,7 +191,7 @@ public class BaseDaoProvider {
     }
 
     public static <T> T fetch(ProviderContext<T> providerContext, Condition cnd) {
-        AssertUtils.notNull(cnd, "Condition cant't be null");
+        AssertUtil.notNull(cnd, "Condition cant't be null");
         return providerContext.dao.fetch(providerContext.entityClass, cnd);
     }
 
@@ -200,27 +200,27 @@ public class BaseDaoProvider {
     }
 
     public static <T> T fetchLinks(ProviderContext<T> providerContext, T obj, String regex) {
-        AssertUtils.notNull(obj);
+        AssertUtil.notNull(obj);
         return providerContext.dao.fetchLinks(obj, regex);
     }
 
     public static <T> T fetchLinks(ProviderContext<T> providerContext, T obj) {
-        AssertUtils.notNull(obj);
+        AssertUtil.notNull(obj);
         return providerContext.dao.fetchLinks(obj, null);
     }
 
     public static <T> T fetchLinks(ProviderContext providerContext, T obj, String regex, Condition cnd) {
-        AssertUtils.notNull(obj);
+        AssertUtil.notNull(obj);
         return providerContext.dao.fetchLinks(obj, regex, cnd);
     }
 
     public static <T> T fetchLinks(ProviderContext providerContext, T obj, Condition cnd) {
-        AssertUtils.notNull(obj);
+        AssertUtil.notNull(obj);
         return providerContext.dao.fetchLinks(obj, null, cnd);
     }
 
     public static <T> int clear(ProviderContext providerContext, Condition cnd) {
-        AssertUtils.notNull(cnd, "Condition cant't be null");
+        AssertUtil.notNull(cnd, "Condition cant't be null");
         return providerContext.dao.clear(providerContext.entityClass, cnd);
     }
 
@@ -229,12 +229,12 @@ public class BaseDaoProvider {
     }
 
     public static <T> T clearLinks(ProviderContext providerContext, T obj, String regex) {
-        AssertUtils.notNull(obj);
+        AssertUtil.notNull(obj);
         return providerContext.dao.clearLinks(obj, regex);
     }
 
     public static <T> int count(ProviderContext providerContext, Condition cnd) {
-        AssertUtils.notNull(cnd, "Condition cant't be null");
+        AssertUtil.notNull(cnd, "Condition cant't be null");
         return providerContext.dao.count(providerContext.entityClass, cnd);
     }
 
@@ -298,7 +298,7 @@ public class BaseDaoProvider {
      * @return
      */
     public static <T> Collection<T> saveBatch(ProviderContext providerContext, Collection<T> objList) {
-        AssertUtils.notEmpty(objList, "Collection can't be null or empty");
+        AssertUtil.notEmpty(objList, "Collection can't be null or empty");
         return providerContext.dao.insert(objList);
     }
 
@@ -322,8 +322,8 @@ public class BaseDaoProvider {
      * @return
      */
     public static PageRecord listPage(ProviderContext providerContext, Condition cnd, Pager pager) {
-        AssertUtils.notNull(cnd, "Condition can't be null");
-        AssertUtils.notNull(pager, "Pager can't be null");
+        AssertUtil.notNull(cnd, "Condition can't be null");
+        AssertUtil.notNull(pager, "Pager can't be null");
         int count = providerContext.dao.count(providerContext.entityClass, cnd);
         PageRecord pageRecord = new PageRecord();
         pageRecord.setTotal(count);
@@ -343,17 +343,15 @@ public class BaseDaoProvider {
      * @return
      */
     public static PageRecord listPage(ProviderContext providerContext, Condition cnd, int pageNumber, int pageSize) {
-        AssertUtils.notNull(cnd, "Condition can't be null");
+        AssertUtil.notNull(cnd, "Condition can't be null");
         return BaseDaoProvider.listPage(providerContext, cnd, providerContext.dao.createPager(pageNumber, pageSize));
     }
 
     public static List list(ProviderContext providerContext, Condition cnd, Pager pager, FieldMatcher matcher) {
-        AssertUtils.notNull(cnd, "Condition can't be null");
-        AssertUtils.notNull(pager, "Pager can't be null");
+        AssertUtil.notNull(cnd, "Condition can't be null");
+        AssertUtil.notNull(pager, "Pager can't be null");
         return providerContext.dao.query(providerContext.entityClass, cnd, pager, matcher);
     }
-
-
 
 
 }

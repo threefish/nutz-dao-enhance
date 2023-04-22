@@ -167,7 +167,7 @@ public class DaoMethodInvoke {
      */
     private Object invokeCustomProvider(Object proxy, Dao dao, Object[] args, Entity entity) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
         String executeSql = replaceConditionSql(this.sourceSql, args, this.conditions);
-        ProviderContext providerContext = ProviderContext.of(dao, this.methodSignature, executeSql, args, this.methodSignature.getEntityClass(), entity, proxy);
+        ProviderContext providerContext = ProviderContext.of(this.enhanceCoreFactory, dao, this.methodSignature, executeSql, args, this.methodSignature.getEntityClass(), entity, proxy);
         Object[] parameterObject = Objects.nonNull(args) ? new Object[args.length + 1] : new Object[1];
         parameterObject[0] = providerContext;
         if (Objects.nonNull(args)) {
@@ -197,6 +197,7 @@ public class DaoMethodInvoke {
 
     /**
      * 替换条件sql
+     *
      * @param sourceSql
      * @param args
      * @param conditionMappingList

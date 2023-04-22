@@ -4,7 +4,7 @@ import java.lang.annotation.*;
 
 /**
  * @author 黄川 huchuc@vip.qq.com
- *  2020/9/13
+ * 2020/9/13
  * 搭配 @Id(auto = false)
  */
 @Retention(RetentionPolicy.RUNTIME)

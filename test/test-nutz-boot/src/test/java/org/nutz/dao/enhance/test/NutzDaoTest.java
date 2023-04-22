@@ -364,4 +364,22 @@ public class NutzDaoTest {
     }
 
 
+    @Test
+    public void test_field_calc() {
+        UserDO userDO = userDao.insert(UserDO.builder().age(17).realName("测试3").build());
+
+        userDao.fieldCalculation(userDO, "test");
+        assert userDO.getUserDO() != null;
+        assert userDO.getUserDO1() != null;
+
+        userDao.fieldCalculation(userDO, "test2");
+        assert userDO.getTest() == userDO.getId() + userDO.getAge();
+
+        userDao.fieldCalculation(userDO);
+        assert userDO.getUserDO3() != null;
+
+
+    }
+
+
 }

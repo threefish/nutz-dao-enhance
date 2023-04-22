@@ -4,7 +4,7 @@ import org.nutz.lang.random.R;
 
 /**
  * @author 黄川 huchuc@vip.qq.com
- *  2023/3/19
+ * 2023/3/19
  */
 public interface IdentifierGenerator {
 

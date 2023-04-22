@@ -1,6 +1,7 @@
 package org.nutz.dao.spring.boot.factory;
 
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.nutz.dao.Dao;
 import org.nutz.dao.enhance.audit.AuditHandler;
 import org.nutz.dao.enhance.config.DaoEnhanceConstant;
@@ -31,6 +32,7 @@ public class DefaualtNutEnhanceCoreFactory implements EnhanceCoreFactory, Initia
      * 数据源缓存
      */
     private final HashMap<String, Dao> daoHashMap = new HashMap<>();
+
     private ApplicationContext applicationContext;
 
 
@@ -48,6 +50,14 @@ public class DefaualtNutEnhanceCoreFactory implements EnhanceCoreFactory, Initia
     public AuditHandler getAuditHandler() {
         return applicationContext.getBean(AuditHandler.class);
     }
+
+
+    @SneakyThrows
+    @Override
+    public Object getBean(String beanName) {
+        return this.applicationContext.getBean(beanName);
+    }
+
 
     @Override
     public void afterPropertiesSet() {

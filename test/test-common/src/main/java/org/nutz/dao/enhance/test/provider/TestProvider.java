@@ -16,7 +16,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * @author 黄川 huchuc@vip.qq.com
- *  2021/6/14
+ * 2021/6/14
  */
 public class TestProvider {
 

@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 
 /**
  * @author 黄川 huchuc@vip.qq.com
- *  2020/7/31
+ * 2020/7/31
  */
 @Slf4j
 public class ClassPathDaoScanner extends ClassPathBeanDefinitionScanner {

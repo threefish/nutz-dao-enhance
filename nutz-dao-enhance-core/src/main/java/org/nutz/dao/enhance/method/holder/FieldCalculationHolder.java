@@ -2,7 +2,9 @@ package org.nutz.dao.enhance.method.holder;
 
 import org.nutz.dao.enhance.annotation.FieldCalculation;
 import org.nutz.dao.enhance.method.fieldcalculation.FieldCalculationInfo;
+import org.nutz.dao.enhance.util.AssertUtil;
 import org.nutz.dao.enhance.util.MethodSignatureUtil;
+import org.nutz.dao.enhance.util.PatternUtil;
 
 import java.lang.reflect.Field;
 import java.util.*;
@@ -14,7 +16,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class FieldCalculationHolder {
 
-    public static final String defaultGroup = "defaultGroup";
+    public static final String DEFAULT_GROUP = "defaultGroup";
 
     private static final Map<Class<?>, Map<String, List<FieldCalculationInfo>>> CLASS_MAP_CONCURRENT_HASH_MAP = new ConcurrentHashMap<>();
 
@@ -26,13 +28,17 @@ public class FieldCalculationHolder {
             for (Field declaredField : declaredFields) {
                 FieldCalculation fieldCalculation = MethodSignatureUtil.getAnnotation(declaredField, FieldCalculation.class);
                 if (Objects.nonNull(fieldCalculation)) {
+                    String beanName = PatternUtil.findBeanNameByExpression(fieldCalculation.expression());
+                    String expression = fieldCalculation.expression();
+                    AssertUtil.notBlank(expression);
+                    expression = expression.replaceAll("\\$ioc:", "");
                     List<String> groups = Arrays.asList(fieldCalculation.groups());
                     if (groups.size() > 0) {
-                        for (String g : groups) {
-                            groupsMap.computeIfAbsent(g, k -> new ArrayList<>()).add(FieldCalculationInfo.of(fieldCalculation.expression(), fieldCalculation.order(), g));
+                        for (String group : groups) {
+                            groupsMap.computeIfAbsent(group, k -> new ArrayList<>()).add(FieldCalculationInfo.of(declaredField.getName(), beanName, expression, fieldCalculation.order(), group));
                         }
                     } else {
-                        groupsMap.computeIfAbsent(defaultGroup, k -> new ArrayList<>()).add(FieldCalculationInfo.of(fieldCalculation.expression(), fieldCalculation.order(), defaultGroup));
+                        groupsMap.computeIfAbsent(DEFAULT_GROUP, k -> new ArrayList<>()).add(FieldCalculationInfo.of(declaredField.getName(), beanName, expression, fieldCalculation.order(), DEFAULT_GROUP));
                     }
                 }
             }
@@ -49,7 +55,7 @@ public class FieldCalculationHolder {
     }
 
     private static void add(Class<?> clzz, FieldCalculationInfo fieldCalculationInfo) {
-        FieldCalculationHolder.add(clzz, defaultGroup, fieldCalculationInfo);
+        FieldCalculationHolder.add(clzz, DEFAULT_GROUP, fieldCalculationInfo);
     }
 
 }

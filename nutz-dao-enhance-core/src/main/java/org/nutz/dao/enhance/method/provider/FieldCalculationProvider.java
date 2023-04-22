@@ -1,13 +1,9 @@
 package org.nutz.dao.enhance.method.provider;
 
-import org.nutz.dao.enhance.method.fieldcalculation.FieldCalculationInfo;
 import org.nutz.dao.enhance.method.holder.FieldCalculationHolder;
-import org.nutz.lang.Lang;
-import org.nutz.lang.Strings;
+import org.nutz.dao.enhance.util.FieldCalculationUtil;
 
 import java.util.Collection;
-import java.util.List;
-import java.util.Map;
 
 /**
  * @author 黄川 huchuc@vip.qq.com
@@ -25,13 +21,7 @@ public class FieldCalculationProvider {
      * @param <T>
      */
     public static <T> void fieldCalculation(ProviderContext providerContext, T t, String group) {
-        Map<String, List<FieldCalculationInfo>> listMap = FieldCalculationHolder.getOrCreate(t.getClass());
-        if (Lang.isNotEmpty(listMap) && Strings.isNotBlank(group)) {
-            List<FieldCalculationInfo> fieldCalculationInfos = listMap.get(group);
-            for (FieldCalculationInfo fieldCalculationInfo : fieldCalculationInfos) {
-                System.out.println("执行" + fieldCalculationInfo.getOrder() + fieldCalculationInfo.getExpression());
-            }
-        }
+        FieldCalculationUtil.fieldCalculation(providerContext.enhanceCoreFactory, t, group);
     }
 
     /**
@@ -58,7 +48,7 @@ public class FieldCalculationProvider {
      * @param <T>
      */
     public static <T> void fieldCalculation(ProviderContext providerContext, T t) {
-        FieldCalculationProvider.fieldCalculation(providerContext, t, FieldCalculationHolder.defaultGroup);
+        FieldCalculationProvider.fieldCalculation(providerContext, t, FieldCalculationHolder.DEFAULT_GROUP);
     }
 
     /**
@@ -69,7 +59,7 @@ public class FieldCalculationProvider {
      * @param <T>
      */
     public static <T> void fieldCalculation(ProviderContext providerContext, Collection<T> collection) {
-        FieldCalculationProvider.fieldCalculation(providerContext, collection, FieldCalculationHolder.defaultGroup);
+        FieldCalculationProvider.fieldCalculation(providerContext, collection, FieldCalculationHolder.DEFAULT_GROUP);
     }
 
 }

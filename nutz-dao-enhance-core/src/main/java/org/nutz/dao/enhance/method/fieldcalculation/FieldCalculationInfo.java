@@ -11,6 +11,18 @@ import lombok.Data;
 @Data
 public class FieldCalculationInfo {
 
+
+    /**
+     * 目标bean的名称
+     */
+    String fieldName;
+
+    /**
+     * 目标bean的名称
+     */
+    String beanName;
+
+
     /**
      * EL 表达式
      * 例如: $ioc.userService.findById($me.id)

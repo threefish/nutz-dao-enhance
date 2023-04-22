@@ -23,7 +23,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StopWatch;
 
 import java.util.*;
-import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * @author 黄川 huchuc@vip.qq.com
@@ -357,10 +356,18 @@ public class SpringDaoTest {
 
     @Test
     public void test_field_calc() {
-        List<UserDO> list = userDao.lambdaQuery().list();
-        for (UserDO userDO : list) {
-            userDao.fieldCalculation(userDO,"test");
-        }
+        UserDO userDO = userDao.insert(UserDO.builder().age(17).realName("测试3").build());
+
+        userDao.fieldCalculation(userDO, "test");
+        assert userDO.getUserDO() != null;
+        assert userDO.getUserDO1() != null;
+
+        userDao.fieldCalculation(userDO, "test2");
+        assert userDO.getTest() == userDO.getId() + userDO.getAge();
+
+        userDao.fieldCalculation(userDO);
+        assert userDO.getUserDO3() != null;
+
 
     }
 

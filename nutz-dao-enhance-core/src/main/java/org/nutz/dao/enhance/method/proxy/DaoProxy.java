@@ -97,7 +97,7 @@ public class DaoProxy<T> implements InvocationHandler, Serializable {
                             return new DefaultMethodInvoker(getMethodHandleJava9(method));
                         }
                     } catch (IllegalAccessException | InstantiationException | InvocationTargetException
-                             | NoSuchMethodException e) {
+                            | NoSuchMethodException e) {
                         throw new RuntimeException(e);
                     }
                 } else {

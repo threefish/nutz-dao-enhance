@@ -12,7 +12,7 @@ import org.nutz.dao.enhance.audit.AuditHandler;
 
 /**
  * @author 黄川 huchuc@vip.qq.com
- *  2020/12/12
+ * 2020/12/12
  */
 public interface EnhanceCoreFactory {
     /**
@@ -37,8 +37,17 @@ public interface EnhanceCoreFactory {
 
     /**
      * 获取审计处理程序
+     *
      * @return
      */
     AuditHandler getAuditHandler();
+
+    /**
+     * 获取bean
+     *
+     * @param beanName
+     * @return
+     */
+    Object getBean(String beanName);
 
 }

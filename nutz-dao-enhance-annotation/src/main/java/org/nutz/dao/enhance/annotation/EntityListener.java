@@ -1,4 +1,5 @@
 package org.nutz.dao.enhance.annotation;
+
 import java.lang.annotation.*;
 
 /**

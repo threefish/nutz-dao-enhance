@@ -19,7 +19,7 @@ import org.nutz.dao.entity.annotation.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table("user")
-@IgnoreAutoDDL
+//@IgnoreAutoDDL
 public class UserDO extends BaseDO {
 
     @Id(auto = false)
@@ -30,16 +30,19 @@ public class UserDO extends BaseDO {
     String realName;
     @Column
     Integer age;
-
-    @FieldCalculation(groups = {"test"}, expression = "filedCalcTestService.query($me)")
+    /**
+     * 字段计算功能，可按分组进行计算
+     */
+    @FieldCalculation(groups = {"test"}, expression = "$ioc:filedCalcTestService.query($me)")
     UserDO userDO;
 
-    @FieldCalculation(groups = {"test"}, order = 1, expression = "filedCalcTestService.query($me)")
+    @FieldCalculation(groups = {"test"}, order = 1, expression = "$ioc:filedCalcTestService.query($me)")
     UserDO userDO1;
 
-    @FieldCalculation(groups = {"test1", "test2"}, order = 2, expression = "filedCalcTestService.query($me)")
-    UserDO userDO2;
+    @FieldCalculation(groups = {"test2"}, order = 2, expression = "$me.age + $me.id")
+    int test;
 
-    @FieldCalculation(order = 1, expression = "filedCalcTestService.query($me)")
+    @FieldCalculation(order = 1, expression = "$ioc:filedCalcTestService.query($me)")
     UserDO userDO3;
+
 }

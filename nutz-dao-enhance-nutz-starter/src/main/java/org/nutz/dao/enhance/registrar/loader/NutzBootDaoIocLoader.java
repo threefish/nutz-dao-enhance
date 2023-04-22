@@ -6,7 +6,7 @@ import org.nutz.ioc.IocLoader;
 
 /**
  * @author 黄川 huchuc@vip.qq.com
- *  2021/6/14
+ * 2021/6/14
  */
 public class NutzBootDaoIocLoader implements IocLoaderProvider {
 

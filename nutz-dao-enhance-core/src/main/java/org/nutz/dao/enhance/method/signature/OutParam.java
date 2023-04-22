@@ -5,7 +5,7 @@ import lombok.Data;
 
 /**
  * @author 黄川 huchuc@vip.qq.com
- *  2023/3/15
+ * 2023/3/15
  */
 @Data
 @AllArgsConstructor(staticName = "of")

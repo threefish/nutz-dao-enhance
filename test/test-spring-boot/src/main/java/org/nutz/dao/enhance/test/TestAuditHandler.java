@@ -24,6 +24,7 @@ public class TestAuditHandler implements AuditHandler {
     public void preUpdate(Object object, Entity entity) {
 
     }
+
     @Override
     public Optional<String> getCurrentAuditor() {
         return Optional.of("spring-test");

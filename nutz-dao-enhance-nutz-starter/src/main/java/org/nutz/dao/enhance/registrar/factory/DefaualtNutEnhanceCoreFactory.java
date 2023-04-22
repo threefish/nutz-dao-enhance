@@ -1,5 +1,6 @@
 package org.nutz.dao.enhance.registrar.factory;
 
+import lombok.SneakyThrows;
 import org.nutz.dao.Dao;
 import org.nutz.dao.enhance.audit.AuditHandler;
 import org.nutz.dao.enhance.config.DaoEnhanceConstant;
@@ -12,6 +13,7 @@ import org.nutz.ioc.Ioc;
 import javax.sql.DataSource;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author 黄川 2020/12/16
@@ -22,7 +24,7 @@ public class DefaualtNutEnhanceCoreFactory implements EnhanceCoreFactory {
     /**
      * 数据源缓存
      */
-    private final HashMap<String, Dao> daoCache = new HashMap<>();
+    private final Map<String, Dao> daoCache = new HashMap<>();
 
     private final Ioc ioc;
 
@@ -46,6 +48,14 @@ public class DefaualtNutEnhanceCoreFactory implements EnhanceCoreFactory {
     @Override
     public AuditHandler getAuditHandler() {
         return ioc.getByType(AuditHandler.class);
+    }
+
+
+    @SneakyThrows
+    @Override
+    public Object getBean(String beanName) {
+        Class<?> type = this.ioc.getType(beanName);
+        return this.ioc.get(type, beanName);
     }
 
 

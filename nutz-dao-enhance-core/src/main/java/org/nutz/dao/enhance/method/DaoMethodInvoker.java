@@ -4,7 +4,7 @@ import java.lang.reflect.Method;
 
 /**
  * @author 黄川 huchuc@vip.qq.com
- *  2020/7/31
+ * 2020/7/31
  */
 public interface DaoMethodInvoker {
     /**

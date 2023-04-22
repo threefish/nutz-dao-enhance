@@ -16,7 +16,7 @@ import static org.springframework.util.Assert.notNull;
 
 /**
  * @author 黄川 huchuc@vip.qq.com
- *  2020/7/30
+ * 2020/7/30
  */
 @Data
 public class DaoScannerConfigurer implements BeanDefinitionRegistryPostProcessor, InitializingBean, ApplicationContextAware {
