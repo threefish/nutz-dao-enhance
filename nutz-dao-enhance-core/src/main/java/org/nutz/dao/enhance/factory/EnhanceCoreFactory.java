@@ -22,8 +22,6 @@ public interface EnhanceCoreFactory {
 
     /**
      * 获取默认dao
-     *
-     * @return
      */
     Dao getDao();
 
@@ -31,7 +29,6 @@ public interface EnhanceCoreFactory {
      * 获取dao
      *
      * @param dataSource
-     * @return
      */
     Dao getDao(String dataSource);
 

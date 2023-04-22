@@ -28,7 +28,6 @@ public class ValueTypeUtil {
      * 是多记录查询,或者分页
      *
      * @param clazz
-     * @return
      */
     public static boolean isCollection(Class<?> clazz) {
         return Collection.class.isAssignableFrom(clazz) || PageRecord.class == clazz;
@@ -38,7 +37,6 @@ public class ValueTypeUtil {
      * 是多记录查询,或者分页
      *
      * @param clazz
-     * @return
      */
     public static boolean isArray(Class<?> clazz) {
         return clazz.isArray();
@@ -49,7 +47,6 @@ public class ValueTypeUtil {
      * 是数字类型
      *
      * @param clazz
-     * @return
      */
     public static boolean isNumber(Class<?> clazz) {
         return NUMBER_HASH_MAP.contains(clazz);

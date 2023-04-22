@@ -37,7 +37,6 @@ public class EntityClassInfoHolder {
      * 获取
      *
      * @param klass
-     * @return
      */
     public static Entity<?> getEntity(Class<?> klass) {
         return ENTITY_HASH_MAP.get(klass);
@@ -48,7 +47,6 @@ public class EntityClassInfoHolder {
      * 获取
      *
      * @param name
-     * @return
      */
     public static Entity<?> getEntity(String name) {
         Class<?> klass = getClass(name);
@@ -59,7 +57,6 @@ public class EntityClassInfoHolder {
      * 获取类
      *
      * @param name
-     * @return
      */
     public static Class<?> getClass(String name) {
         return STRING_CLASS_HASH_MAP.get(name);

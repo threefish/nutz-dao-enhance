@@ -68,7 +68,6 @@ public class MethodSignatureUtil {
      * 是否是继承了baseMapper
      *
      * @param method
-     * @return
      */
     public static boolean isExtendsBaseMapper(Method method) {
         // 获取父类
@@ -83,7 +82,6 @@ public class MethodSignatureUtil {
      * 是否需要获取sql注解
      *
      * @param method
-     * @return
      */
     public static boolean isNeedSqlAnnotation(Method method) {
         // 继承了 baseMapper
@@ -99,7 +97,6 @@ public class MethodSignatureUtil {
      * 第一个参数应该是否是分页信息
      *
      * @param method
-     * @return
      */
     public static boolean firstParameterIsPaginationInfo(Method method) {
         Parameter[] parameters = method.getParameters();
@@ -114,7 +111,6 @@ public class MethodSignatureUtil {
      * 获取实体class
      *
      * @param clazz
-     * @return
      */
     public static Class<?> getClassEntityType(Class<?> clazz) {
         Class cl = null;
@@ -139,7 +135,6 @@ public class MethodSignatureUtil {
      * 获取第一个泛型类
      *
      * @param actualTypeArguments
-     * @return
      */
     public static Type getActualTypeFirst(Type[] actualTypeArguments) {
         if (Lang.isNotEmpty(actualTypeArguments)) {
@@ -153,7 +148,6 @@ public class MethodSignatureUtil {
      * 如果泛型是class就直接返回否则返回null
      *
      * @param actualType
-     * @return
      */
     public static Class getActualTypeClass(Type actualType) {
         if (Objects.nonNull(actualType) && actualType instanceof Class) {
@@ -166,7 +160,6 @@ public class MethodSignatureUtil {
      * 如果泛型是class就直接返回否则返回null
      *
      * @param actualTypeArguments
-     * @return
      */
     public static Class getActualTypeClassFirst(Type[] actualTypeArguments) {
         return getActualTypeClass(getActualTypeFirst(actualTypeArguments));
@@ -177,7 +170,6 @@ public class MethodSignatureUtil {
      * 获取实体class
      *
      * @param method
-     * @return
      */
     public static Class getMethodEntityType(Method method) {
         Entity annotation = method.getAnnotation(Entity.class);
@@ -191,7 +183,6 @@ public class MethodSignatureUtil {
      * 获取 Condition 条件参数
      *
      * @param parameterTypes
-     * @return
      */
     public static int getConditionParameterInedx(Class<?>[] parameterTypes) {
         for (int i = 0; i < parameterTypes.length; i++) {
@@ -209,7 +200,6 @@ public class MethodSignatureUtil {
      * @param providerType
      * @param methodName
      * @param returnType
-     * @return
      */
     public static Method getCustomProviderTypeMethod(Method orginMethod, Class<?> providerType, String methodName, Class<?> returnType) {
         List<Method> sameNameMethods = Arrays.stream(providerType.getMethods()).filter(m -> m.getName().equals(methodName)).collect(Collectors.toList());
@@ -255,7 +245,6 @@ public class MethodSignatureUtil {
      * 获取全部字段
      *
      * @param entityClass
-     * @return
      */
     public static List<Field> getAllFields(Class<?> entityClass) {
         Class cls = entityClass;

@@ -14,7 +14,6 @@ public interface DaoMethodInvoker {
      * @param method
      * @param args
      * @param dataSource
-     * @return
      * @throws Throwable
      */
     Object invoke(Object proxy, Method method, Object[] args, String dataSource) throws Throwable;

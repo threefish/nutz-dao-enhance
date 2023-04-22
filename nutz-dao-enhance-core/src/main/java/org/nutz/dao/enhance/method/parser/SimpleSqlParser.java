@@ -68,8 +68,6 @@ public class SimpleSqlParser {
 
     /**
      * 解析,必须再运行时才能执行
-     *
-     * @return
      */
     public SimpleSqlParser parse() {
         this.replaceSql();
@@ -93,8 +91,6 @@ public class SimpleSqlParser {
 
     /**
      * 替换SQL
-     *
-     * @return
      */
     private void replaceSql() {
         String tempSql = this.sql;
@@ -116,7 +112,6 @@ public class SimpleSqlParser {
      *
      * @param tempSql
      * @param columnMapping
-     * @return
      */
     private String replaceColumnSql(String tempSql, ColumnMapping columnMapping) {
         final TableMapping table = columnMapping.getTable();
@@ -148,7 +143,6 @@ public class SimpleSqlParser {
      * 获取条件表达式
      *
      * @param sql
-     * @return
      */
     private void analyzeConditionMapping(String sql) {
         List<ConditionMapping> mappingList = new ArrayList<>();
@@ -173,7 +167,6 @@ public class SimpleSqlParser {
      * 获取条件参数名
      *
      * @param part
-     * @return
      */
     private Set<String> getConditionParameter(String part) {
         Set<String> strings = new HashSet<>();
@@ -190,7 +183,6 @@ public class SimpleSqlParser {
      * 分析sql字符串
      *
      * @param str
-     * @return
      */
     private String[] getTokens(String str) {
         String[] tokens = split(WHITESPACE + "(),", str, true);
@@ -223,7 +215,6 @@ public class SimpleSqlParser {
      * 获取字段信息
      *
      * @param allTokens
-     * @return
      */
     private Set<ColumnMapping> getColumnMapping(String[] allTokens) {
         Set<ColumnMapping> columnMappings = new HashSet<>();
@@ -249,7 +240,6 @@ public class SimpleSqlParser {
      * 获取表信息
      *
      * @param tokens
-     * @return
      */
     private void analyzeTableMapping(String[] tokens) {
         Set<TableMapping> mappings = new HashSet<>();
@@ -274,7 +264,6 @@ public class SimpleSqlParser {
      *
      * @param tokens
      * @param start
-     * @return
      */
     private String nextNonWhite(String[] tokens, int start) {
         for (int i = start + 1; i < tokens.length; i++) {
@@ -301,7 +290,6 @@ public class SimpleSqlParser {
      * 是java实体字段
      *
      * @param token
-     * @return
      */
     private boolean isEntityJavaIdentifier(String token) {
         // 字符串长度大于1

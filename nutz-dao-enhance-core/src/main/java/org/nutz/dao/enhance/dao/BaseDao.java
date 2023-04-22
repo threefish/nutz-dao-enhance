@@ -29,7 +29,6 @@ public interface BaseDao<T> {
      * 如果你的字段仅仅声明了 '@Id(auto=true)'，没有声明 '@Next'，则认为你还是想取回插入后最新的 ID 值，因为 自动为你添加类似 @Next(@SQL("SELECT MAX(id) FROM tableName")) 的设置
      *
      * @param t
-     * @return
      */
     @CustomProvider(type = BaseDaoProvider.class)
     T insert(T t);
