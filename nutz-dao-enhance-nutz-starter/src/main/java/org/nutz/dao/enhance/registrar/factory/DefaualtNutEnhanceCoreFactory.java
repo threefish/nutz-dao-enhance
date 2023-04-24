@@ -7,6 +7,7 @@ import org.nutz.dao.enhance.config.DaoEnhanceConstant;
 import org.nutz.dao.enhance.config.DaoProperties;
 import org.nutz.dao.enhance.factory.EnhanceCoreFactory;
 import org.nutz.dao.enhance.method.holder.AutoCreateTableHolder;
+import org.nutz.dao.enhance.util.FieldCalculationUtil;
 import org.nutz.dao.impl.NutDao;
 import org.nutz.ioc.Ioc;
 
@@ -33,6 +34,7 @@ public class DefaualtNutEnhanceCoreFactory implements EnhanceCoreFactory {
     public DefaualtNutEnhanceCoreFactory(Ioc ioc, DaoProperties daoProperties) {
         this.ioc = ioc;
         this.daoProperties = daoProperties;
+        FieldCalculationUtil.setEnhanceCoreFactory(this);
     }
 
     @Override

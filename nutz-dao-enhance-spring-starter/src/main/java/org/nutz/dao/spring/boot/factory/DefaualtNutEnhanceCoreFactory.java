@@ -1,11 +1,11 @@
 package org.nutz.dao.spring.boot.factory;
 
-import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.nutz.dao.Dao;
 import org.nutz.dao.enhance.audit.AuditHandler;
 import org.nutz.dao.enhance.config.DaoEnhanceConstant;
 import org.nutz.dao.enhance.factory.EnhanceCoreFactory;
+import org.nutz.dao.enhance.util.FieldCalculationUtil;
 import org.nutz.dao.impl.NutDao;
 import org.nutz.dao.spring.boot.runner.SpringDaoRunner;
 import org.springframework.beans.BeansException;
@@ -25,7 +25,6 @@ import java.util.HashMap;
  */
 @Component(value = EnhanceCoreFactory.DEFAUALT_DAO_FACTORY_BEAN_NAME)
 @ConditionalOnBean(EnhanceCoreFactory.class)
-@RequiredArgsConstructor
 public class DefaualtNutEnhanceCoreFactory implements EnhanceCoreFactory, InitializingBean, ApplicationContextAware {
 
     /**
@@ -35,6 +34,9 @@ public class DefaualtNutEnhanceCoreFactory implements EnhanceCoreFactory, Initia
 
     private ApplicationContext applicationContext;
 
+    public DefaualtNutEnhanceCoreFactory() {
+        FieldCalculationUtil.setEnhanceCoreFactory(this);
+    }
 
     @Override
     public Dao getDao() {

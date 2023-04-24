@@ -21,7 +21,7 @@ public class FieldCalculationProvider {
      * @param <T>
      */
     public static <T> void fieldCalculation(ProviderContext providerContext, T t, String group) {
-        FieldCalculationUtil.fieldCalculation(providerContext.enhanceCoreFactory, t, group);
+        FieldCalculationUtil.fieldCalculation(t, group);
     }
 
     /**

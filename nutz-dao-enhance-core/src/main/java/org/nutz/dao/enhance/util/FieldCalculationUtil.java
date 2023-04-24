@@ -18,26 +18,30 @@ import java.util.Map;
  */
 public class FieldCalculationUtil {
 
+    private static EnhanceCoreFactory enhanceCoreFactory;
+
+    public static void setEnhanceCoreFactory(EnhanceCoreFactory enhanceCoreFactory) {
+        FieldCalculationUtil.enhanceCoreFactory = enhanceCoreFactory;
+    }
 
     /**
      * 按组进行字段计算
      *
-     * @param enhanceCoreFactory
      * @param t
      * @param <T>
      */
-    public static <T> void fieldCalculation(EnhanceCoreFactory enhanceCoreFactory, T t) {
-        fieldCalculation(enhanceCoreFactory, t,FieldCalculationHolder.DEFAULT_GROUP);
+    public static <T> void fieldCalculation(T t) {
+        fieldCalculation(t, FieldCalculationHolder.DEFAULT_GROUP);
     }
+
     /**
      * 按组进行字段计算
      *
-     * @param enhanceCoreFactory
      * @param t
      * @param group
      * @param <T>
      */
-    public static <T> void fieldCalculation(EnhanceCoreFactory enhanceCoreFactory, T t, String group) {
+    public static <T> void fieldCalculation(T t, String group) {
         Map<String, List<FieldCalculationInfo>> listMap = FieldCalculationHolder.getOrCreate(t.getClass());
         if (Lang.isNotEmpty(listMap) && Strings.isNotBlank(group)) {
             List<FieldCalculationInfo> fieldCalculationInfos = listMap.get(group);
