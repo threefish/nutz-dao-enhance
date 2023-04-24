@@ -25,8 +25,8 @@ public class FieldCalculationInfo {
 
     /**
      * EL 表达式
-     * 例如: $ioc.userService.findById($me.id)
-     * 例如: $me.age + $me.name
+     * 例如: $ioc.userService.findById($this.id)
+     * 例如: $this.age + $this.name
      */
     String expression;
 

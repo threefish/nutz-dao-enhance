@@ -13,7 +13,7 @@ import org.nutz.dao.enhance.test.MainApplication;
 import org.nutz.dao.enhance.test.dao.UserDao;
 import org.nutz.dao.enhance.test.entity.UserDO;
 import org.nutz.dao.enhance.test.entity.UserVO;
-import org.nutz.dao.enhance.util.FieldCalculationUtil;
+import org.nutz.dao.enhance.util.FieldCalcUtil;
 import org.nutz.dao.entity.Record;
 import org.nutz.dao.pager.Pager;
 import org.nutz.lang.util.NutMap;
@@ -359,14 +359,14 @@ public class SpringDaoTest {
     public void test_field_calc() {
         UserDO userDO = userDao.insert(UserDO.builder().age(17).realName("测试3").build());
 
-        FieldCalculationUtil.fieldCalculation(userDO, "test");
+        FieldCalcUtil.calc(userDO, "test");
         assert userDO.getUserDO() != null;
         assert userDO.getUserDO1() != null;
 
-        FieldCalculationUtil.fieldCalculation(userDO, "test2");
+        FieldCalcUtil.calc(userDO, "test2");
         assert userDO.getTest() == userDO.getId() + userDO.getAge();
 
-        FieldCalculationUtil.fieldCalculation(userDO);
+        FieldCalcUtil.calc(userDO);
         assert userDO.getUserDO3() != null;
 
 

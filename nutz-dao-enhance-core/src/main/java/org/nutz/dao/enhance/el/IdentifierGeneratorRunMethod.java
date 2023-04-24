@@ -16,7 +16,7 @@ import java.util.List;
 public class IdentifierGeneratorRunMethod implements RunMethod {
 
     public static final String NAME = "autoGeneratorID";
-    public static final String FUN_NAME = NAME + "($me)";
+    public static final String FUN_NAME = NAME + "($this)";
 
     private final IdentifierGenerator identifierGenerator;
 

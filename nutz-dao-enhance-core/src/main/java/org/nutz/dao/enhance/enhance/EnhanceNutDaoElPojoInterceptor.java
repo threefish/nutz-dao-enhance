@@ -27,6 +27,7 @@ public class EnhanceNutDaoElPojoInterceptor extends SimpleElPojoInterceptor {
             Context context = Lang.context();
             context.set("field", mf.getColumnName());
             context.set("view", mf.getEntity());
+            context.set("$this", obj);
             context.set("$me", obj);
             Object elVal = el.eval(context);
             if (elVal != null) {

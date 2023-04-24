@@ -5,7 +5,7 @@ import org.nutz.dao.Dao;
 import org.nutz.dao.enhance.audit.AuditHandler;
 import org.nutz.dao.enhance.config.DaoEnhanceConstant;
 import org.nutz.dao.enhance.factory.EnhanceCoreFactory;
-import org.nutz.dao.enhance.util.FieldCalculationUtil;
+import org.nutz.dao.enhance.util.FieldCalcUtil;
 import org.nutz.dao.impl.NutDao;
 import org.nutz.dao.spring.boot.runner.SpringDaoRunner;
 import org.springframework.beans.BeansException;
@@ -35,7 +35,7 @@ public class DefaualtNutEnhanceCoreFactory implements EnhanceCoreFactory, Initia
     private ApplicationContext applicationContext;
 
     public DefaualtNutEnhanceCoreFactory() {
-        FieldCalculationUtil.setEnhanceCoreFactory(this);
+        FieldCalcUtil.setEnhanceCoreFactory(this);
     }
 
     @Override

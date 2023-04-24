@@ -1,7 +1,7 @@
 package org.nutz.dao.enhance.method.provider;
 
 import org.nutz.dao.enhance.method.holder.FieldCalculationHolder;
-import org.nutz.dao.enhance.util.FieldCalculationUtil;
+import org.nutz.dao.enhance.util.FieldCalcUtil;
 
 import java.util.Collection;
 
@@ -21,7 +21,7 @@ public class FieldCalculationProvider {
      * @param <T>
      */
     public static <T> void fieldCalculation(ProviderContext providerContext, T t, String group) {
-        FieldCalculationUtil.fieldCalculation(t, group);
+        FieldCalcUtil.calc(t, group);
     }
 
     /**

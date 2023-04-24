@@ -33,16 +33,16 @@ public class UserDO extends BaseDO {
     /**
      * 字段计算功能，可按分组进行计算
      */
-    @FieldCalculation(groups = {"test"}, expression = "$ioc:filedCalcTestService.query($me)")
+    @FieldCalculation(groups = {"test"}, expression = "$ioc:fieldCalcTestService.query($this)")
     UserDO userDO;
 
-    @FieldCalculation(groups = {"test"}, order = 1, expression = "$ioc:filedCalcTestService.query($me)")
+    @FieldCalculation(groups = {"test"}, order = 1, expression = "$ioc:fieldCalcTestService.query($this)")
     UserDO userDO1;
 
-    @FieldCalculation(groups = {"test2"}, order = 2, expression = "$me.age + $me.id")
+    @FieldCalculation(groups = {"test2"}, order = 2, expression = "$this.age + $this.id")
     int test;
 
-    @FieldCalculation(order = 1, expression = "$ioc:filedCalcTestService.query($me)")
+    @FieldCalculation(order = 1, expression = "$ioc:fieldCalcTestService.query($this)")
     UserDO userDO3;
 
 }

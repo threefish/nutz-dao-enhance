@@ -12,6 +12,7 @@ import org.nutz.dao.enhance.pagination.PageRecord;
 import org.nutz.dao.enhance.test.dao.UserDao;
 import org.nutz.dao.enhance.test.entity.UserDO;
 import org.nutz.dao.enhance.test.entity.UserVO;
+import org.nutz.dao.enhance.util.FieldCalcUtil;
 import org.nutz.dao.entity.Record;
 import org.nutz.dao.pager.Pager;
 import org.nutz.ioc.loader.annotation.Inject;
@@ -368,7 +369,7 @@ public class NutzDaoTest {
     public void test_field_calc() {
         UserDO userDO = userDao.insert(UserDO.builder().age(17).realName("测试3").build());
 
-        userDao.fieldCalculation(userDO, "test");
+        FieldCalcUtil.calc(userDO, "test");
         assert userDO.getUserDO() != null;
         assert userDO.getUserDO1() != null;
 

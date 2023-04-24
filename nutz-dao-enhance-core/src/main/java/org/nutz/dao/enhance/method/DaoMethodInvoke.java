@@ -16,8 +16,6 @@ import org.nutz.dao.enhance.method.parser.ConditionMapping;
 import org.nutz.dao.enhance.method.parser.SimpleSqlParser;
 import org.nutz.dao.enhance.method.provider.ProviderContext;
 import org.nutz.dao.enhance.method.signature.MethodSignature;
-import org.nutz.dao.enhance.pagination.PageRecord;
-import org.nutz.dao.enhance.util.FieldCalculationUtil;
 import org.nutz.dao.enhance.util.MethodSignatureUtil;
 import org.nutz.dao.entity.Entity;
 import org.nutz.dao.entity.MappingField;
@@ -29,7 +27,6 @@ import org.nutz.lang.Stopwatch;
 import org.nutz.lang.Strings;
 import org.nutz.lang.util.Context;
 
-import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -137,56 +134,6 @@ public class DaoMethodInvoke {
      * @return
      */
     public Object execute(Object proxy, String dataSource, Method methodTraget, Object[] args) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException, InstantiationException {
-        Object result = doExecute(proxy, dataSource, methodTraget, args);
-        autoFieldCalculation(result);
-        return result;
-    }
-
-    private void autoFieldCalculation(Object result) {
-        if (!this.methodSignature.isReturnsVoid()) {
-            Object realResult = result;
-            if (this.methodSignature.isReturnsOptional()) {
-                Optional<Object> data = (Optional) result;
-                if (data.isPresent()) {
-                    realResult = data.get();
-                } else {
-                    realResult = null;
-                }
-            }
-            if (realResult != null) {
-                Class<?> returnType = this.methodSignature.getReturnType();
-                if (returnType.isAssignableFrom(Collection.class)) {
-                    Collection collection = ((Collection) realResult);
-                    collection.forEach(record -> FieldCalculationUtil.fieldCalculation(record));
-                } else if (returnType.isAssignableFrom(PageRecord.class)) {
-                    PageRecord pageRecord = ((PageRecord) realResult);
-                    pageRecord.getRecords().forEach(record -> FieldCalculationUtil.fieldCalculation(record));
-                } else if (returnType.isArray()) {
-                    int length = Array.getLength(realResult);
-                    for (int i = 0; i < length; i++) {
-                        Object element = Array.get(realResult, i);
-                        if (!element.getClass().isPrimitive()) {
-                            // 对数组元素进行操作
-                            FieldCalculationUtil.fieldCalculation(element);
-                        }
-                    }
-                } else if (!this.methodSignature.getReturnType().isPrimitive()) {
-                    FieldCalculationUtil.fieldCalculation(realResult);
-                }
-            }
-        }
-    }
-
-    /**
-     * 执行
-     *
-     * @param proxy
-     * @param dataSource
-     * @param methodTraget
-     * @param args
-     * @return
-     */
-    public Object doExecute(Object proxy, String dataSource, Method methodTraget, Object[] args) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException, InstantiationException {
         Stopwatch stopWatch = new Stopwatch();
         try {
             stopWatch.start();

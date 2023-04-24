@@ -16,12 +16,12 @@ import java.util.Map;
  * @author 黄川 huchuc@vip.qq.com
  * date: 2023/4/22
  */
-public class FieldCalculationUtil {
+public class FieldCalcUtil {
 
     private static EnhanceCoreFactory enhanceCoreFactory;
 
     public static void setEnhanceCoreFactory(EnhanceCoreFactory enhanceCoreFactory) {
-        FieldCalculationUtil.enhanceCoreFactory = enhanceCoreFactory;
+        FieldCalcUtil.enhanceCoreFactory = enhanceCoreFactory;
     }
 
     /**
@@ -30,8 +30,8 @@ public class FieldCalculationUtil {
      * @param t
      * @param <T>
      */
-    public static <T> void fieldCalculation(T t) {
-        fieldCalculation(t, FieldCalculationHolder.DEFAULT_GROUP);
+    public static <T> void calc(T t) {
+        calc(t, FieldCalculationHolder.DEFAULT_GROUP);
     }
 
     /**
@@ -41,13 +41,13 @@ public class FieldCalculationUtil {
      * @param group
      * @param <T>
      */
-    public static <T> void fieldCalculation(T t, String group) {
+    public static <T> void calc(T t, String group) {
         Map<String, List<FieldCalculationInfo>> listMap = FieldCalculationHolder.getOrCreate(t.getClass());
         if (Lang.isNotEmpty(listMap) && Strings.isNotBlank(group)) {
             List<FieldCalculationInfo> fieldCalculationInfos = listMap.get(group);
             for (FieldCalculationInfo fieldCalculationInfo : fieldCalculationInfos) {
                 Context context = Lang.context();
-                context.set("$me", t);
+                context.set("$this", t);
                 if (Strings.isNotBlank(fieldCalculationInfo.getBeanName())) {
                     Object bean = enhanceCoreFactory.getBean(fieldCalculationInfo.getBeanName());
                     context.set(fieldCalculationInfo.getBeanName(), bean);
