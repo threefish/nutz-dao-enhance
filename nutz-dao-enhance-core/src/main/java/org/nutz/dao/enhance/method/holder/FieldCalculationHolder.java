@@ -16,7 +16,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class FieldCalculationHolder {
 
-    public static final String DEFAULT_GROUP = "defaultGroup";
+    public static final String DEFAULT_GROUP = "default";
 
     private static final Map<Class<?>, Map<String, List<FieldCalculationInfo>>> CLASS_MAP_CONCURRENT_HASH_MAP = new ConcurrentHashMap<>();
 
