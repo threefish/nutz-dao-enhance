@@ -42,19 +42,22 @@ public class FieldCalcUtil {
      * @param <T>
      */
     public static <T> void calc(T t, String group) {
-        Map<String, List<FieldCalculationInfo>> listMap = FieldCalculationHolder.getOrCreate(t.getClass());
-        if (Lang.isNotEmpty(listMap) && Strings.isNotBlank(group)) {
-            List<FieldCalculationInfo> fieldCalculationInfos = listMap.get(group);
-            for (FieldCalculationInfo fieldCalculationInfo : fieldCalculationInfos) {
-                Context context = Lang.context();
-                context.set("$this", t);
-                if (Strings.isNotBlank(fieldCalculationInfo.getBeanName())) {
-                    Object bean = enhanceCoreFactory.getBean(fieldCalculationInfo.getBeanName());
-                    context.set(fieldCalculationInfo.getBeanName(), bean);
+        if (t != null) {
+            Map<String, List<FieldCalculationInfo>> listMap = FieldCalculationHolder.getOrCreate(t.getClass());
+            if (Lang.isNotEmpty(listMap) && Strings.isNotBlank(group)) {
+                List<FieldCalculationInfo> fieldCalculationInfos = listMap.get(group);
+                for (FieldCalculationInfo fieldCalculationInfo : fieldCalculationInfos) {
+                    Context context = Lang.context();
+                    context.set("$this", t);
+                    if (Strings.isNotBlank(fieldCalculationInfo.getBeanName())) {
+                        Object bean = enhanceCoreFactory.getBean(fieldCalculationInfo.getBeanName());
+                        context.set(fieldCalculationInfo.getBeanName(), bean);
+                    }
+                    Object value = El.eval(context, fieldCalculationInfo.getExpression());
+                    Mirror.me(t).setValue(t, fieldCalculationInfo.getFieldName(), value);
                 }
-                Object value = El.eval(context, fieldCalculationInfo.getExpression());
-                Mirror.me(t).setValue(t, fieldCalculationInfo.getFieldName(), value);
             }
         }
+
     }
 }
