@@ -35,10 +35,10 @@ public class FieldCalculationHolder {
                     List<String> groups = Arrays.asList(fieldCalculation.groups());
                     if (groups.size() > 0) {
                         for (String group : groups) {
-                            groupsMap.computeIfAbsent(group, k -> new ArrayList<>()).add(FieldCalculationInfo.of(declaredField.getName(), beanName, expression, fieldCalculation.order(), group));
+                            groupsMap.computeIfAbsent(group, k -> new ArrayList<>()).add(FieldCalculationInfo.of(declaredField.getName(), beanName, expression, fieldCalculation.order(), group, fieldCalculation.ignoreOptionalWrapper()));
                         }
                     } else {
-                        groupsMap.computeIfAbsent(DEFAULT_GROUP, k -> new ArrayList<>()).add(FieldCalculationInfo.of(declaredField.getName(), beanName, expression, fieldCalculation.order(), DEFAULT_GROUP));
+                        groupsMap.computeIfAbsent(DEFAULT_GROUP, k -> new ArrayList<>()).add(FieldCalculationInfo.of(declaredField.getName(), beanName, expression, fieldCalculation.order(), DEFAULT_GROUP, fieldCalculation.ignoreOptionalWrapper()));
                     }
                 }
             }

@@ -11,6 +11,7 @@ import org.nutz.lang.util.Context;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * @author 黄川 huchuc@vip.qq.com
@@ -54,7 +55,15 @@ public class FieldCalcUtil {
                         context.set(fieldCalculationInfo.getBeanName(), bean);
                     }
                     Object value = El.eval(context, fieldCalculationInfo.getExpression());
-                    Mirror.me(t).setValue(t, fieldCalculationInfo.getFieldName(), value);
+                    Object realValue = value;
+                    if (value instanceof Optional && fieldCalculationInfo.isIgnoreOptionalWrapper()) {
+                        // 需要去除optional包裹
+                        Optional optional = ((Optional<?>) value);
+                        realValue = optional.isPresent() ? optional.get() : null;
+                    }
+                    if (realValue != null) {
+                        Mirror.me(t).setValue(t, fieldCalculationInfo.getFieldName(), realValue);
+                    }
                 }
             }
         }

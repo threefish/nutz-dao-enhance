@@ -30,4 +30,9 @@ public @interface FieldCalculation {
      */
     String[] groups() default {};
 
+    /**
+     * 忽略返回对象的 Optional 包裹
+     */
+    boolean ignoreOptionalWrapper() default  true;
+
 }

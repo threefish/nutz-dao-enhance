@@ -39,4 +39,8 @@ public class FieldCalculationInfo {
      * 分组计算
      */
     String group;
+    /**
+     * 忽略返回对象的 Optional 包裹
+     */
+    boolean ignoreOptionalWrapper;
 }
