@@ -30,15 +30,16 @@ public class FieldCalculationHolder {
                 if (Objects.nonNull(fieldCalculation)) {
                     String beanName = PatternUtil.findBeanNameByExpression(fieldCalculation.expression());
                     String expression = fieldCalculation.expression();
+                    String conditionExpression = fieldCalculation.conditionExpression();
                     AssertUtil.notBlank(expression);
                     expression = expression.replaceAll("\\$ioc:", "");
                     List<String> groups = Arrays.asList(fieldCalculation.groups());
                     if (groups.size() > 0) {
                         for (String group : groups) {
-                            groupsMap.computeIfAbsent(group, k -> new ArrayList<>()).add(FieldCalculationInfo.of(declaredField.getName(), beanName, expression, fieldCalculation.order(), group, fieldCalculation.ignoreOptionalWrapper()));
+                            groupsMap.computeIfAbsent(group, k -> new ArrayList<>()).add(FieldCalculationInfo.of(declaredField.getName(), beanName, conditionExpression, expression, fieldCalculation.order(), group, fieldCalculation.ignoreOptionalWrapper()));
                         }
                     } else {
-                        groupsMap.computeIfAbsent(DEFAULT_GROUP, k -> new ArrayList<>()).add(FieldCalculationInfo.of(declaredField.getName(), beanName, expression, fieldCalculation.order(), DEFAULT_GROUP, fieldCalculation.ignoreOptionalWrapper()));
+                        groupsMap.computeIfAbsent(DEFAULT_GROUP, k -> new ArrayList<>()).add(FieldCalculationInfo.of(declaredField.getName(), beanName, conditionExpression, expression, fieldCalculation.order(), DEFAULT_GROUP, fieldCalculation.ignoreOptionalWrapper()));
                     }
                 }
             }

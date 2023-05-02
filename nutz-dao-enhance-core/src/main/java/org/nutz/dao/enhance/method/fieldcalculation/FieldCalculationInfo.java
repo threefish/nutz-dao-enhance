@@ -22,6 +22,11 @@ public class FieldCalculationInfo {
      */
     String beanName;
 
+    /**
+     * 条件表达式，满足才执行
+     * 例如: $this.age !=null
+     */
+    String conditionExpression;
 
     /**
      * EL 表达式

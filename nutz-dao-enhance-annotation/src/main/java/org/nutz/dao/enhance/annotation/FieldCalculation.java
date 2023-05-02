@@ -19,6 +19,12 @@ public @interface FieldCalculation {
     String expression();
 
     /**
+     * 条件表达式，满足才执行
+     * 例如: $this.age !=null
+     */
+    String conditionExpression() default "";
+
+    /**
      * 顺序 越小越先执行
      */
     int order() default 0;

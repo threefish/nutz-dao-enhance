@@ -44,6 +44,22 @@ public class FieldCalcUtil {
      */
     public static <T> void calc(T t, String group) {
         if (t != null) {
+            Class<?> clazz = t.getClass();
+            if (Iterable.class.isAssignableFrom(clazz)) {
+                Iterable collection = ((Iterable) t);
+                collection.forEach(c -> calculation(c, group));
+            }
+        }
+    }
+
+    /**
+     * 计算
+     *
+     * @param t
+     * @param group
+     */
+    public static void calculation(Object t, String group) {
+        if (t != null) {
             Map<String, List<FieldCalculationInfo>> listMap = FieldCalculationHolder.getOrCreate(t.getClass());
             if (Lang.isNotEmpty(listMap) && Strings.isNotBlank(group)) {
                 List<FieldCalculationInfo> fieldCalculationInfos = listMap.get(group);
@@ -54,15 +70,23 @@ public class FieldCalcUtil {
                         Object bean = enhanceCoreFactory.getBean(fieldCalculationInfo.getBeanName());
                         context.set(fieldCalculationInfo.getBeanName(), bean);
                     }
-                    Object value = El.eval(context, fieldCalculationInfo.getExpression());
-                    Object realValue = value;
-                    if (value instanceof Optional && fieldCalculationInfo.isIgnoreOptionalWrapper()) {
-                        // 需要去除optional包裹
-                        Optional optional = ((Optional<?>) value);
-                        realValue = optional.isPresent() ? optional.get() : null;
+                    String conditionExpression = fieldCalculationInfo.getConditionExpression();
+                    boolean matchCondition = true;
+                    if (Strings.isNotBlank(conditionExpression)) {
+                        Object eval = El.eval(context, conditionExpression);
+                        matchCondition = "true".equals(String.valueOf(eval));
                     }
-                    if (realValue != null) {
-                        Mirror.me(t).setValue(t, fieldCalculationInfo.getFieldName(), realValue);
+                    if (matchCondition) {
+                        Object value = El.eval(context, fieldCalculationInfo.getExpression());
+                        Object realValue = value;
+                        if (value instanceof Optional && fieldCalculationInfo.isIgnoreOptionalWrapper()) {
+                            // 需要去除optional包裹
+                            Optional optional = ((Optional<?>) value);
+                            realValue = optional.isPresent() ? optional.get() : null;
+                        }
+                        if (realValue != null) {
+                            Mirror.me(t).setValue(t, fieldCalculationInfo.getFieldName(), realValue);
+                        }
                     }
                 }
             }
