@@ -11,6 +11,7 @@ import org.nutz.dao.Cnd;
 import org.nutz.dao.enhance.pagination.PageRecord;
 import org.nutz.dao.enhance.test.MainApplication;
 import org.nutz.dao.enhance.test.dao.UserDao;
+import org.nutz.dao.enhance.test.entity.JobDO;
 import org.nutz.dao.enhance.test.entity.UserDO;
 import org.nutz.dao.enhance.test.entity.UserVO;
 import org.nutz.dao.enhance.util.FieldCalcUtil;
@@ -372,4 +373,12 @@ public class SpringDaoTest {
 
     }
 
+    @Test
+    public void test_left_query() {
+        List<UserDO> list = userDao.lambdaQuery()
+                .leftJoin(JobDO.class, UserDO::getId, JobDO::getUserId)
+                .eq(JobDO.class, UserDO::getRealName, "测试")
+                .list();
+        System.out.println("");
+    }
 }

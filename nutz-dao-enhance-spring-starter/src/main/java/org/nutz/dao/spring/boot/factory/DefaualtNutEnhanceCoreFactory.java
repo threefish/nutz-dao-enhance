@@ -4,6 +4,7 @@ import lombok.SneakyThrows;
 import org.nutz.dao.Dao;
 import org.nutz.dao.enhance.audit.AuditHandler;
 import org.nutz.dao.enhance.config.DaoEnhanceConstant;
+import org.nutz.dao.enhance.enhance.EnhanceNutDao;
 import org.nutz.dao.enhance.factory.EnhanceCoreFactory;
 import org.nutz.dao.enhance.util.FieldCalcUtil;
 import org.nutz.dao.impl.NutDao;
@@ -73,7 +74,7 @@ public class DefaualtNutEnhanceCoreFactory implements EnhanceCoreFactory, Initia
     }
 
     private Dao createDao(DataSource dataSource) {
-        NutDao nutDao = new NutDao(dataSource);
+        EnhanceNutDao nutDao = new EnhanceNutDao(dataSource);
         // 将事务交给spring管理
         nutDao.setRunner(new SpringDaoRunner());
         return nutDao;

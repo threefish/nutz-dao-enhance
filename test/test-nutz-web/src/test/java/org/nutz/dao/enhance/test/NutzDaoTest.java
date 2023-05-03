@@ -8,6 +8,7 @@ import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.runner.RunWith;
 import org.nutz.dao.Cnd;
+import org.nutz.dao.enhance.dao.condition.QueryCondition;
 import org.nutz.dao.enhance.pagination.PageRecord;
 import org.nutz.dao.enhance.test.dao.UserDao;
 import org.nutz.dao.enhance.test.entity.UserDO;
@@ -205,7 +206,7 @@ public class NutzDaoTest {
 
     @Test
     public void test_each() {
-        userDao.each(Cnd.NEW(), (index, ele, length) -> {
+        userDao.each(QueryCondition.NEW(), (index, ele, length) -> {
             System.out.println(index);
         });
     }

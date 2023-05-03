@@ -2,6 +2,7 @@ package org.nutz.dao.enhance.dao.lambda;
 
 import org.nutz.dao.Cnd;
 import org.nutz.dao.FieldFilter;
+import org.nutz.dao.enhance.dao.condition.QueryCondition;
 import org.nutz.dao.enhance.method.provider.ProviderContext;
 import org.nutz.dao.util.cri.IsNull;
 import org.nutz.dao.util.cri.SqlExpression;
@@ -25,7 +26,7 @@ public abstract class LambdaCondition<Children extends LambdaCondition, T> {
 
     protected final Children thisType = (Children) this;
 
-    protected final Cnd cnd;
+    protected final QueryCondition cnd;
 
     protected final ProviderContext providerContext;
     /**
@@ -49,7 +50,7 @@ public abstract class LambdaCondition<Children extends LambdaCondition, T> {
      */
     private List<String> excludes;
 
-    public LambdaCondition(Cnd cnd, ProviderContext providerContext, boolean notNull, boolean notEmpty) {
+    public LambdaCondition(QueryCondition cnd, ProviderContext providerContext, boolean notNull, boolean notEmpty) {
         this.cnd = cnd;
         this.providerContext = providerContext;
         this.notNull = notNull;
@@ -148,14 +149,14 @@ public abstract class LambdaCondition<Children extends LambdaCondition, T> {
 
 
     public Children eq(PFun<T, ?> name, Object value) {
-        cnd.and(name, "=", value);
         checkValueForNull(name, value);
+        cnd.and(name, "=", value);
         return this.thisType;
     }
 
     public Children eq(String name, Object value) {
-        cnd.and(name, "=", value);
         checkValueForNull(name, value);
+        cnd.and(name, "=", value);
         return this.thisType;
     }
 
@@ -394,14 +395,14 @@ public abstract class LambdaCondition<Children extends LambdaCondition, T> {
     }
 
     public Children notBetween(PFun<T, ?> name, Object val1, Object val2) {
-        cnd.andNot(name, "between", new Object[]{val1, val2});
         checkValueForNull(name, val1, val2);
+        cnd.andNot(name, "between", new Object[]{val1, val2});
         return this.thisType;
     }
 
     public Children notBetween(String name, Object val1, Object val2) {
-        cnd.andNot(name, "between", new Object[]{val1, val2});
         checkValueForNull(name, val1, val2);
+        cnd.andNot(name, "between", new Object[]{val1, val2});
         return this.thisType;
     }
 
@@ -692,7 +693,7 @@ public abstract class LambdaCondition<Children extends LambdaCondition, T> {
     public final Children and(Function<LambdaConditionWapper<T>, LambdaConditionWapper<T>>... exps) {
         if (exps != null && exps.length > 0) {
             SqlExpressionGroup sqlExpressionGroup = new SqlExpressionGroup();
-            Arrays.stream(exps).forEach(orPart -> sqlExpressionGroup.or(orPart.apply(new LambdaConditionWapper<T>(Cnd.NEW(), this.providerContext, this.notNull, this.notEmpty)).getSqlExpressionGroup()));
+            Arrays.stream(exps).forEach(orPart -> sqlExpressionGroup.or(orPart.apply(new LambdaConditionWapper<T>(QueryCondition.NEW(), this.providerContext, this.notNull, this.notEmpty)).getSqlExpressionGroup()));
             this.cnd.and(sqlExpressionGroup);
         }
         return this.thisType;
@@ -708,7 +709,7 @@ public abstract class LambdaCondition<Children extends LambdaCondition, T> {
     public final Children or(Function<LambdaConditionWapper<T>, LambdaConditionWapper<T>>... exps) {
         if (exps != null && exps.length > 0) {
             SqlExpressionGroup sqlExpressionGroup = new SqlExpressionGroup();
-            Arrays.stream(exps).forEach(orPart -> sqlExpressionGroup.or(orPart.apply(new LambdaConditionWapper<T>(Cnd.NEW(), this.providerContext, this.notNull, this.notEmpty)).getSqlExpressionGroup()));
+            Arrays.stream(exps).forEach(orPart -> sqlExpressionGroup.or(orPart.apply(new LambdaConditionWapper<T>(QueryCondition.NEW(), this.providerContext, this.notNull, this.notEmpty)).getSqlExpressionGroup()));
             this.cnd.or(sqlExpressionGroup);
         }
         return this.thisType;
@@ -720,7 +721,7 @@ public abstract class LambdaCondition<Children extends LambdaCondition, T> {
      * @param name
      * @param coll
      */
-    private void checkCollectionValueForEmpty(PFun<T, ?> name, Collection<?> coll) {
+    protected void checkCollectionValueForEmpty(PFun name, Collection<?> coll) {
         checkCollectionValueForEmpty(LambdaQuery.resolve(name), coll);
     }
 
@@ -730,7 +731,7 @@ public abstract class LambdaCondition<Children extends LambdaCondition, T> {
      * @param name
      * @param coll
      */
-    private void checkCollectionValueForEmpty(String name, Collection<?> coll) {
+    protected void checkCollectionValueForEmpty(String name, Collection<?> coll) {
         if (this.notEmpty) {
             if (coll == null || coll.isEmpty()) {
                 throw new IllegalArgumentException(String.format("Value for [%s] cannot be empty", name));
@@ -742,7 +743,7 @@ public abstract class LambdaCondition<Children extends LambdaCondition, T> {
      * 如果字段值是null将报错，阻止sql提交
      */
     @SafeVarargs
-    private final void checkValueForNull(PFun<T, ?> name, Object... values) {
+    protected final void checkValueForNull(PFun name, Object... values) {
         checkValueForNull(LambdaQuery.resolve(name), values);
     }
 
@@ -750,7 +751,7 @@ public abstract class LambdaCondition<Children extends LambdaCondition, T> {
      * 如果字段值是null将报错，阻止sql提交
      */
     @SafeVarargs
-    private final void checkValueForNull(String name, Object... values) {
+    protected final void checkValueForNull(String name, Object... values) {
         if (this.notNull) {
             if (values == null) {
                 throw new IllegalArgumentException(String.format("Value for [%s] cannot be null", name));

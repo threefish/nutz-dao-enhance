@@ -2,6 +2,7 @@ package org.nutz.dao.enhance.dao.lambda;
 
 import org.nutz.dao.Chain;
 import org.nutz.dao.Cnd;
+import org.nutz.dao.enhance.dao.condition.QueryCondition;
 import org.nutz.dao.enhance.method.provider.ProviderContext;
 import org.nutz.dao.util.lambda.LambdaQuery;
 import org.nutz.dao.util.lambda.PFun;
@@ -24,7 +25,7 @@ public class LambdaUpdate<T> extends LambdaCondition<LambdaUpdate<T>, T> {
     private Map<String, Object> data;
 
     public LambdaUpdate(ProviderContext providerContext, boolean notNull, boolean notEmpty) {
-        super(Cnd.NEW(), providerContext, notNull, notEmpty);
+        super(QueryCondition.NEW(), providerContext, notNull, notEmpty);
         this.providerContext = providerContext;
     }
 

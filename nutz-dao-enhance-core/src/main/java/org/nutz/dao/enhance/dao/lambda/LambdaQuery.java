@@ -1,9 +1,11 @@
 package org.nutz.dao.enhance.dao.lambda;
 
-import org.nutz.dao.Cnd;
 import org.nutz.dao.enhance.dao.BaseDao;
+import org.nutz.dao.enhance.dao.condition.QueryCondition;
 import org.nutz.dao.enhance.method.provider.ProviderContext;
 import org.nutz.dao.enhance.pagination.PageRecord;
+import org.nutz.dao.entity.Entity;
+import org.nutz.dao.entity.MappingField;
 import org.nutz.dao.pager.Pager;
 import org.nutz.dao.util.lambda.PFun;
 import org.nutz.lang.Each;
@@ -21,7 +23,7 @@ public class LambdaQuery<T> extends LambdaCondition<LambdaQuery<T>, T> {
     protected final BaseDao<T> baseDao;
 
     public LambdaQuery(ProviderContext providerContext, boolean notNull, boolean notEmpty) {
-        super(Cnd.NEW(), providerContext, notNull, notEmpty);
+        super(QueryCondition.NEW(), providerContext, notNull, notEmpty);
         this.baseDao = ((BaseDao) providerContext.proxy);
     }
 
@@ -123,6 +125,110 @@ public class LambdaQuery<T> extends LambdaCondition<LambdaQuery<T>, T> {
         return this;
     }
 
+    public <JOIN> LambdaQuery<T> leftJoin(Class<?> clazz, PFun<T, ?> mainName, PFun<JOIN, ?> leftName) {
+        cnd.leftJoin(clazz, getEntityFieldName(providerContext.entityClass, mainName), getEntityFieldName(clazz, leftName));
+        return this;
+    }
+
+    public <JOIN> LambdaQuery<T> rightJoin(Class<?> clazz, PFun<T, ?> mainName, PFun<JOIN, ?> leftName) {
+        cnd.rightJoin(clazz, getEntityFieldName(providerContext.entityClass, mainName), getEntityFieldName(clazz, leftName));
+        return this;
+    }
+
+    public <JOIN> LambdaQuery<T> innerJoin(Class<?> clazz, PFun<T, ?> mainName, PFun<JOIN, ?> leftName) {
+        cnd.innerJoin(clazz, getEntityFieldName(providerContext.entityClass, mainName), getEntityFieldName(clazz, leftName));
+        return this;
+    }
+
+    private <JOIN> String getEntityFieldName(Class<?> clazz, PFun<JOIN, ?> name) {
+        Entity<?> entity = this.providerContext.dao.getEntityHolder().getEntity(clazz);
+        MappingField field = entity.getField(org.nutz.dao.util.lambda.LambdaQuery.resolve(name));
+        return String.format("%s.%s", entity.getTableName(), field.getColumnName());
+    }
+
+    public <JOIN> LambdaQuery<T> eq(Class<?> clazz, PFun<JOIN, ?> name, Object value) {
+        checkValueForNull(name, value);
+        cnd.and(getEntityFieldName(clazz, name), "=", value);
+        return this.thisType;
+    }
+
+    public <JOIN> LambdaQuery<T> ne(Class<?> clazz, PFun<JOIN, ?> name, Object value) {
+        checkValueForNull(name, value);
+        cnd.and(getEntityFieldName(clazz, name), "!=", value);
+        return this.thisType;
+    }
+
+    /**
+     * 大于
+     *
+     * @param name
+     * @param value
+     * @return
+     */
+    public <JOIN> LambdaQuery<T> gt(Class<?> clazz, PFun<JOIN, ?> name, Object value) {
+        checkValueForNull(name, value);
+        cnd.and(getEntityFieldName(clazz, name), ">", value);
+        return this.thisType;
+    }
+
+    /**
+     * 大于等于
+     *
+     * @param name
+     * @param value
+     * @return
+     */
+    public <JOIN> LambdaQuery<T> gte(Class<?> clazz, PFun<JOIN, ?> name, Object value) {
+        checkValueForNull(name, value);
+        cnd.and(getEntityFieldName(clazz, name), ">=", value);
+        return this.thisType;
+    }
+
+    /**
+     * 小于
+     *
+     * @param name
+     * @param value
+     * @return
+     */
+    public <JOIN> LambdaQuery<T> lt(Class<?> clazz, PFun<JOIN, ?> name, Object value) {
+        checkValueForNull(name, value);
+        cnd.and(getEntityFieldName(clazz, name), "<", value);
+        return this.thisType;
+    }
+
+    /**
+     * 小于等于
+     *
+     * @param name
+     * @param value
+     * @return
+     */
+    public <JOIN> LambdaQuery<T> lte(Class<?> clazz, PFun<JOIN, ?> name, Object value) {
+        checkValueForNull(name, value);
+        cnd.and(getEntityFieldName(clazz, name), "<=", value);
+        return this.thisType;
+    }
+
+    /**
+     * 之间
+     *
+     * @param name
+     * @param val1
+     * @param val2
+     * @return
+     */
+    public <JOIN> LambdaQuery<T> between(Class<?> clazz, PFun<JOIN, ?> name, Object val1, Object val2) {
+        checkValueForNull(name, val1, val2);
+        cnd.and(getEntityFieldName(clazz, name), "between", new Object[]{val1, val2});
+        return this.thisType;
+    }
+
+    public <JOIN> LambdaQuery<T> notBetween(Class<?> clazz, PFun<JOIN, ?> name, Object val1, Object val2) {
+        checkValueForNull(name, val1, val2);
+        cnd.andNot(getEntityFieldName(clazz, name), "between", new Object[]{val1, val2});
+        return this.thisType;
+    }
 
     /**
      * 查询

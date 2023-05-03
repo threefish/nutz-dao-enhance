@@ -20,6 +20,7 @@ public class EntityClassInfoHolder {
      */
     private static final HashMap<String, Class<?>> STRING_CLASS_HASH_MAP = new LinkedHashMap<>();
 
+
     /**
      * 放入
      *
