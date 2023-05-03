@@ -235,11 +235,11 @@ public class BaseDaoProvider {
 
     public static <T> int count(ProviderContext providerContext, Condition cnd) {
         AssertUtil.notNull(cnd, "Condition cant't be null");
-        return providerContext.dao.count(providerContext.entityClass, cnd);
+        return providerContext.dao.count(providerContext.entity, cnd);
     }
 
     public static <T> int count(ProviderContext providerContext) {
-        return providerContext.dao.count(providerContext.entityClass);
+        return providerContext.dao.count(providerContext.entity);
     }
 
     public static <T> int getMaxId(ProviderContext providerContext) {
@@ -324,7 +324,7 @@ public class BaseDaoProvider {
     public static PageRecord listPage(ProviderContext providerContext, Condition cnd, Pager pager) {
         AssertUtil.notNull(cnd, "Condition can't be null");
         AssertUtil.notNull(pager, "Pager can't be null");
-        int count = providerContext.dao.count(providerContext.entityClass, cnd);
+        int count = providerContext.dao.count(providerContext.entity, cnd);
         PageRecord pageRecord = new PageRecord();
         pageRecord.setTotal(count);
         pageRecord.setPager(pager);

@@ -375,10 +375,11 @@ public class SpringDaoTest {
 
     @Test
     public void test_left_query() {
-        List<UserDO> list = userDao.lambdaQuery()
+        PageRecord<UserDO> list = userDao.lambdaQuery()
                 .leftJoin(JobDO.class, UserDO::getId, JobDO::getUserId)
                 .eq(JobDO.class, UserDO::getRealName, "测试")
-                .list();
+                .limit(1,10)
+                .listPage();
         System.out.println("");
     }
 }
