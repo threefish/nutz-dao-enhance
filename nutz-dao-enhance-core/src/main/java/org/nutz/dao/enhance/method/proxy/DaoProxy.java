@@ -5,6 +5,7 @@ import org.nutz.dao.DaoException;
 import org.nutz.dao.enhance.factory.EnhanceCoreFactory;
 import org.nutz.dao.enhance.method.DaoMethodInvoke;
 import org.nutz.dao.enhance.method.DaoMethodInvoker;
+import org.nutz.dao.enhance.util.ExceptionUtil;
 
 import java.io.Serializable;
 import java.lang.invoke.MethodHandle;
@@ -75,14 +76,7 @@ public class DaoProxy<T> implements InvocationHandler, Serializable {
                 return cachedInvoker(method).invoke(proxy, method, args, dataSource);
             }
         } catch (Throwable t) {
-            if (t instanceof InvocationTargetException && t.getCause() != null) {
-                if (t.getCause() instanceof DaoException && t.getCause().getCause() != null) {
-                    // 抛出原始异常
-                    throw t.getCause().getCause();
-                }
-                throw t.getCause();
-            }
-            throw t;
+            throw ExceptionUtil.unwrapThrowable(t);
         }
     }
 
