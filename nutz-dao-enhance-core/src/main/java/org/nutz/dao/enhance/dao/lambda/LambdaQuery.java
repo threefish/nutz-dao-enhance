@@ -4,12 +4,14 @@ import org.nutz.dao.enhance.dao.BaseDao;
 import org.nutz.dao.enhance.dao.condition.QueryCondition;
 import org.nutz.dao.enhance.method.provider.ProviderContext;
 import org.nutz.dao.enhance.pagination.PageRecord;
+import org.nutz.dao.enhance.util.LambdaQueryUtil;
 import org.nutz.dao.entity.Entity;
 import org.nutz.dao.entity.MappingField;
 import org.nutz.dao.pager.Pager;
 import org.nutz.dao.util.lambda.PFun;
 import org.nutz.lang.Each;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,6 +32,11 @@ public class LambdaQuery<T> extends LambdaCondition<LambdaQuery<T>, T> {
     @SafeVarargs
     public final LambdaQuery<T> select(PFun<T, ?>... names) {
         return activeds(names);
+    }
+
+    public final <JOIN> LambdaQuery<T> selectAs(PFun<T, ?> mainName,  PFun<JOIN, ?> joinName) {
+        cnd.selectAs(org.nutz.dao.util.lambda.LambdaQuery.resolve(mainName),getEntityFieldName(LambdaQueryUtil.resolve(joinName), joinName));
+        return this;
     }
 
     public LambdaQuery<T> where(PFun<T, ?> name, String op, Object value) {
@@ -147,14 +154,22 @@ public class LambdaQuery<T> extends LambdaCondition<LambdaQuery<T>, T> {
     }
 
     public <JOIN> LambdaQuery<T> eq(Class<?> clazz, PFun<JOIN, ?> name, Object value) {
-        checkValueForNull(name, value);
-        cnd.and(getEntityFieldName(clazz, name), "=", value);
+        this.eq(getEntityFieldName(clazz, name), value);
+        return this.thisType;
+    }
+
+    public <JOIN> LambdaQuery<T> eq(boolean condition, Class<?> clazz, PFun<JOIN, ?> name, Object value) {
+        this.eq(condition, getEntityFieldName(clazz, name), value);
         return this.thisType;
     }
 
     public <JOIN> LambdaQuery<T> ne(Class<?> clazz, PFun<JOIN, ?> name, Object value) {
-        checkValueForNull(name, value);
-        cnd.and(getEntityFieldName(clazz, name), "!=", value);
+        this.ne(getEntityFieldName(clazz, name), value);
+        return this.thisType;
+    }
+
+    public <JOIN> LambdaQuery<T> ne(boolean condition, Class<?> clazz, PFun<JOIN, ?> name, Object value) {
+        this.ne(condition, getEntityFieldName(clazz, name), value);
         return this.thisType;
     }
 
@@ -166,8 +181,12 @@ public class LambdaQuery<T> extends LambdaCondition<LambdaQuery<T>, T> {
      * @return
      */
     public <JOIN> LambdaQuery<T> gt(Class<?> clazz, PFun<JOIN, ?> name, Object value) {
-        checkValueForNull(name, value);
-        cnd.and(getEntityFieldName(clazz, name), ">", value);
+        this.gt(getEntityFieldName(clazz, name), value);
+        return this.thisType;
+    }
+
+    public <JOIN> LambdaQuery<T> gt(boolean condition, Class<?> clazz, PFun<JOIN, ?> name, Object value) {
+        this.gt(condition, getEntityFieldName(clazz, name), value);
         return this.thisType;
     }
 
@@ -179,8 +198,12 @@ public class LambdaQuery<T> extends LambdaCondition<LambdaQuery<T>, T> {
      * @return
      */
     public <JOIN> LambdaQuery<T> gte(Class<?> clazz, PFun<JOIN, ?> name, Object value) {
-        checkValueForNull(name, value);
-        cnd.and(getEntityFieldName(clazz, name), ">=", value);
+        this.gte(getEntityFieldName(clazz, name), value);
+        return this.thisType;
+    }
+
+    public <JOIN> LambdaQuery<T> gte(boolean condition, Class<?> clazz, PFun<JOIN, ?> name, Object value) {
+        this.gte(condition, getEntityFieldName(clazz, name), value);
         return this.thisType;
     }
 
@@ -192,8 +215,12 @@ public class LambdaQuery<T> extends LambdaCondition<LambdaQuery<T>, T> {
      * @return
      */
     public <JOIN> LambdaQuery<T> lt(Class<?> clazz, PFun<JOIN, ?> name, Object value) {
-        checkValueForNull(name, value);
-        cnd.and(getEntityFieldName(clazz, name), "<", value);
+        this.lt(getEntityFieldName(clazz, name), value);
+        return this.thisType;
+    }
+
+    public <JOIN> LambdaQuery<T> lt(boolean condition, Class<?> clazz, PFun<JOIN, ?> name, Object value) {
+        this.lt(condition, getEntityFieldName(clazz, name), value);
         return this.thisType;
     }
 
@@ -205,8 +232,12 @@ public class LambdaQuery<T> extends LambdaCondition<LambdaQuery<T>, T> {
      * @return
      */
     public <JOIN> LambdaQuery<T> lte(Class<?> clazz, PFun<JOIN, ?> name, Object value) {
-        checkValueForNull(name, value);
-        cnd.and(getEntityFieldName(clazz, name), "<=", value);
+        this.lte(getEntityFieldName(clazz, name), value);
+        return this.thisType;
+    }
+
+    public <JOIN> LambdaQuery<T> lte(boolean condition, Class<?> clazz, PFun<JOIN, ?> name, Object value) {
+        this.lte(condition, getEntityFieldName(clazz, name), value);
         return this.thisType;
     }
 
@@ -219,14 +250,82 @@ public class LambdaQuery<T> extends LambdaCondition<LambdaQuery<T>, T> {
      * @return
      */
     public <JOIN> LambdaQuery<T> between(Class<?> clazz, PFun<JOIN, ?> name, Object val1, Object val2) {
-        checkValueForNull(name, val1, val2);
-        cnd.and(getEntityFieldName(clazz, name), "between", new Object[]{val1, val2});
+        this.between(getEntityFieldName(clazz, name), val1, val2);
+        return this.thisType;
+    }
+
+    public <JOIN> LambdaQuery<T> between(boolean condition, Class<?> clazz, PFun<JOIN, ?> name, Object val1, Object val2) {
+        this.between(condition, getEntityFieldName(clazz, name), val1, val2);
         return this.thisType;
     }
 
     public <JOIN> LambdaQuery<T> notBetween(Class<?> clazz, PFun<JOIN, ?> name, Object val1, Object val2) {
-        checkValueForNull(name, val1, val2);
-        cnd.andNot(getEntityFieldName(clazz, name), "between", new Object[]{val1, val2});
+        this.notBetween(getEntityFieldName(clazz, name), val1, val2);
+        return this.thisType;
+    }
+
+    public <JOIN> LambdaQuery<T> notBetween(boolean condition, Class<?> clazz, PFun<JOIN, ?> name, Object val1, Object val2) {
+        this.notBetween(condition, getEntityFieldName(clazz, name), val1, val2);
+        return this.thisType;
+    }
+
+    public <JOIN> LambdaQuery<T> like(Class<?> clazz, PFun<JOIN, ?> name, Object value) {
+        this.like(getEntityFieldName(clazz, name), value);
+        return this.thisType;
+    }
+
+    public <JOIN> LambdaQuery<T> like(boolean condition, Class<?> clazz, PFun<JOIN, ?> name, Object value) {
+        this.like(condition, getEntityFieldName(clazz, name), value);
+        return this.thisType;
+    }
+
+    public <JOIN> LambdaQuery<T> likeLeft(Class<?> clazz, PFun<JOIN, ?> name, Object value) {
+        this.likeLeft(getEntityFieldName(clazz, name), value);
+        return this.thisType;
+    }
+
+    public <JOIN> LambdaQuery<T> likeLeft(boolean condition, Class<?> clazz, PFun<JOIN, ?> name, Object value) {
+        this.likeLeft(condition, getEntityFieldName(clazz, name), value);
+        return this.thisType;
+    }
+
+    public <JOIN> LambdaQuery<T> likeRight(Class<?> clazz, PFun<JOIN, ?> name, Object value) {
+        this.likeRight(getEntityFieldName(clazz, name), value);
+        return this.thisType;
+    }
+
+    public <JOIN> LambdaQuery<T> likeRight(boolean condition, Class<?> clazz, PFun<JOIN, ?> name, Object value) {
+        this.likeRight(condition, getEntityFieldName(clazz, name), value);
+        return this.thisType;
+    }
+
+    public <JOIN> LambdaQuery<T> in(Class<?> clazz, PFun<JOIN, ?> name, Collection<?> coll) {
+        this.in(getEntityFieldName(clazz, name), coll);
+        return this.thisType;
+    }
+
+    public <JOIN> LambdaQuery<T> in(boolean condition, Class<?> clazz, PFun<JOIN, ?> name, Collection<?> coll) {
+        this.in(condition, getEntityFieldName(clazz, name), coll);
+        return this.thisType;
+    }
+
+    public <JOIN> LambdaQuery<T> notIn(Class<?> clazz, PFun<JOIN, ?> name, Collection<?> coll) {
+        this.notIn(getEntityFieldName(clazz, name), coll);
+        return this.thisType;
+    }
+
+    public <JOIN> LambdaQuery<T> notIn(boolean condition, Class<?> clazz, PFun<JOIN, ?> name, Collection<?> coll) {
+        this.notIn(condition, getEntityFieldName(clazz, name), coll);
+        return this.thisType;
+    }
+
+    public <JOIN> LambdaQuery<T> isNull(Class<?> clazz, PFun<JOIN, ?> name) {
+        this.isNull(getEntityFieldName(clazz, name));
+        return this.thisType;
+    }
+
+    public <JOIN> LambdaQuery<T> isNotNull(Class<?> clazz, PFun<JOIN, ?> name) {
+        this.isNotNull(getEntityFieldName(clazz, name));
         return this.thisType;
     }
 

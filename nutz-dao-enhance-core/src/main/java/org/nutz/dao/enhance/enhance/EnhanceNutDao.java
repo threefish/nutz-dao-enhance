@@ -4,14 +4,17 @@ import lombok.SneakyThrows;
 import org.nutz.dao.Condition;
 import org.nutz.dao.enhance.dao.condition.QueryCondition;
 import org.nutz.dao.enhance.dao.join.QueryJoin;
+import org.nutz.dao.enhance.dao.join.SelectAsColumn;
 import org.nutz.dao.entity.Entity;
 import org.nutz.dao.impl.NutDao;
 import org.nutz.dao.impl.sql.pojo.PojoFetchIntCallback;
 import org.nutz.dao.impl.sql.pojo.PojoQueryEntityCallback;
+import org.nutz.dao.impl.sql.pojo.QueryEntityFieldsAndSelectAsPItem;
 import org.nutz.dao.pager.Pager;
 import org.nutz.dao.sql.Criteria;
 import org.nutz.dao.sql.GroupBy;
 import org.nutz.dao.sql.Pojo;
+import org.nutz.dao.sql.SqlType;
 import org.nutz.dao.util.Pojos;
 import org.nutz.dao.util.cri.SimpleCriteria;
 import org.nutz.lang.Strings;
@@ -46,30 +49,29 @@ public class EnhanceNutDao extends NutDao {
             if (cnd instanceof QueryCondition) {
                 // 此条件内不能debug，否则不会按照预期执行，奇葩
                 QueryCondition queryCondition = ((QueryCondition) cnd);
-                if (queryCondition.hasJoin()) {
-                    appendJoin(pojo, queryCondition);
-                    // 高级条件接口，直接得到 WHERE 子句
-                    if (cnd instanceof Criteria) {
-                        if (cnd instanceof SimpleCriteria) {
-                            String beforeWhere = ((SimpleCriteria) cnd).getBeforeWhere();
-                            if (!Strings.isBlank(beforeWhere)) {
-                                pojo.append(Pojos.Items.wrap(beforeWhere));
-                            }
+                appendJoin(pojo, queryCondition);
+                // 高级条件接口，直接得到 WHERE 子句
+                if (cnd instanceof Criteria) {
+                    if (cnd instanceof SimpleCriteria) {
+                        String beforeWhere = ((SimpleCriteria) cnd).getBeforeWhere();
+                        if (!Strings.isBlank(beforeWhere)) {
+                            pojo.append(Pojos.Items.wrap(beforeWhere));
                         }
-                        pojo.append(((Criteria) cnd).where());
-                        // MySQL/PgSQL/SqlServer 与 Oracle/H2的结果会不一样,奇葩啊
-                        GroupBy gb = ((Criteria) cnd).getGroupBy();
-                        pojo.append(gb);
                     }
-                    // 否则暴力获取 WHERE 子句
-                    else {
-                        String str = Pojos.formatCondition(en, cnd);
-                        if (!Strings.isBlank(str)) {
-                            String[] ss = str.toUpperCase().split("ORDER BY");
-                            pojo.append(Pojos.Items.wrap(str.substring(0, ss[0].length())));
-                        }
+                    pojo.append(((Criteria) cnd).where());
+                    // MySQL/PgSQL/SqlServer 与 Oracle/H2的结果会不一样,奇葩啊
+                    GroupBy gb = ((Criteria) cnd).getGroupBy();
+                    pojo.append(gb);
+                }
+                // 否则暴力获取 WHERE 子句
+                else {
+                    String str = Pojos.formatCondition(en, cnd);
+                    if (!Strings.isBlank(str)) {
+                        String[] ss = str.toUpperCase().split("ORDER BY");
+                        pojo.append(Pojos.Items.wrap(str.substring(0, ss[0].length())));
                     }
                 }
+
             }
             // 设置回调，并执行 SQL
             pojo.setAfter(new PojoFetchIntCallback());
@@ -86,7 +88,7 @@ public class EnhanceNutDao extends NutDao {
         if (cnd instanceof QueryCondition) {
             QueryCondition queryCondition = ((QueryCondition) cnd);
             if (queryCondition.hasJoin()) {
-                Pojo pojo = pojoMaker.makeQuery(entity);
+                Pojo pojo = makeQuery(entity, queryCondition.getSelectAsColumns());
                 appendJoin(pojo, queryCondition);
                 pojo.append(Pojos.Items.cnd(cnd))
                         .addParamsBy("*")
@@ -107,6 +109,15 @@ public class EnhanceNutDao extends NutDao {
             String joinFieldName = queryJoin.getJoinField();
             pojo.append(Pojos.Items.wrapf("%s JOIN %s ON %s=%s", queryJoin.getType().getValue(), joinEntity.getTableName(), mainFieldName, joinFieldName));
         }
+    }
+
+    private Pojo makeQuery(Entity<?> en, List<SelectAsColumn> selectAsColumns) {
+        Pojo pojo = Pojos.pojo(expert, en, SqlType.SELECT);
+        pojo.setEntity(en);
+        pojo.append(new QueryEntityFieldsAndSelectAsPItem(selectAsColumns));
+        pojo.append(Pojos.Items.wrap("FROM"));
+        pojo.append(Pojos.Items.entityViewName());
+        return pojo;
     }
 
 }

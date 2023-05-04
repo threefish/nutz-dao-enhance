@@ -374,12 +374,20 @@ public class SpringDaoTest {
     }
 
     @Test
-    public void test_left_query() {
-        PageRecord<UserDO> list = userDao.lambdaQuery()
+    public void test_left_join_query() {
+        List<UserDO> list = userDao.lambdaQuery()
+                .selectAs(UserDO::getRealName, JobDO::getRealName)
                 .leftJoin(JobDO.class, UserDO::getId, JobDO::getUserId)
-                .eq(JobDO.class, UserDO::getRealName, "测试")
-                .limit(1,10)
+                .like(UserDO.class, JobDO::getRealName, "测试")
+                .list();
+        assert list.size() == 3;
+
+        PageRecord<UserDO> page = userDao.lambdaQuery()
+                .selectAs(UserDO::getRealName, JobDO::getUserId)
+                .leftJoin(JobDO.class, UserDO::getId, JobDO::getUserId)
+                .like(UserDO.class, JobDO::getRealName, "测试")
+                .limit(1, 10)
                 .listPage();
-        System.out.println("");
+        assert page.getTotal() == 3;
     }
 }

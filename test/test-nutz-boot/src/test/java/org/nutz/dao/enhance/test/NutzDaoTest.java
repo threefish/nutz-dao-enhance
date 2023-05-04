@@ -10,6 +10,7 @@ import org.junit.runner.RunWith;
 import org.nutz.dao.Cnd;
 import org.nutz.dao.enhance.pagination.PageRecord;
 import org.nutz.dao.enhance.test.dao.UserDao;
+import org.nutz.dao.enhance.test.entity.JobDO;
 import org.nutz.dao.enhance.test.entity.UserDO;
 import org.nutz.dao.enhance.test.entity.UserVO;
 import org.nutz.dao.enhance.util.FieldCalcUtil;
@@ -382,5 +383,22 @@ public class NutzDaoTest {
 
     }
 
+    @Test
+    public void test_left_join_query() {
+        List<UserDO> list = userDao.lambdaQuery()
+                .selectAs(UserDO::getRealName, JobDO::getRealName)
+                .leftJoin(JobDO.class, UserDO::getId, JobDO::getUserId)
+                .like(UserDO.class, JobDO::getRealName, "测试")
+                .list();
+        assert list.size() == 3;
+
+        PageRecord<UserDO> page = userDao.lambdaQuery()
+                .selectAs(UserDO::getRealName, JobDO::getUserId)
+                .leftJoin(JobDO.class, UserDO::getId, JobDO::getUserId)
+                .like(UserDO.class, JobDO::getRealName, "测试")
+                .limit(1, 10)
+                .listPage();
+        assert page.getTotal() == 3;
+    }
 
 }
