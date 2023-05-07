@@ -379,6 +379,7 @@ public class SpringDaoTest {
                 .selectAs(UserDO::getRealName, JobDO::getRealName)
                 .leftJoin(JobDO.class, UserDO::getId, JobDO::getUserId)
                 .like(UserDO.class, JobDO::getRealName, "测试")
+                .groupBy(UserDO::getRealName)
                 .list();
         assert list.size() == 3;
 

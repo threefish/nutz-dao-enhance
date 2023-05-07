@@ -46,8 +46,9 @@ public class FieldCalcUtil {
         if (t != null) {
             Class<?> clazz = t.getClass();
             if (Iterable.class.isAssignableFrom(clazz)) {
-                Iterable collection = ((Iterable) t);
-                collection.forEach(c -> calculation(c, group));
+                ((Iterable) t).forEach(c -> calculation(c, group));
+            } else {
+                calculation(t, group);
             }
         }
     }
