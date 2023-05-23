@@ -11,7 +11,13 @@
 7. 查询预计中可以使用和java实体类名称如： UserDO as u ,会翻译为 user as u 而 u.realName 则会翻译为 u.real_name
 8. 自定义SQL下可按参数循环执行sql语句（batch操作）
 9. @FieldCalculation 字段计算注解可以方便的在查询结果下对查询对象进行计算（通过表达式赋值）
-PS：3-4项的原理实际是采用NutzDao原生@PrevInsert @PrevUpdate搭配el表达式等方式来实现，原生功能更强大，请自由选择使用。
+10. lambda方式连表查询join
+    PS：3-4项的原理实际是采用NutzDao原生@PrevInsert @PrevUpdate搭配el表达式等方式来实现，原生功能更强大，请自由选择使用。
+
+### mavne坐标
+
+[nutz-dao-enhance-spring-starter](https://mvnrepository.com/artifact/org.nutz/nutz-dao-enhance-spring-starter)
+[nutz-dao-enhance-nutz-starter](https://mvnrepository.com/artifact/org.nutz/nutz-dao-enhance-nutz-starter)
 
 ### lambda常用方法
 
@@ -675,6 +681,26 @@ public class SpringDaoTest {
         assert userDO.getUserDO3() != null;
 
 
+    }
+
+
+    @Test
+    public void test_left_join_query() {
+        List<UserDO> list = userDao.lambdaQuery()
+                .selectAs(UserDO::getRealName, JobDO::getRealName)
+                .leftJoin(JobDO.class, UserDO::getId, JobDO::getUserId)
+                .like(UserDO.class, JobDO::getRealName, "测试")
+                .groupBy(UserDO::getRealName)
+                .list();
+        assert list.size() == 3;
+
+        PageRecord<UserDO> page = userDao.lambdaQuery()
+                .selectAs(UserDO::getRealName, JobDO::getUserId)
+                .leftJoin(JobDO.class, UserDO::getId, JobDO::getUserId)
+                .like(UserDO.class, JobDO::getRealName, "测试")
+                .limit(1, 10)
+                .listPage();
+        assert page.getTotal() == 3;
     }
 
 }
