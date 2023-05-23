@@ -7,7 +7,7 @@
     <packaging>pom</packaging>
     <groupId>org.nutz</groupId>
     <artifactId>nutz-dao-enhance</artifactId>
-    <version>1.0.1-SNAPSHOT</version>
+    <version>1.0.1-release</version>
 
     <name>nutz-dao-enhance</name>
     <description>nutz-dao-enhance</description>
@@ -23,7 +23,7 @@
         <maven.compiler.target>8</maven.compiler.target>
         <java.version>1.8</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <enhance.version>1.0.1-SNAPSHOT</enhance.version>
+        <enhance.version>1.0.1-release</enhance.version>
     </properties>
     <dependencyManagement>
         <dependencies>
