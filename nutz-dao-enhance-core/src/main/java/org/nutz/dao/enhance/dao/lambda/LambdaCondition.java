@@ -49,6 +49,9 @@ public abstract class LambdaCondition<Children extends LambdaCondition, T> {
      * 排除的字段
      */
     private List<String> excludes;
+    private boolean orStatus = false;
+    private boolean andOrStatus = false;
+    private Cnd orCondition = Cnd.NEW();
 
     public LambdaCondition(QueryCondition cnd, ProviderContext providerContext, boolean notNull, boolean notEmpty) {
         this.cnd = cnd;
@@ -147,16 +150,23 @@ public abstract class LambdaCondition<Children extends LambdaCondition, T> {
         return this.thisType;
     }
 
-
     public Children eq(PFun<T, ?> name, Object value) {
         checkValueForNull(name, value);
-        cnd.and(name, "=", value);
+        if (this.orStatus) {
+            this.orCondition.or(name, "=", value);
+        } else {
+            cnd.and(name, "=", value);
+        }
         return this.thisType;
     }
 
     public Children eq(String name, Object value) {
         checkValueForNull(name, value);
-        cnd.and(name, "=", value);
+        if (this.orStatus) {
+            this.orCondition.or(name, "=", value);
+        } else {
+            cnd.and(name, "=", value);
+        }
         return this.thisType;
     }
 
@@ -165,7 +175,11 @@ public abstract class LambdaCondition<Children extends LambdaCondition, T> {
             return this.thisType;
         }
         checkValueForNull(name, value);
-        cnd.and(name, "=", value);
+        if (this.orStatus) {
+            this.orCondition.or(name, "=", value);
+        } else {
+            cnd.and(name, "=", value);
+        }
         return this.thisType;
     }
 
@@ -174,19 +188,31 @@ public abstract class LambdaCondition<Children extends LambdaCondition, T> {
             return this.thisType;
         }
         checkValueForNull(name, value);
-        cnd.and(name, "=", value);
+        if (this.orStatus) {
+            this.orCondition.or(name, "=", value);
+        } else {
+            cnd.and(name, "=", value);
+        }
         return this.thisType;
     }
 
     public Children ne(PFun<T, ?> name, Object value) {
         checkValueForNull(name, value);
-        cnd.and(name, "!=", value);
+        if (this.orStatus) {
+            this.orCondition.or(name, "!=", value);
+        } else {
+            cnd.and(name, "!=", value);
+        }
         return this.thisType;
     }
 
     public Children ne(String name, Object value) {
         checkValueForNull(name, value);
-        cnd.and(name, "!=", value);
+        if (this.orStatus) {
+            this.orCondition.or(name, "!=", value);
+        } else {
+            cnd.and(name, "!=", value);
+        }
         return this.thisType;
     }
 
@@ -195,7 +221,11 @@ public abstract class LambdaCondition<Children extends LambdaCondition, T> {
             return this.thisType;
         }
         checkValueForNull(name, value);
-        cnd.and(name, "!=", value);
+        if (this.orStatus) {
+            this.orCondition.or(name, "!=", value);
+        } else {
+            cnd.and(name, "!=", value);
+        }
         return this.thisType;
     }
 
@@ -204,7 +234,11 @@ public abstract class LambdaCondition<Children extends LambdaCondition, T> {
             return this.thisType;
         }
         checkValueForNull(name, value);
-        cnd.and(name, "!=", value);
+        if (this.orStatus) {
+            this.orCondition.or(name, "!=", value);
+        } else {
+            cnd.and(name, "!=", value);
+        }
         return this.thisType;
     }
 
@@ -217,13 +251,21 @@ public abstract class LambdaCondition<Children extends LambdaCondition, T> {
      */
     public Children gt(PFun<T, ?> name, Object value) {
         checkValueForNull(name, value);
-        cnd.and(name, ">", value);
+        if (this.orStatus) {
+            this.orCondition.or(name, ">", value);
+        } else {
+            cnd.and(name, ">", value);
+        }
         return this.thisType;
     }
 
     public Children gt(String name, Object value) {
         checkValueForNull(name, value);
-        cnd.and(name, ">", value);
+        if (this.orStatus) {
+            this.orCondition.or(name, ">", value);
+        } else {
+            cnd.and(name, ">", value);
+        }
         return this.thisType;
     }
 
@@ -232,7 +274,11 @@ public abstract class LambdaCondition<Children extends LambdaCondition, T> {
             return this.thisType;
         }
         checkValueForNull(name, value);
-        cnd.and(name, ">", value);
+        if (this.orStatus) {
+            this.orCondition.or(name, ">", value);
+        } else {
+            cnd.and(name, ">", value);
+        }
         return this.thisType;
     }
 
@@ -241,7 +287,11 @@ public abstract class LambdaCondition<Children extends LambdaCondition, T> {
             return this.thisType;
         }
         checkValueForNull(name, value);
-        cnd.and(name, ">", value);
+        if (this.orStatus) {
+            this.orCondition.or(name, ">", value);
+        } else {
+            cnd.and(name, ">", value);
+        }
         return this.thisType;
     }
 
@@ -254,13 +304,21 @@ public abstract class LambdaCondition<Children extends LambdaCondition, T> {
      */
     public Children gte(PFun<T, ?> name, Object value) {
         checkValueForNull(name, value);
-        cnd.and(name, ">=", value);
+        if (this.orStatus) {
+            this.orCondition.or(name, ">=", value);
+        } else {
+            cnd.and(name, ">=", value);
+        }
         return this.thisType;
     }
 
     public Children gte(String name, Object value) {
         checkValueForNull(name, value);
-        cnd.and(name, ">=", value);
+        if (this.orStatus) {
+            this.orCondition.or(name, ">=", value);
+        } else {
+            cnd.and(name, ">=", value);
+        }
         return this.thisType;
     }
 
@@ -269,7 +327,11 @@ public abstract class LambdaCondition<Children extends LambdaCondition, T> {
             return this.thisType;
         }
         checkValueForNull(name, value);
-        cnd.and(name, ">=", value);
+        if (this.orStatus) {
+            this.orCondition.or(name, ">=", value);
+        } else {
+            cnd.and(name, ">=", value);
+        }
         return this.thisType;
     }
 
@@ -278,7 +340,11 @@ public abstract class LambdaCondition<Children extends LambdaCondition, T> {
             return this.thisType;
         }
         checkValueForNull(name, value);
-        cnd.and(name, ">=", value);
+        if (this.orStatus) {
+            this.orCondition.or(name, ">=", value);
+        } else {
+            cnd.and(name, ">=", value);
+        }
         return this.thisType;
     }
 
@@ -291,13 +357,21 @@ public abstract class LambdaCondition<Children extends LambdaCondition, T> {
      */
     public Children lt(PFun<T, ?> name, Object value) {
         checkValueForNull(name, value);
-        cnd.and(name, "<", value);
+        if (this.orStatus) {
+            this.orCondition.or(name, "<", value);
+        } else {
+            cnd.and(name, "<", value);
+        }
         return this.thisType;
     }
 
     public Children lt(String name, Object value) {
         checkValueForNull(name, value);
-        cnd.and(name, "<", value);
+        if (this.orStatus) {
+            this.orCondition.or(name, "<", value);
+        } else {
+            cnd.and(name, "<", value);
+        }
         return this.thisType;
     }
 
@@ -306,7 +380,11 @@ public abstract class LambdaCondition<Children extends LambdaCondition, T> {
             return this.thisType;
         }
         checkValueForNull(name, value);
-        cnd.and(name, "<", value);
+        if (this.orStatus) {
+            this.orCondition.or(name, "<", value);
+        } else {
+            cnd.and(name, "<", value);
+        }
         return this.thisType;
     }
 
@@ -315,7 +393,11 @@ public abstract class LambdaCondition<Children extends LambdaCondition, T> {
             return this.thisType;
         }
         checkValueForNull(name, value);
-        cnd.and(name, "<", value);
+        if (this.orStatus) {
+            this.orCondition.or(name, "<", value);
+        } else {
+            cnd.and(name, "<", value);
+        }
         return this.thisType;
     }
 
@@ -328,13 +410,21 @@ public abstract class LambdaCondition<Children extends LambdaCondition, T> {
      */
     public Children lte(PFun<T, ?> name, Object value) {
         checkValueForNull(name, value);
-        cnd.and(name, "<=", value);
+        if (this.orStatus) {
+            this.orCondition.or(name, "<=", value);
+        } else {
+            cnd.and(name, "<=", value);
+        }
         return this.thisType;
     }
 
     public Children lte(String name, Object value) {
         checkValueForNull(name, value);
-        cnd.and(name, "<=", value);
+        if (this.orStatus) {
+            this.orCondition.or(name, "<=", value);
+        } else {
+            cnd.and(name, "<=", value);
+        }
         return this.thisType;
     }
 
@@ -343,7 +433,11 @@ public abstract class LambdaCondition<Children extends LambdaCondition, T> {
             return this.thisType;
         }
         checkValueForNull(name, value);
-        cnd.and(name, "<=", value);
+        if (this.orStatus) {
+            this.orCondition.or(name, "<=", value);
+        } else {
+            cnd.and(name, "<=", value);
+        }
         return this.thisType;
     }
 
@@ -352,7 +446,12 @@ public abstract class LambdaCondition<Children extends LambdaCondition, T> {
             return this.thisType;
         }
         checkValueForNull(name, value);
-        cnd.and(name, "<=", value);
+
+        if (this.orStatus) {
+            this.orCondition.or(name, "<=", value);
+        } else {
+            cnd.and(name, "<=", value);
+        }
         return this.thisType;
     }
 
@@ -366,13 +465,21 @@ public abstract class LambdaCondition<Children extends LambdaCondition, T> {
      */
     public Children between(PFun<T, ?> name, Object val1, Object val2) {
         checkValueForNull(name, val1, val2);
-        cnd.and(name, "between", new Object[]{val1, val2});
+        if (this.orStatus) {
+            this.orCondition.or(name, "between", new Object[]{val1, val2});
+        } else {
+            cnd.and(name, "between", new Object[]{val1, val2});
+        }
         return this.thisType;
     }
 
     public Children between(String name, Object val1, Object val2) {
         checkValueForNull(name, val1, val2);
-        cnd.and(name, "between", new Object[]{val1, val2});
+        if (this.orStatus) {
+            this.orCondition.or(name, "between", new Object[]{val1, val2});
+        } else {
+            cnd.and(name, "between", new Object[]{val1, val2});
+        }
         return this.thisType;
     }
 
@@ -381,7 +488,11 @@ public abstract class LambdaCondition<Children extends LambdaCondition, T> {
             return this.thisType;
         }
         checkValueForNull(name, val1, val2);
-        cnd.and(name, "between", new Object[]{val1, val2});
+        if (this.orStatus) {
+            this.orCondition.or(name, "between", new Object[]{val1, val2});
+        } else {
+            cnd.and(name, "between", new Object[]{val1, val2});
+        }
         return this.thisType;
     }
 
@@ -390,19 +501,31 @@ public abstract class LambdaCondition<Children extends LambdaCondition, T> {
             return this.thisType;
         }
         checkValueForNull(name, val1, val2);
-        cnd.and(name, "between", new Object[]{val1, val2});
+        if (this.orStatus) {
+            this.orCondition.or(name, "between", new Object[]{val1, val2});
+        } else {
+            cnd.and(name, "between", new Object[]{val1, val2});
+        }
         return this.thisType;
     }
 
     public Children notBetween(PFun<T, ?> name, Object val1, Object val2) {
         checkValueForNull(name, val1, val2);
-        cnd.andNot(name, "between", new Object[]{val1, val2});
+        if (this.orStatus) {
+            this.orCondition.orNot(name, "between", new Object[]{val1, val2});
+        } else {
+            cnd.andNot(name, "between", new Object[]{val1, val2});
+        }
         return this.thisType;
     }
 
     public Children notBetween(String name, Object val1, Object val2) {
         checkValueForNull(name, val1, val2);
-        cnd.andNot(name, "between", new Object[]{val1, val2});
+        if (this.orStatus) {
+            this.orCondition.orNot(name, "between", new Object[]{val1, val2});
+        } else {
+            cnd.andNot(name, "between", new Object[]{val1, val2});
+        }
         return this.thisType;
     }
 
@@ -411,7 +534,11 @@ public abstract class LambdaCondition<Children extends LambdaCondition, T> {
             return this.thisType;
         }
         checkValueForNull(name, val1, val2);
-        cnd.andNot(name, "between", new Object[]{val1, val2});
+        if (this.orStatus) {
+            this.orCondition.orNot(name, "between", new Object[]{val1, val2});
+        } else {
+            cnd.andNot(name, "between", new Object[]{val1, val2});
+        }
         return this.thisType;
     }
 
@@ -420,19 +547,31 @@ public abstract class LambdaCondition<Children extends LambdaCondition, T> {
             return this.thisType;
         }
         checkValueForNull(name, val1, val2);
-        cnd.andNot(name, "between", new Object[]{val1, val2});
+        if (this.orStatus) {
+            this.orCondition.orNot(name, "between", new Object[]{val1, val2});
+        } else {
+            cnd.andNot(name, "between", new Object[]{val1, val2});
+        }
         return this.thisType;
     }
 
     public Children like(PFun<T, ?> name, Object value) {
         checkValueForNull(name, value);
-        cnd.and(name, "like", String.format("%%%s%%", value));
+        if (this.orStatus) {
+            this.orCondition.or(name, "like", String.format("%%%s%%", value));
+        } else {
+            cnd.and(name, "like", String.format("%%%s%%", value));
+        }
         return this.thisType;
     }
 
     public Children like(String name, Object value) {
         checkValueForNull(name, value);
-        cnd.and(name, "like", String.format("%%%s%%", value));
+        if (this.orStatus) {
+            this.orCondition.or(name, "like", String.format("%%%s%%", value));
+        } else {
+            cnd.and(name, "like", String.format("%%%s%%", value));
+        }
         return this.thisType;
     }
 
@@ -441,7 +580,11 @@ public abstract class LambdaCondition<Children extends LambdaCondition, T> {
             return this.thisType;
         }
         checkValueForNull(name, value);
-        cnd.and(name, "like", String.format("%%%s%%", value));
+        if (this.orStatus) {
+            this.orCondition.or(name, "like", String.format("%%%s%%", value));
+        } else {
+            cnd.and(name, "like", String.format("%%%s%%", value));
+        }
         return this.thisType;
     }
 
@@ -450,19 +593,31 @@ public abstract class LambdaCondition<Children extends LambdaCondition, T> {
             return this.thisType;
         }
         checkValueForNull(name, value);
-        cnd.and(name, "like", String.format("%%%s%%", value));
+        if (this.orStatus) {
+            this.orCondition.or(name, "like", String.format("%%%s%%", value));
+        } else {
+            cnd.and(name, "like", String.format("%%%s%%", value));
+        }
         return this.thisType;
     }
 
     public Children notLike(PFun<T, ?> name, Object value) {
         checkValueForNull(name, value);
-        cnd.andNot(name, "like", String.format("%%%s%%", value));
+        if (this.orStatus) {
+            this.orCondition.orNot(name, "like", String.format("%%%s%%", value));
+        } else {
+            cnd.andNot(name, "like", String.format("%%%s%%", value));
+        }
         return this.thisType;
     }
 
     public Children notLike(String name, Object value) {
         checkValueForNull(name, value);
-        cnd.andNot(name, "like", String.format("%%%s%%", value));
+        if (this.orStatus) {
+            this.orCondition.orNot(name, "like", String.format("%%%s%%", value));
+        } else {
+            cnd.andNot(name, "like", String.format("%%%s%%", value));
+        }
         return this.thisType;
     }
 
@@ -471,7 +626,11 @@ public abstract class LambdaCondition<Children extends LambdaCondition, T> {
             return this.thisType;
         }
         checkValueForNull(name, value);
-        cnd.andNot(name, "like", String.format("%%%s%%", value));
+        if (this.orStatus) {
+            this.orCondition.orNot(name, "like", String.format("%%%s%%", value));
+        } else {
+            cnd.andNot(name, "like", String.format("%%%s%%", value));
+        }
         return this.thisType;
     }
 
@@ -480,19 +639,31 @@ public abstract class LambdaCondition<Children extends LambdaCondition, T> {
             return this.thisType;
         }
         checkValueForNull(name, value);
-        cnd.andNot(name, "like", String.format("%%%s%%", value));
+        if (this.orStatus) {
+            this.orCondition.orNot(name, "like", String.format("%%%s%%", value));
+        } else {
+            cnd.andNot(name, "like", String.format("%%%s%%", value));
+        }
         return this.thisType;
     }
 
     public Children likeLeft(PFun<T, ?> name, Object value) {
         checkValueForNull(name, value);
-        cnd.and(Cnd.exp(name, "like", String.format("%%%s", value)));
+        if (this.orStatus) {
+            this.orCondition.or(Cnd.exp(name, "like", String.format("%%%s", value)));
+        } else {
+            cnd.and(Cnd.exp(name, "like", String.format("%%%s", value)));
+        }
         return this.thisType;
     }
 
     public Children likeLeft(String name, Object value) {
         checkValueForNull(name, value);
-        cnd.and(Cnd.exp(name, "like", String.format("%%%s", value)));
+        if (this.orStatus) {
+            this.orCondition.or(Cnd.exp(name, "like", String.format("%%%s", value)));
+        } else {
+            cnd.and(Cnd.exp(name, "like", String.format("%%%s", value)));
+        }
         return this.thisType;
     }
 
@@ -501,7 +672,11 @@ public abstract class LambdaCondition<Children extends LambdaCondition, T> {
             return this.thisType;
         }
         checkValueForNull(name, value);
-        cnd.and(Cnd.exp(name, "like", String.format("%%%s", value)));
+        if (this.orStatus) {
+            this.orCondition.or(Cnd.exp(name, "like", String.format("%%%s", value)));
+        } else {
+            cnd.and(Cnd.exp(name, "like", String.format("%%%s", value)));
+        }
         return this.thisType;
     }
 
@@ -510,19 +685,31 @@ public abstract class LambdaCondition<Children extends LambdaCondition, T> {
             return this.thisType;
         }
         checkValueForNull(name, value);
-        cnd.and(Cnd.exp(name, "like", String.format("%%%s", value)));
+        if (this.orStatus) {
+            this.orCondition.or(Cnd.exp(name, "like", String.format("%%%s", value)));
+        } else {
+            cnd.and(Cnd.exp(name, "like", String.format("%%%s", value)));
+        }
         return this.thisType;
     }
 
     public Children likeRight(PFun<T, ?> name, Object value) {
         checkValueForNull(name, value);
-        cnd.and(Cnd.exp(name, "like", String.format("%s%%", value)));
+        if (this.orStatus) {
+            this.orCondition.or(Cnd.exp(name, "like", String.format("%s%%", value)));
+        } else {
+            cnd.and(Cnd.exp(name, "like", String.format("%s%%", value)));
+        }
         return this.thisType;
     }
 
     public Children likeRight(String name, Object value) {
         checkValueForNull(name, value);
-        cnd.and(Cnd.exp(name, "like", String.format("%s%%", value)));
+        if (this.orStatus) {
+            this.orCondition.or(Cnd.exp(name, "like", String.format("%s%%", value)));
+        } else {
+            cnd.and(Cnd.exp(name, "like", String.format("%s%%", value)));
+        }
         return this.thisType;
     }
 
@@ -531,7 +718,11 @@ public abstract class LambdaCondition<Children extends LambdaCondition, T> {
             return this.thisType;
         }
         checkValueForNull(name, value);
-        cnd.and(Cnd.exp(name, "like", String.format("%s%%", value)));
+        if (this.orStatus) {
+            this.orCondition.or(Cnd.exp(name, "like", String.format("%s%%", value)));
+        } else {
+            cnd.and(Cnd.exp(name, "like", String.format("%s%%", value)));
+        }
         return this.thisType;
     }
 
@@ -540,17 +731,29 @@ public abstract class LambdaCondition<Children extends LambdaCondition, T> {
             return this.thisType;
         }
         checkValueForNull(name, value);
-        cnd.and(Cnd.exp(name, "like", String.format("%s%%", value)));
+        if (this.orStatus) {
+            this.orCondition.or(Cnd.exp(name, "like", String.format("%s%%", value)));
+        } else {
+            cnd.and(Cnd.exp(name, "like", String.format("%s%%", value)));
+        }
         return this.thisType;
     }
 
     public Children isNull(PFun<T, ?> name) {
-        cnd.and(new IsNull(name));
+        if (this.orStatus) {
+            this.orCondition.or(new IsNull(name));
+        } else {
+            cnd.and(new IsNull(name));
+        }
         return this.thisType;
     }
 
     public Children isNull(String name) {
-        cnd.and(new IsNull(name));
+        if (this.orStatus) {
+            this.orCondition.or(new IsNull(name));
+        } else {
+            cnd.and(new IsNull(name));
+        }
         return this.thisType;
     }
 
@@ -558,7 +761,11 @@ public abstract class LambdaCondition<Children extends LambdaCondition, T> {
         if (!condition) {
             return this.thisType;
         }
-        cnd.and(new IsNull(name));
+        if (this.orStatus) {
+            this.orCondition.or(new IsNull(name));
+        } else {
+            cnd.and(new IsNull(name));
+        }
         return this.thisType;
     }
 
@@ -566,17 +773,29 @@ public abstract class LambdaCondition<Children extends LambdaCondition, T> {
         if (!condition) {
             return this.thisType;
         }
-        cnd.and(new IsNull(name));
+        if (this.orStatus) {
+            this.orCondition.or(new IsNull(name));
+        } else {
+            cnd.and(new IsNull(name));
+        }
         return this.thisType;
     }
 
     public Children isNotNull(PFun<T, ?> name) {
-        cnd.and(new IsNull(name).setNot(true));
+        if (this.orStatus) {
+            this.orCondition.or(new IsNull(name).setNot(true));
+        } else {
+            cnd.and(new IsNull(name).setNot(true));
+        }
         return this.thisType;
     }
 
     public Children isNotNull(String name) {
-        cnd.and(new IsNull(name).setNot(true));
+        if (this.orStatus) {
+            this.orCondition.or(new IsNull(name).setNot(true));
+        } else {
+            cnd.and(new IsNull(name).setNot(true));
+        }
         return this.thisType;
     }
 
@@ -584,7 +803,11 @@ public abstract class LambdaCondition<Children extends LambdaCondition, T> {
         if (!condition) {
             return this.thisType;
         }
-        cnd.and(new IsNull(name).setNot(true));
+        if (this.orStatus) {
+            this.orCondition.or(new IsNull(name).setNot(true));
+        } else {
+            cnd.and(new IsNull(name).setNot(true));
+        }
         return this.thisType;
     }
 
@@ -592,19 +815,31 @@ public abstract class LambdaCondition<Children extends LambdaCondition, T> {
         if (!condition) {
             return this.thisType;
         }
-        cnd.and(new IsNull(name).setNot(true));
+        if (this.orStatus) {
+            this.orCondition.or(new IsNull(name).setNot(true));
+        } else {
+            cnd.and(new IsNull(name).setNot(true));
+        }
         return this.thisType;
     }
 
     public Children in(PFun<T, ?> name, Collection<?> coll) {
         checkCollectionValueForEmpty(name, coll);
-        cnd.and(name, "in", coll);
+        if (this.orStatus) {
+            this.cnd.or(name, "in", coll);
+        } else {
+            this.cnd.and(name, "in", coll);
+        }
         return this.thisType;
     }
 
     public Children in(String name, Collection<?> coll) {
         checkCollectionValueForEmpty(name, coll);
-        cnd.and(name, "in", coll);
+        if (this.orStatus) {
+            this.cnd.or(name, "in", coll);
+        } else {
+            this.cnd.and(name, "in", coll);
+        }
         return this.thisType;
     }
 
@@ -613,7 +848,11 @@ public abstract class LambdaCondition<Children extends LambdaCondition, T> {
             return this.thisType;
         }
         checkCollectionValueForEmpty(name, coll);
-        cnd.and(name, "in", coll);
+        if (this.orStatus) {
+            this.cnd.or(name, "in", coll);
+        } else {
+            this.cnd.and(name, "in", coll);
+        }
         return this.thisType;
     }
 
@@ -622,19 +861,31 @@ public abstract class LambdaCondition<Children extends LambdaCondition, T> {
             return this.thisType;
         }
         checkCollectionValueForEmpty(name, coll);
-        cnd.and(name, "in", coll);
+        if (this.orStatus) {
+            this.cnd.or(name, "in", coll);
+        } else {
+            this.cnd.and(name, "in", coll);
+        }
         return this.thisType;
     }
 
     public Children notIn(PFun<T, ?> name, Collection<?> coll) {
         checkCollectionValueForEmpty(name, coll);
-        cnd.and(name, "not in", coll);
+        if (this.orStatus) {
+            this.cnd.or(name, "not in", coll);
+        } else {
+            this.cnd.and(name, "not in", coll);
+        }
         return this.thisType;
     }
 
     public Children notIn(String name, Collection<?> coll) {
         checkCollectionValueForEmpty(name, coll);
-        cnd.and(name, "not in", coll);
+        if (this.orStatus) {
+            this.cnd.or(name, "not in", coll);
+        } else {
+            this.cnd.and(name, "not in", coll);
+        }
         return this.thisType;
     }
 
@@ -643,7 +894,11 @@ public abstract class LambdaCondition<Children extends LambdaCondition, T> {
             return this.thisType;
         }
         checkCollectionValueForEmpty(name, coll);
-        cnd.and(name, "not in", coll);
+        if (this.orStatus) {
+            this.cnd.or(name, "not in", coll);
+        } else {
+            this.cnd.and(name, "not in", coll);
+        }
         return this.thisType;
     }
 
@@ -652,10 +907,13 @@ public abstract class LambdaCondition<Children extends LambdaCondition, T> {
             return this.thisType;
         }
         checkCollectionValueForEmpty(name, coll);
-        cnd.and(name, "not in", coll);
+        if (this.orStatus) {
+            this.cnd.or(name, "not in", coll);
+        } else {
+            this.cnd.and(name, "not in", coll);
+        }
         return this.thisType;
     }
-
 
     public Children and(SqlExpression exp) {
         this.cnd.and(exp);
@@ -666,7 +924,11 @@ public abstract class LambdaCondition<Children extends LambdaCondition, T> {
         if (!condition) {
             return this.thisType;
         }
-        this.cnd.and(exp);
+        if (this.orStatus) {
+            this.cnd.or(exp);
+        } else {
+            this.cnd.and(exp);
+        }
         return this.thisType;
     }
 
@@ -679,7 +941,33 @@ public abstract class LambdaCondition<Children extends LambdaCondition, T> {
         if (!condition) {
             return this.thisType;
         }
-        this.cnd.and(exp);
+        this.cnd.or(exp);
+        return this.thisType;
+    }
+
+    public Children or() {
+        this.orStatus = true;
+        return this.thisType;
+    }
+
+    public Children andOr() {
+        this.orStatus = true;
+        this.andOrStatus = true;
+        return this.thisType;
+    }
+
+    public Children endOr() {
+        SqlExpressionGroup where = this.orCondition.getCri().where();
+        if (!where.getExps().isEmpty()) {
+            if (this.andOrStatus) {
+                this.cnd.and(where);
+            } else {
+                this.cnd.or(where);
+            }
+        }
+        this.orStatus = false;
+        this.andOrStatus = false;
+        this.orCondition = Cnd.NEW();
         return this.thisType;
     }
 
@@ -709,10 +997,26 @@ public abstract class LambdaCondition<Children extends LambdaCondition, T> {
     public final Children or(Function<LambdaConditionWapper<T>, LambdaConditionWapper<T>>... exps) {
         if (exps != null && exps.length > 0) {
             SqlExpressionGroup sqlExpressionGroup = new SqlExpressionGroup();
-            Arrays.stream(exps).forEach(orPart -> sqlExpressionGroup.or(orPart.apply(new LambdaConditionWapper<T>(QueryCondition.NEW(), this.providerContext, this.notNull, this.notEmpty)).getSqlExpressionGroup()));
+            Arrays.stream(exps).forEach(orPart -> {
+                sqlExpressionGroup.or(orPart.apply(new LambdaConditionWapper<T>(QueryCondition.NEW(), this.providerContext, this.notNull, this.notEmpty)).getSqlExpressionGroup());
+            });
             this.cnd.or(sqlExpressionGroup);
         }
         return this.thisType;
+    }
+
+    /**
+     * OR链接 组内采用OR
+     *
+     * @param exps
+     * @return
+     */
+    @SafeVarargs
+    public final Children or(boolean condition, Function<LambdaConditionWapper<T>, LambdaConditionWapper<T>>... exps) {
+        if (!condition) {
+            return this.thisType;
+        }
+        return this.or(exps);
     }
 
     /**

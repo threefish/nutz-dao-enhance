@@ -391,4 +391,19 @@ public class SpringDaoTest {
                 .listPage();
         assert page.getTotal() == 3;
     }
+
+    @Test
+    public void test_or_query() {
+        List<UserDO> list = userDao.lambdaQuery()
+                .like(UserDO.class, JobDO::getRealName, "测试1")
+                .or()
+                .eq(UserDO.class, JobDO::getRealName, "测试2")
+                .eq(UserDO.class, JobDO::getRealName, "测试3")
+                .endOr()
+                .eq(UserDO.class, JobDO::getRealName, "测试4")
+                .groupBy(UserDO::getRealName)
+                .list();
+        assert list.size() == 3;
+
+    }
 }
