@@ -12,7 +12,6 @@ import org.nutz.dao.util.lambda.PFun;
 import org.nutz.lang.Lang;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Function;
@@ -793,6 +792,38 @@ public abstract class LambdaCondition<Children extends LambdaCondition, T> {
             return this.thisType;
         }
         return this.or(wapperFunction);
+    }
+
+
+    /**
+     * and链接
+     *
+     * @param wapperFunction
+     * @return
+     */
+    public final Children and(Function<LambdaConditionWapper<T>, LambdaConditionWapper<T>> wapperFunction) {
+        if (wapperFunction != null) {
+            SqlExpressionGroup sqlExpressionGroup = wapperFunction.apply(new LambdaConditionWapper<T>(QueryCondition.NEW(), this.providerContext, this.notNull, this.notEmpty)).getSqlExpressionGroup();
+            List<SqlExpression> exps = sqlExpressionGroup.getExps();
+            if (exps != null && !exps.isEmpty()) {
+                this.cnd.and(sqlExpressionGroup);
+            }
+        }
+        return this.thisType;
+    }
+
+    /**
+     * and链接
+     *
+     * @param wapperFunction
+     * @return
+     */
+    public final Children and(boolean condition, Function<LambdaConditionWapper<T>, LambdaConditionWapper<T>> wapperFunction) {
+        if (!condition) {
+            this.orStatus = false;
+            return this.thisType;
+        }
+        return this.and(wapperFunction);
     }
 
     /**
