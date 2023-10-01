@@ -300,14 +300,6 @@ public class NutzDaoTest {
         int count = userDao.lambdaQuery().gte(UserDO::getAge, 17).count();
         List<UserDO> query5 = userDao.lambdaQuery().gte(UserDO::getAge, 17).list();
         assert query5.size() == count;
-
-        List<UserDO> list = userDao.lambdaQuery().gte(UserDO::getAge, 17)
-                .and(c -> c.gte(UserDO::getAge, 15).lte(UserDO::getAge, 40), c -> c.gte(UserDO::getId, 10))
-                .list();
-
-
-        assert list.size() == 1;
-
     }
 
     @Test

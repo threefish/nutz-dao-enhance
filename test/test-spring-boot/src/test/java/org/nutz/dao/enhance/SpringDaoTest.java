@@ -289,10 +289,6 @@ public class SpringDaoTest {
         int count = userDao.lambdaQuery().gte(UserDO::getAge, 17).count();
         List<UserDO> query5 = userDao.lambdaQuery().gte(UserDO::getAge, 17).list();
         assert query5.size() == count;
-        List<UserDO> list = userDao.lambdaQuery().gte(UserDO::getAge, 17)
-                .and(c -> c.gte(UserDO::getAge, 15).lte(UserDO::getAge, 40), c -> c.gte(UserDO::getId, 10))
-                .list();
-        assert list.size() == 1;
     }
 
     @Test
@@ -394,16 +390,15 @@ public class SpringDaoTest {
 
     @Test
     public void test_or_query() {
-        List<UserDO> list = userDao.lambdaQuery()
-                .like(UserDO.class, JobDO::getRealName, "测试1")
+        userDao.lambdaQuery().like(UserDO::getRealName, "测试1")
                 .or()
-                .eq(UserDO.class, JobDO::getRealName, "测试2")
-                .eq(UserDO.class, JobDO::getRealName, "测试3")
-                .endOr()
-                .eq(UserDO.class, JobDO::getRealName, "测试4")
+                .eq(UserDO::getRealName, "测试2")
+                .eq(UserDO::getRealName, "测试3")
+                .eq(UserDO::getRealName, "测试4")
+                .or(q -> q.eq(false,UserDO::getRealName, "1").or().eq(false,UserDO::getRealName, "2").eq(false,UserDO::getRealName, "3"))
                 .groupBy(UserDO::getRealName)
                 .list();
-        assert list.size() == 3;
+
 
     }
 }

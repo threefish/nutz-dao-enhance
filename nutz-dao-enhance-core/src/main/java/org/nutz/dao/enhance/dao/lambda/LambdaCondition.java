@@ -1,10 +1,10 @@
 package org.nutz.dao.enhance.dao.lambda;
 
-import org.nutz.dao.Cnd;
 import org.nutz.dao.FieldFilter;
 import org.nutz.dao.enhance.dao.condition.QueryCondition;
 import org.nutz.dao.enhance.method.provider.ProviderContext;
 import org.nutz.dao.util.cri.IsNull;
+import org.nutz.dao.util.cri.NoParamsSqlExpression;
 import org.nutz.dao.util.cri.SqlExpression;
 import org.nutz.dao.util.cri.SqlExpressionGroup;
 import org.nutz.dao.util.lambda.LambdaQuery;
@@ -49,9 +49,8 @@ public abstract class LambdaCondition<Children extends LambdaCondition, T> {
      * 排除的字段
      */
     private List<String> excludes;
+
     private boolean orStatus = false;
-    private boolean andOrStatus = false;
-    private Cnd orCondition = Cnd.NEW();
 
     public LambdaCondition(QueryCondition cnd, ProviderContext providerContext, boolean notNull, boolean notEmpty) {
         this.cnd = cnd;
@@ -152,93 +151,111 @@ public abstract class LambdaCondition<Children extends LambdaCondition, T> {
 
     public Children eq(PFun<T, ?> name, Object value) {
         checkValueForNull(name, value);
-        if (this.orStatus) {
-            this.orCondition.or(name, "=", value);
-        } else {
-            cnd.and(name, "=", value);
-        }
+        this.addConditionItem(name, "=", value);
         return this.thisType;
+    }
+
+    private void addConditionItem(PFun<T, ?> name, String op, Object value) {
+        if (this.orStatus) {
+            this.cnd.or(name, op, value);
+        } else {
+            this.cnd.and(name, op, value);
+        }
+        this.orStatus = false;
+    }
+
+    private void addConditionItemAndSetNot(PFun<T, ?> name, String op, Object value) {
+        if (this.orStatus) {
+            this.cnd.orNot(name, op, value);
+        } else {
+            this.cnd.andNot(name, op, value);
+        }
+        this.orStatus = false;
+    }
+
+    private void addConditionItemAndSetNot(String name, String op, Object value) {
+        if (this.orStatus) {
+            this.cnd.orNot(name, op, value);
+        } else {
+            this.cnd.andNot(name, op, value);
+        }
+        this.orStatus = false;
+    }
+
+    private void addConditionItem(String name, String op, Object value) {
+        if (this.orStatus) {
+            this.cnd.or(name, op, value);
+        } else {
+            this.cnd.and(name, op, value);
+        }
+        this.orStatus = false;
+    }
+
+
+    private void addConditionItemNotOp(NoParamsSqlExpression noParamsSqlExpression) {
+        if (this.orStatus) {
+            this.cnd.or(noParamsSqlExpression);
+        } else {
+            this.cnd.and(noParamsSqlExpression);
+        }
+        this.orStatus = false;
     }
 
     public Children eq(String name, Object value) {
         checkValueForNull(name, value);
-        if (this.orStatus) {
-            this.orCondition.or(name, "=", value);
-        } else {
-            cnd.and(name, "=", value);
-        }
+        this.addConditionItem(name, "=", value);
         return this.thisType;
     }
 
     public Children eq(boolean condition, PFun<T, ?> name, Object value) {
         if (!condition) {
+            this.orStatus = false;
             return this.thisType;
         }
         checkValueForNull(name, value);
-        if (this.orStatus) {
-            this.orCondition.or(name, "=", value);
-        } else {
-            cnd.and(name, "=", value);
-        }
+        this.addConditionItem(name, "=", value);
         return this.thisType;
     }
 
     public Children eq(boolean condition, String name, Object value) {
         if (!condition) {
+            this.orStatus = false;
             return this.thisType;
         }
         checkValueForNull(name, value);
-        if (this.orStatus) {
-            this.orCondition.or(name, "=", value);
-        } else {
-            cnd.and(name, "=", value);
-        }
+        this.addConditionItem(name, "=", value);
         return this.thisType;
     }
 
     public Children ne(PFun<T, ?> name, Object value) {
         checkValueForNull(name, value);
-        if (this.orStatus) {
-            this.orCondition.or(name, "!=", value);
-        } else {
-            cnd.and(name, "!=", value);
-        }
+        this.addConditionItem(name, "!=", value);
         return this.thisType;
     }
 
     public Children ne(String name, Object value) {
         checkValueForNull(name, value);
-        if (this.orStatus) {
-            this.orCondition.or(name, "!=", value);
-        } else {
-            cnd.and(name, "!=", value);
-        }
+        this.addConditionItem(name, "=", value);
         return this.thisType;
     }
 
     public Children ne(boolean condition, PFun<T, ?> name, Object value) {
         if (!condition) {
+            this.orStatus = false;
             return this.thisType;
         }
         checkValueForNull(name, value);
-        if (this.orStatus) {
-            this.orCondition.or(name, "!=", value);
-        } else {
-            cnd.and(name, "!=", value);
-        }
+        this.addConditionItem(name, "=", value);
         return this.thisType;
     }
 
     public Children ne(boolean condition, String name, Object value) {
         if (!condition) {
+            this.orStatus = false;
             return this.thisType;
         }
         checkValueForNull(name, value);
-        if (this.orStatus) {
-            this.orCondition.or(name, "!=", value);
-        } else {
-            cnd.and(name, "!=", value);
-        }
+        this.addConditionItem(name, "!=", value);
         return this.thisType;
     }
 
@@ -251,47 +268,33 @@ public abstract class LambdaCondition<Children extends LambdaCondition, T> {
      */
     public Children gt(PFun<T, ?> name, Object value) {
         checkValueForNull(name, value);
-        if (this.orStatus) {
-            this.orCondition.or(name, ">", value);
-        } else {
-            cnd.and(name, ">", value);
-        }
+        this.addConditionItem(name, ">", value);
         return this.thisType;
     }
 
     public Children gt(String name, Object value) {
         checkValueForNull(name, value);
-        if (this.orStatus) {
-            this.orCondition.or(name, ">", value);
-        } else {
-            cnd.and(name, ">", value);
-        }
+        this.addConditionItem(name, ">", value);
         return this.thisType;
     }
 
     public Children gt(boolean condition, PFun<T, ?> name, Object value) {
         if (!condition) {
+            this.orStatus = false;
             return this.thisType;
         }
         checkValueForNull(name, value);
-        if (this.orStatus) {
-            this.orCondition.or(name, ">", value);
-        } else {
-            cnd.and(name, ">", value);
-        }
+        this.addConditionItem(name, ">", value);
         return this.thisType;
     }
 
     public Children gt(boolean condition, String name, Object value) {
         if (!condition) {
+            this.orStatus = false;
             return this.thisType;
         }
         checkValueForNull(name, value);
-        if (this.orStatus) {
-            this.orCondition.or(name, ">", value);
-        } else {
-            cnd.and(name, ">", value);
-        }
+        this.addConditionItem(name, ">", value);
         return this.thisType;
     }
 
@@ -304,47 +307,36 @@ public abstract class LambdaCondition<Children extends LambdaCondition, T> {
      */
     public Children gte(PFun<T, ?> name, Object value) {
         checkValueForNull(name, value);
-        if (this.orStatus) {
-            this.orCondition.or(name, ">=", value);
-        } else {
-            cnd.and(name, ">=", value);
-        }
+        this.addConditionItem(name, ">=", value);
         return this.thisType;
     }
 
     public Children gte(String name, Object value) {
         checkValueForNull(name, value);
-        if (this.orStatus) {
-            this.orCondition.or(name, ">=", value);
-        } else {
-            cnd.and(name, ">=", value);
-        }
+        this.addConditionItem(name, ">=", value);
+
         return this.thisType;
     }
 
     public Children gte(boolean condition, PFun<T, ?> name, Object value) {
         if (!condition) {
+            this.orStatus = false;
             return this.thisType;
         }
         checkValueForNull(name, value);
-        if (this.orStatus) {
-            this.orCondition.or(name, ">=", value);
-        } else {
-            cnd.and(name, ">=", value);
-        }
+        this.addConditionItem(name, ">=", value);
+
         return this.thisType;
     }
 
     public Children gte(boolean condition, String name, Object value) {
         if (!condition) {
+            this.orStatus = false;
             return this.thisType;
         }
         checkValueForNull(name, value);
-        if (this.orStatus) {
-            this.orCondition.or(name, ">=", value);
-        } else {
-            cnd.and(name, ">=", value);
-        }
+        this.addConditionItem(name, ">=", value);
+
         return this.thisType;
     }
 
@@ -357,47 +349,37 @@ public abstract class LambdaCondition<Children extends LambdaCondition, T> {
      */
     public Children lt(PFun<T, ?> name, Object value) {
         checkValueForNull(name, value);
-        if (this.orStatus) {
-            this.orCondition.or(name, "<", value);
-        } else {
-            cnd.and(name, "<", value);
-        }
+        this.addConditionItem(name, "<", value);
+
         return this.thisType;
     }
 
     public Children lt(String name, Object value) {
         checkValueForNull(name, value);
-        if (this.orStatus) {
-            this.orCondition.or(name, "<", value);
-        } else {
-            cnd.and(name, "<", value);
-        }
+        this.addConditionItem(name, "<", value);
+
         return this.thisType;
     }
 
     public Children lt(boolean condition, PFun<T, ?> name, Object value) {
         if (!condition) {
+            this.orStatus = false;
             return this.thisType;
         }
         checkValueForNull(name, value);
-        if (this.orStatus) {
-            this.orCondition.or(name, "<", value);
-        } else {
-            cnd.and(name, "<", value);
-        }
+        this.addConditionItem(name, "<", value);
+
         return this.thisType;
     }
 
     public Children lt(boolean condition, String name, Object value) {
         if (!condition) {
+            this.orStatus = false;
             return this.thisType;
         }
         checkValueForNull(name, value);
-        if (this.orStatus) {
-            this.orCondition.or(name, "<", value);
-        } else {
-            cnd.and(name, "<", value);
-        }
+        this.addConditionItem(name, "<", value);
+
         return this.thisType;
     }
 
@@ -410,48 +392,37 @@ public abstract class LambdaCondition<Children extends LambdaCondition, T> {
      */
     public Children lte(PFun<T, ?> name, Object value) {
         checkValueForNull(name, value);
-        if (this.orStatus) {
-            this.orCondition.or(name, "<=", value);
-        } else {
-            cnd.and(name, "<=", value);
-        }
+        this.addConditionItem(name, "<=", value);
+
         return this.thisType;
     }
 
     public Children lte(String name, Object value) {
         checkValueForNull(name, value);
-        if (this.orStatus) {
-            this.orCondition.or(name, "<=", value);
-        } else {
-            cnd.and(name, "<=", value);
-        }
+        this.addConditionItem(name, "<=", value);
+
         return this.thisType;
     }
 
     public Children lte(boolean condition, PFun<T, ?> name, Object value) {
         if (!condition) {
+            this.orStatus = false;
             return this.thisType;
         }
         checkValueForNull(name, value);
-        if (this.orStatus) {
-            this.orCondition.or(name, "<=", value);
-        } else {
-            cnd.and(name, "<=", value);
-        }
+        this.addConditionItem(name, "<=", value);
+
         return this.thisType;
     }
 
     public Children lte(boolean condition, String name, Object value) {
         if (!condition) {
+            this.orStatus = false;
             return this.thisType;
         }
         checkValueForNull(name, value);
+        this.addConditionItem(name, "<=", value);
 
-        if (this.orStatus) {
-            this.orCondition.or(name, "<=", value);
-        } else {
-            cnd.and(name, "<=", value);
-        }
         return this.thisType;
     }
 
@@ -465,558 +436,363 @@ public abstract class LambdaCondition<Children extends LambdaCondition, T> {
      */
     public Children between(PFun<T, ?> name, Object val1, Object val2) {
         checkValueForNull(name, val1, val2);
-        if (this.orStatus) {
-            this.orCondition.or(name, "between", new Object[]{val1, val2});
-        } else {
-            cnd.and(name, "between", new Object[]{val1, val2});
-        }
+        this.addConditionItem(name, "between", new Object[]{val1, val2});
         return this.thisType;
     }
 
     public Children between(String name, Object val1, Object val2) {
         checkValueForNull(name, val1, val2);
-        if (this.orStatus) {
-            this.orCondition.or(name, "between", new Object[]{val1, val2});
-        } else {
-            cnd.and(name, "between", new Object[]{val1, val2});
-        }
+        this.addConditionItem(name, "between", new Object[]{val1, val2});
         return this.thisType;
     }
 
     public Children between(boolean condition, PFun<T, ?> name, Object val1, Object val2) {
         if (!condition) {
+            this.orStatus = false;
             return this.thisType;
         }
         checkValueForNull(name, val1, val2);
-        if (this.orStatus) {
-            this.orCondition.or(name, "between", new Object[]{val1, val2});
-        } else {
-            cnd.and(name, "between", new Object[]{val1, val2});
-        }
+        this.addConditionItem(name, "between", new Object[]{val1, val2});
+
         return this.thisType;
     }
 
     public Children between(boolean condition, String name, Object val1, Object val2) {
         if (!condition) {
+            this.orStatus = false;
             return this.thisType;
         }
         checkValueForNull(name, val1, val2);
-        if (this.orStatus) {
-            this.orCondition.or(name, "between", new Object[]{val1, val2});
-        } else {
-            cnd.and(name, "between", new Object[]{val1, val2});
-        }
+        this.addConditionItem(name, "between", new Object[]{val1, val2});
+
         return this.thisType;
     }
 
     public Children notBetween(PFun<T, ?> name, Object val1, Object val2) {
         checkValueForNull(name, val1, val2);
-        if (this.orStatus) {
-            this.orCondition.orNot(name, "between", new Object[]{val1, val2});
-        } else {
-            cnd.andNot(name, "between", new Object[]{val1, val2});
-        }
+        this.addConditionItemAndSetNot(name, "between", new Object[]{val1, val2});
         return this.thisType;
     }
 
     public Children notBetween(String name, Object val1, Object val2) {
         checkValueForNull(name, val1, val2);
-        if (this.orStatus) {
-            this.orCondition.orNot(name, "between", new Object[]{val1, val2});
-        } else {
-            cnd.andNot(name, "between", new Object[]{val1, val2});
-        }
+        this.addConditionItemAndSetNot(name, "between", new Object[]{val1, val2});
         return this.thisType;
     }
 
     public Children notBetween(boolean condition, PFun<T, ?> name, Object val1, Object val2) {
         if (!condition) {
+            this.orStatus = false;
             return this.thisType;
         }
         checkValueForNull(name, val1, val2);
-        if (this.orStatus) {
-            this.orCondition.orNot(name, "between", new Object[]{val1, val2});
-        } else {
-            cnd.andNot(name, "between", new Object[]{val1, val2});
-        }
+        this.addConditionItemAndSetNot(name, "between", new Object[]{val1, val2});
         return this.thisType;
     }
 
     public Children notBetween(boolean condition, String name, Object val1, Object val2) {
         if (!condition) {
+            this.orStatus = false;
             return this.thisType;
         }
         checkValueForNull(name, val1, val2);
-        if (this.orStatus) {
-            this.orCondition.orNot(name, "between", new Object[]{val1, val2});
-        } else {
-            cnd.andNot(name, "between", new Object[]{val1, val2});
-        }
+        this.addConditionItemAndSetNot(name, "between", new Object[]{val1, val2});
         return this.thisType;
     }
 
     public Children like(PFun<T, ?> name, Object value) {
         checkValueForNull(name, value);
-        if (this.orStatus) {
-            this.orCondition.or(name, "like", String.format("%%%s%%", value));
-        } else {
-            cnd.and(name, "like", String.format("%%%s%%", value));
-        }
+        this.addConditionItem(name, "like", String.format("%%%s%%", value));
         return this.thisType;
     }
 
     public Children like(String name, Object value) {
         checkValueForNull(name, value);
-        if (this.orStatus) {
-            this.orCondition.or(name, "like", String.format("%%%s%%", value));
-        } else {
-            cnd.and(name, "like", String.format("%%%s%%", value));
-        }
+        this.addConditionItem(name, "like", String.format("%%%s%%", value));
         return this.thisType;
     }
 
     public Children like(boolean condition, PFun<T, ?> name, Object value) {
         if (!condition) {
+            this.orStatus = false;
             return this.thisType;
         }
         checkValueForNull(name, value);
-        if (this.orStatus) {
-            this.orCondition.or(name, "like", String.format("%%%s%%", value));
-        } else {
-            cnd.and(name, "like", String.format("%%%s%%", value));
-        }
+        this.addConditionItem(name, "like", String.format("%%%s%%", value));
         return this.thisType;
     }
 
     public Children like(boolean condition, String name, Object value) {
         if (!condition) {
+            this.orStatus = false;
             return this.thisType;
         }
         checkValueForNull(name, value);
-        if (this.orStatus) {
-            this.orCondition.or(name, "like", String.format("%%%s%%", value));
-        } else {
-            cnd.and(name, "like", String.format("%%%s%%", value));
-        }
+        this.addConditionItem(name, "like", String.format("%%%s%%", value));
+
         return this.thisType;
     }
 
     public Children notLike(PFun<T, ?> name, Object value) {
         checkValueForNull(name, value);
-        if (this.orStatus) {
-            this.orCondition.orNot(name, "like", String.format("%%%s%%", value));
-        } else {
-            cnd.andNot(name, "like", String.format("%%%s%%", value));
-        }
+        this.addConditionItemAndSetNot(name, "like", String.format("%%%s%%", value));
         return this.thisType;
     }
 
     public Children notLike(String name, Object value) {
         checkValueForNull(name, value);
-        if (this.orStatus) {
-            this.orCondition.orNot(name, "like", String.format("%%%s%%", value));
-        } else {
-            cnd.andNot(name, "like", String.format("%%%s%%", value));
-        }
+        this.addConditionItemAndSetNot(name, "like", String.format("%%%s%%", value));
         return this.thisType;
     }
 
     public Children notLike(boolean condition, PFun<T, ?> name, Object value) {
         if (!condition) {
+            this.orStatus = false;
             return this.thisType;
         }
         checkValueForNull(name, value);
-        if (this.orStatus) {
-            this.orCondition.orNot(name, "like", String.format("%%%s%%", value));
-        } else {
-            cnd.andNot(name, "like", String.format("%%%s%%", value));
-        }
+        this.addConditionItemAndSetNot(name, "like", String.format("%%%s%%", value));
         return this.thisType;
     }
 
     public Children notLike(boolean condition, String name, Object value) {
         if (!condition) {
+            this.orStatus = false;
             return this.thisType;
         }
         checkValueForNull(name, value);
-        if (this.orStatus) {
-            this.orCondition.orNot(name, "like", String.format("%%%s%%", value));
-        } else {
-            cnd.andNot(name, "like", String.format("%%%s%%", value));
-        }
+        this.addConditionItemAndSetNot(name, "like", String.format("%%%s%%", value));
         return this.thisType;
     }
 
     public Children likeLeft(PFun<T, ?> name, Object value) {
         checkValueForNull(name, value);
-        if (this.orStatus) {
-            this.orCondition.or(Cnd.exp(name, "like", String.format("%%%s", value)));
-        } else {
-            cnd.and(Cnd.exp(name, "like", String.format("%%%s", value)));
-        }
+        this.addConditionItem(name, "like", String.format("%%%s", value));
         return this.thisType;
     }
 
     public Children likeLeft(String name, Object value) {
         checkValueForNull(name, value);
-        if (this.orStatus) {
-            this.orCondition.or(Cnd.exp(name, "like", String.format("%%%s", value)));
-        } else {
-            cnd.and(Cnd.exp(name, "like", String.format("%%%s", value)));
-        }
+        this.addConditionItem(name, "like", String.format("%%%s", value));
         return this.thisType;
     }
 
     public Children likeLeft(boolean condition, PFun<T, ?> name, Object value) {
         if (!condition) {
+            this.orStatus = false;
             return this.thisType;
         }
         checkValueForNull(name, value);
-        if (this.orStatus) {
-            this.orCondition.or(Cnd.exp(name, "like", String.format("%%%s", value)));
-        } else {
-            cnd.and(Cnd.exp(name, "like", String.format("%%%s", value)));
-        }
+        this.addConditionItem(name, "like", String.format("%%%s", value));
         return this.thisType;
     }
 
     public Children likeLeft(boolean condition, String name, Object value) {
         if (!condition) {
+            this.orStatus = false;
             return this.thisType;
         }
         checkValueForNull(name, value);
-        if (this.orStatus) {
-            this.orCondition.or(Cnd.exp(name, "like", String.format("%%%s", value)));
-        } else {
-            cnd.and(Cnd.exp(name, "like", String.format("%%%s", value)));
-        }
+        this.addConditionItem(name, "like", String.format("%%%s", value));
         return this.thisType;
     }
 
     public Children likeRight(PFun<T, ?> name, Object value) {
         checkValueForNull(name, value);
-        if (this.orStatus) {
-            this.orCondition.or(Cnd.exp(name, "like", String.format("%s%%", value)));
-        } else {
-            cnd.and(Cnd.exp(name, "like", String.format("%s%%", value)));
-        }
+        this.addConditionItem(name, "like", String.format("%s%%", value));
         return this.thisType;
     }
 
     public Children likeRight(String name, Object value) {
         checkValueForNull(name, value);
-        if (this.orStatus) {
-            this.orCondition.or(Cnd.exp(name, "like", String.format("%s%%", value)));
-        } else {
-            cnd.and(Cnd.exp(name, "like", String.format("%s%%", value)));
-        }
+        this.addConditionItem(name, "like", String.format("%s%%", value));
         return this.thisType;
     }
 
     public Children likeRight(boolean condition, PFun<T, ?> name, Object value) {
         if (!condition) {
+            this.orStatus = false;
             return this.thisType;
         }
         checkValueForNull(name, value);
-        if (this.orStatus) {
-            this.orCondition.or(Cnd.exp(name, "like", String.format("%s%%", value)));
-        } else {
-            cnd.and(Cnd.exp(name, "like", String.format("%s%%", value)));
-        }
+        this.addConditionItem(name, "like", String.format("%s%%", value));
         return this.thisType;
     }
 
     public Children likeRight(boolean condition, String name, Object value) {
         if (!condition) {
+            this.orStatus = false;
             return this.thisType;
         }
         checkValueForNull(name, value);
-        if (this.orStatus) {
-            this.orCondition.or(Cnd.exp(name, "like", String.format("%s%%", value)));
-        } else {
-            cnd.and(Cnd.exp(name, "like", String.format("%s%%", value)));
-        }
+        this.addConditionItem(name, "like", String.format("%s%%", value));
         return this.thisType;
     }
 
     public Children isNull(PFun<T, ?> name) {
-        if (this.orStatus) {
-            this.orCondition.or(new IsNull(name));
-        } else {
-            cnd.and(new IsNull(name));
-        }
+        this.addConditionItemNotOp(new IsNull(name));
         return this.thisType;
     }
 
     public Children isNull(String name) {
-        if (this.orStatus) {
-            this.orCondition.or(new IsNull(name));
-        } else {
-            cnd.and(new IsNull(name));
-        }
+        this.addConditionItemNotOp(new IsNull(name));
         return this.thisType;
     }
 
     public Children isNull(boolean condition, PFun<T, ?> name) {
         if (!condition) {
+            this.orStatus = false;
             return this.thisType;
         }
-        if (this.orStatus) {
-            this.orCondition.or(new IsNull(name));
-        } else {
-            cnd.and(new IsNull(name));
-        }
+        this.addConditionItemNotOp(new IsNull(name));
         return this.thisType;
     }
 
     public Children isNull(boolean condition, String name) {
         if (!condition) {
+            this.orStatus = false;
             return this.thisType;
         }
-        if (this.orStatus) {
-            this.orCondition.or(new IsNull(name));
-        } else {
-            cnd.and(new IsNull(name));
-        }
+        this.addConditionItemNotOp(new IsNull(name));
         return this.thisType;
     }
 
     public Children isNotNull(PFun<T, ?> name) {
-        if (this.orStatus) {
-            this.orCondition.or(new IsNull(name).setNot(true));
-        } else {
-            cnd.and(new IsNull(name).setNot(true));
-        }
+        IsNull isNull = new IsNull(name);
+        isNull.setNot(true);
+        this.addConditionItemNotOp(isNull);
         return this.thisType;
     }
 
     public Children isNotNull(String name) {
-        if (this.orStatus) {
-            this.orCondition.or(new IsNull(name).setNot(true));
-        } else {
-            cnd.and(new IsNull(name).setNot(true));
-        }
+        IsNull isNull = new IsNull(name);
+        isNull.setNot(true);
+        this.addConditionItemNotOp(isNull);
         return this.thisType;
     }
 
     public Children isNotNull(boolean condition, PFun<T, ?> name) {
         if (!condition) {
+            this.orStatus = false;
             return this.thisType;
         }
-        if (this.orStatus) {
-            this.orCondition.or(new IsNull(name).setNot(true));
-        } else {
-            cnd.and(new IsNull(name).setNot(true));
-        }
+        IsNull isNull = new IsNull(name);
+        isNull.setNot(true);
+        this.addConditionItemNotOp(isNull);
         return this.thisType;
     }
 
     public Children isNotNull(boolean condition, String name) {
         if (!condition) {
+            this.orStatus = false;
             return this.thisType;
         }
-        if (this.orStatus) {
-            this.orCondition.or(new IsNull(name).setNot(true));
-        } else {
-            cnd.and(new IsNull(name).setNot(true));
-        }
+        IsNull isNull = new IsNull(name);
+        isNull.setNot(true);
+        this.addConditionItemNotOp(isNull);
         return this.thisType;
     }
 
     public Children in(PFun<T, ?> name, Collection<?> coll) {
         checkCollectionValueForEmpty(name, coll);
-        if (this.orStatus) {
-            this.cnd.or(name, "in", coll);
-        } else {
-            this.cnd.and(name, "in", coll);
-        }
+        this.addConditionItem(name, "in", coll);
         return this.thisType;
     }
 
     public Children in(String name, Collection<?> coll) {
         checkCollectionValueForEmpty(name, coll);
-        if (this.orStatus) {
-            this.cnd.or(name, "in", coll);
-        } else {
-            this.cnd.and(name, "in", coll);
-        }
+        this.addConditionItem(name, "in", coll);
         return this.thisType;
     }
 
     public Children in(boolean condition, PFun<T, ?> name, Collection<?> coll) {
         if (!condition) {
+            this.orStatus = false;
             return this.thisType;
         }
         checkCollectionValueForEmpty(name, coll);
-        if (this.orStatus) {
-            this.cnd.or(name, "in", coll);
-        } else {
-            this.cnd.and(name, "in", coll);
-        }
+        this.addConditionItem(name, "in", coll);
         return this.thisType;
     }
 
     public Children in(boolean condition, String name, Collection<?> coll) {
         if (!condition) {
+            this.orStatus = false;
             return this.thisType;
         }
         checkCollectionValueForEmpty(name, coll);
-        if (this.orStatus) {
-            this.cnd.or(name, "in", coll);
-        } else {
-            this.cnd.and(name, "in", coll);
-        }
+        this.addConditionItem(name, "in", coll);
         return this.thisType;
     }
 
     public Children notIn(PFun<T, ?> name, Collection<?> coll) {
         checkCollectionValueForEmpty(name, coll);
-        if (this.orStatus) {
-            this.cnd.or(name, "not in", coll);
-        } else {
-            this.cnd.and(name, "not in", coll);
-        }
+        this.addConditionItem(name, "not in", coll);
         return this.thisType;
     }
 
     public Children notIn(String name, Collection<?> coll) {
         checkCollectionValueForEmpty(name, coll);
-        if (this.orStatus) {
-            this.cnd.or(name, "not in", coll);
-        } else {
-            this.cnd.and(name, "not in", coll);
-        }
+        this.addConditionItem(name, "not in", coll);
         return this.thisType;
     }
 
     public Children notIn(boolean condition, PFun<T, ?> name, Collection<?> coll) {
         if (!condition) {
+            this.orStatus = false;
             return this.thisType;
         }
         checkCollectionValueForEmpty(name, coll);
-        if (this.orStatus) {
-            this.cnd.or(name, "not in", coll);
-        } else {
-            this.cnd.and(name, "not in", coll);
-        }
+        this.addConditionItem(name, "not in", coll);
         return this.thisType;
     }
 
     public Children notIn(boolean condition, String name, Collection<?> coll) {
         if (!condition) {
+            this.orStatus = false;
             return this.thisType;
         }
         checkCollectionValueForEmpty(name, coll);
-        if (this.orStatus) {
-            this.cnd.or(name, "not in", coll);
-        } else {
-            this.cnd.and(name, "not in", coll);
-        }
+        this.addConditionItem(name, "not in", coll);
         return this.thisType;
     }
 
-    public Children and(SqlExpression exp) {
-        this.cnd.and(exp);
-        return this.thisType;
-    }
-
-    public Children and(boolean condition, SqlExpression exp) {
-        if (!condition) {
-            return this.thisType;
-        }
-        if (this.orStatus) {
-            this.cnd.or(exp);
-        } else {
-            this.cnd.and(exp);
-        }
-        return this.thisType;
-    }
-
-    public Children or(SqlExpression exp) {
-        this.cnd.and(exp);
-        return this.thisType;
-    }
-
-    public Children or(boolean condition, SqlExpression exp) {
-        if (!condition) {
-            return this.thisType;
-        }
-        this.cnd.or(exp);
-        return this.thisType;
-    }
 
     public Children or() {
         this.orStatus = true;
         return this.thisType;
     }
 
-    public Children andOr() {
-        this.orStatus = true;
-        this.andOrStatus = true;
-        return this.thisType;
-    }
 
-    public Children endOr() {
-        SqlExpressionGroup where = this.orCondition.getCri().where();
-        if (!where.getExps().isEmpty()) {
-            if (this.andOrStatus) {
-                this.cnd.and(where);
-            } else {
-                this.cnd.or(where);
+    /**
+     * OR链接
+     *
+     * @param wapperFunction
+     * @return
+     */
+    public final Children or(Function<LambdaConditionWapper<T>, LambdaConditionWapper<T>> wapperFunction) {
+        if (wapperFunction != null) {
+            SqlExpressionGroup sqlExpressionGroup = wapperFunction.apply(new LambdaConditionWapper<T>(QueryCondition.NEW(), this.providerContext, this.notNull, this.notEmpty)).getSqlExpressionGroup();
+            List<SqlExpression> exps = sqlExpressionGroup.getExps();
+            if (exps != null && !exps.isEmpty()) {
+                this.cnd.or(sqlExpressionGroup);
             }
         }
-        this.orStatus = false;
-        this.andOrStatus = false;
-        this.orCondition = Cnd.NEW();
         return this.thisType;
     }
 
     /**
-     * and链接 组内采用OR
+     * OR链接
      *
-     * @param exps
+     * @param wapperFunction
      * @return
      */
-    @SafeVarargs
-    public final Children and(Function<LambdaConditionWapper<T>, LambdaConditionWapper<T>>... exps) {
-        if (exps != null && exps.length > 0) {
-            SqlExpressionGroup sqlExpressionGroup = new SqlExpressionGroup();
-            Arrays.stream(exps).forEach(orPart -> sqlExpressionGroup.or(orPart.apply(new LambdaConditionWapper<T>(QueryCondition.NEW(), this.providerContext, this.notNull, this.notEmpty)).getSqlExpressionGroup()));
-            this.cnd.and(sqlExpressionGroup);
-        }
-        return this.thisType;
-    }
-
-    /**
-     * OR链接 组内采用OR
-     *
-     * @param exps
-     * @return
-     */
-    @SafeVarargs
-    public final Children or(Function<LambdaConditionWapper<T>, LambdaConditionWapper<T>>... exps) {
-        if (exps != null && exps.length > 0) {
-            SqlExpressionGroup sqlExpressionGroup = new SqlExpressionGroup();
-            Arrays.stream(exps).forEach(orPart -> {
-                sqlExpressionGroup.or(orPart.apply(new LambdaConditionWapper<T>(QueryCondition.NEW(), this.providerContext, this.notNull, this.notEmpty)).getSqlExpressionGroup());
-            });
-            this.cnd.or(sqlExpressionGroup);
-        }
-        return this.thisType;
-    }
-
-    /**
-     * OR链接 组内采用OR
-     *
-     * @param exps
-     * @return
-     */
-    @SafeVarargs
-    public final Children or(boolean condition, Function<LambdaConditionWapper<T>, LambdaConditionWapper<T>>... exps) {
+    public final Children or(boolean condition, Function<LambdaConditionWapper<T>, LambdaConditionWapper<T>> wapperFunction) {
         if (!condition) {
+            this.orStatus = false;
             return this.thisType;
         }
-        return this.or(exps);
+        return this.or(wapperFunction);
     }
 
     /**

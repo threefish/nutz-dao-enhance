@@ -4,11 +4,12 @@ import org.nutz.dao.Chain;
 import org.nutz.dao.Cnd;
 import org.nutz.dao.enhance.dao.condition.QueryCondition;
 import org.nutz.dao.enhance.method.provider.ProviderContext;
+import org.nutz.dao.util.cri.SqlExpression;
 import org.nutz.dao.util.lambda.LambdaQuery;
 import org.nutz.dao.util.lambda.PFun;
-import org.nutz.lang.Strings;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -88,7 +89,8 @@ public class LambdaUpdate<T> extends LambdaCondition<LambdaUpdate<T>, T> {
 
 
     public int delete() {
-        if (Strings.isBlank(this.cnd.toString())) {
+        List<SqlExpression> exps = this.cnd.getCri().where().getExps();
+        if (exps == null || exps.isEmpty()) {
             throw new UnsupportedOperationException("删除时请传入条件，避免全表删除!!!");
         }
         return _invoke(() -> this.providerContext.dao.clear(providerContext.entity, this.cnd));
