@@ -329,6 +329,7 @@ public class BaseDaoProvider {
         pageRecord.setTotal(count);
         pageRecord.setPager(pager);
         pageRecord.setRecords(Collections.EMPTY_LIST);
+        pager.setRecordCount(count);
         if (count > 0) {
             pageRecord.setRecords(providerContext.dao.query(providerContext.entityClass, cnd, pager));
         }
