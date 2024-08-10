@@ -763,6 +763,21 @@ public abstract class LambdaCondition<Children extends LambdaCondition, T> {
     }
 
 
+    public Children or(SqlExpression exp) {
+        this.cnd.and(exp);
+        return this.thisType;
+    }
+
+    public Children or(boolean condition, SqlExpression exp) {
+        if (!condition) {
+            return this.thisType;
+        } else {
+            this.cnd.and(exp);
+            return this.thisType;
+        }
+    }
+
+
     /**
      * OR链接
      *
@@ -824,6 +839,21 @@ public abstract class LambdaCondition<Children extends LambdaCondition, T> {
             return this.thisType;
         }
         return this.and(wapperFunction);
+    }
+
+
+    public Children and(SqlExpression exp) {
+        this.cnd.and(exp);
+        return this.thisType;
+    }
+
+    public Children and(boolean condition, SqlExpression exp) {
+        if (!condition) {
+            return this.thisType;
+        } else {
+            this.cnd.and(exp);
+            return this.thisType;
+        }
     }
 
     /**
