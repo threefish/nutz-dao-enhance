@@ -1,45 +1,88 @@
-# nutz-dao-enhance
+# 🧩 nutz-dao-enhance
 
-## 增强NutzDao,无需写dao实现类也能完成数据库基础crud、复杂sql查询、存储过程调用。
+> 🚀 **增强版 NutzDao** —— 无需编写 DAO 实现类，即可完成数据库的基础 CRUD、复杂 SQL 查询、存储过程调用与 Lambda 链式操作。  
+> 让 NutzDao 的使用更加优雅、灵活、高效。
 
-1. @Entity(UserDO.class)可添加到Dao接口类上或放在方法上，该方法返回实体优先采用当前指定的class
-2. 在开启自动建表的情况下，将@IgnoreAutoDDL添加到实体类上将忽略当前实体自动创建表和更新功能
-3. 实现 AuditHandler 接口，可以在更新和插入数据时自动设置当前操作人(对应注解 @CreatedBy @LastModifiedBy)，同时也实现了@EntityListener 注解
-4. 实现 IdentifierGenerator 接口，可以在插入时对添加了 @AutoID 字段进行赋值。如果搭配 @Id 注解，需要在 @Id(auto=false)时才生效
-5. @CustomProvider 可以方便你扩展更多基础的功能 参考 org.nutz.dao.enhance.dao.BaseDao
-6. \#[] 语法使用介绍 例子： \#[ and u.realName=@name and u.gmtCreate=@gmtCreate ] name或gmtCreate 入参不存在，则当前#[]中的全部条件都不生效，且会忽略这段sql
-7. 查询预计中可以使用和java实体类名称如： UserDO as u ,会翻译为 user as u 而 u.realName 则会翻译为 u.real_name
-8. 自定义SQL下可按参数循环执行sql语句（batch操作）
-9. @FieldCalculation 字段计算注解可以方便的在查询结果下对查询对象进行计算（通过表达式赋值）
-10. lambda方式连表查询join
-    PS：3-4项的原理实际是采用NutzDao原生@PrevInsert @PrevUpdate搭配el表达式等方式来实现，原生功能更强大，请自由选择使用。
+---
 
-### mavne坐标
+## 🌟 功能亮点
 
-[nutz-dao-enhance-spring-starter](https://mvnrepository.com/artifact/org.nutz/nutz-dao-enhance-spring-starter)
-[nutz-dao-enhance-nutz-starter](https://mvnrepository.com/artifact/org.nutz/nutz-dao-enhance-nutz-starter)
+1. **自动实体绑定**
+   - 使用 `@Entity(UserDO.class)` 注解，可添加在 DAO 接口或方法上。
+   - 当方法返回实体时，优先采用当前指定的 class。
 
-### lambda常用方法
+2. **自动建表可控**
+   - 在启用自动建表功能的前提下，为实体类添加 `@IgnoreAutoDDL` 注解可忽略自动建表/更新。
+
+3. **操作人自动填充**
+   - 实现 `AuditHandler` 接口，可在插入或更新时自动填充操作人字段（配合 `@CreatedBy`、`@LastModifiedBy` 注解）。
+   - 同时支持 `@EntityListener` 注解。
+
+4. **主键自动生成**
+   - 实现 `IdentifierGenerator` 接口，为带有 `@AutoID` 的字段自动赋值。
+   - 若配合 `@Id` 注解使用，仅在 `@Id(auto = false)` 时生效。
+
+5. **自定义扩展能力**
+   - 通过 `@CustomProvider` 扩展基础功能，示例参考 `org.nutz.dao.enhance.dao.BaseDao`。
+
+6. **动态 SQL 条件语法**
+   - 使用 `#[]` 语法实现可选条件拼接：
+     ```sql
+     #[ and u.realName=@name and u.gmtCreate=@gmtCreate ]
+     ```
+     当 `name` 或 `gmtCreate` 参数不存在时，该语句块将被忽略。
+
+7. **智能实体名与字段映射**
+   - 语句中可使用 Java 实体名（如 `UserDO as u`），自动转换为数据库表名（如 `user as u`）。
+   - 字段名（如 `u.realName`）将自动转换为下划线格式（如 `u.real_name`）。
+
+8. **批量操作支持**
+   - 自定义 SQL 可按参数循环执行，实现批量插入/删除等操作。
+
+9. **查询结果字段计算**
+   - 使用 `@FieldCalculation` 注解对查询结果进行计算并赋值（支持分组与表达式）。
+
+10. **Lambda 链式查询与更新**
+    - 优雅的链式写法实现 CRUD、分页、连接查询等操作。
+
+> 💡 提示：第 3~4 项功能的底层实现基于 NutzDao 原生 `@PrevInsert` / `@PrevUpdate` 与 EL 表达式，原生能力更强大，可灵活选择。
+
+---
+
+## 📦 Maven 坐标
+
+- [nutz-dao-enhance-spring-starter](https://mvnrepository.com/artifact/org.nutz/nutz-dao-enhance-spring-starter)
+- [nutz-dao-enhance-nutz-starter](https://mvnrepository.com/artifact/org.nutz/nutz-dao-enhance-nutz-starter)
+
+---
+
+## 🧠 Lambda 常用操作示例
 
 ```java
-//lambda方式更新
+// 更新操作
 userDao.lambdaUpdate().set(UserDO::getAge, 123).eq(UserDO::getAge, 15).update();
 userDao.lambdaUpdate().eq(UserDO::getAge, 15).delete();
 userDao.lambdaUpdate().set(UserDO::getAge, 250).insert();
 
-//lambda方式查询
-userDao.lambdaQuery().isNotNull(UserDO::getRealName).in(UserDO::getAge,Arrays.asList(15,16)).list();
+// 查询操作
+userDao.lambdaQuery().isNotNull(UserDO::getRealName).in(UserDO::getAge, Arrays.asList(15,16)).list();
 userDao.lambdaQuery().isNull(UserDO::getRealName).one();
 userDao.lambdaQuery().gte(UserDO::getAge, 17).count();
 userDao.lambdaQuery().gte(UserDO::getAge, 17)
         .and(c -> c.gte(UserDO::getAge, 15).lte(UserDO::getAge, 40), c -> c.gte(UserDO::getId, 10))
         .list();
-
 ```
 
-### 更多用法请查看 org.nutz.dao.enhance.SpringDaoTest
+更多用法可参考测试类：
+```java
+org.nutz.dao.enhance.SpringDaoTest
+```
 
-#### 自定义SQL操作 dao
+---
+
+## 🧩 DAO 接口示例
+
+以下为 `UserDao` 的完整示例，展示了 `@Query`、`@Insert`、`@Update`、`@Delete`、`@CallStoredProcedure` 等注解的多种用法：
 
 ```java
 /**
@@ -333,11 +376,18 @@ public interface UserDao extends BaseDao<UserDO> {
 
 
 
-
-
 ```
 
-#### 测试类
+> ⚙️ 该接口支持：
+> - 条件动态 SQL（`#[]`）
+> - 实体映射（`@Entity`）
+> - 返回类型自动适配（List、Map、Optional、Record）
+> - 存储过程调用（`@CallStoredProcedure`）
+> - 批量插入与自定义扩展（`@CustomProvider`）
+
+---
+
+## 🧪 测试类示例
 
 ```java
 @SuppressWarnings("all")
@@ -705,12 +755,13 @@ public class SpringDaoTest {
 
 }
 
-
-
-
 ```
 
-#### 实体类 entity
+> ✅ 自动建表、自动注入、事务回滚，全面验证增强功能的稳定性与一致性。
+
+---
+
+## 🧱 实体类定义示例
 
 ```java
 @Data
@@ -725,13 +776,13 @@ public class UserDO extends BaseDO {
    @AutoID
    @ColDefine(width = 9, type = ColType.INT)
    Integer id;
+
    @Column
    String realName;
+
    @Column
    Integer age;
-   /**
-    * 字段计算功能，可按分组进行计算
-    */
+
    @FieldCalculation(groups = {"test"}, expression = "$ioc:filedCalcTestService.query($this)")
    UserDO userDO;
 
@@ -743,13 +794,32 @@ public class UserDO extends BaseDO {
 
    @FieldCalculation(order = 1, expression = "$ioc:filedCalcTestService.query($this)")
    UserDO userDO3;
-
 }
 ```
 
-### 打包
+---
 
+## ⚙️ 打包与发布
+
+```bash
+mvn clean package -P release
+mvn clean install -P release
 ```
-mvn clean package -P releasse
-mvn clean install -P releasse
-```
+
+---
+
+## 📚 附加说明
+
+- 完全兼容原生 **NutzDao**
+- 支持 **Spring Boot** 与 **Nutz Boot**
+- 无侵入性设计，保留 Nutz 的灵活性与可扩展性
+- 适合大规模企业项目配合统一 DAO 层规范与自动代码生成
+
+---
+
+## 🏁 结语
+
+`nutz-dao-enhance` 致力于让 **NutzDao 更现代、更优雅、更易扩展**。  
+通过注解、Lambda、动态 SQL 与自动化能力，大幅减少样板代码，让开发者聚焦于业务逻辑。
+
+> 💬 欢迎贡献代码、提交 Issue 或 PR，一起完善这个项目。
