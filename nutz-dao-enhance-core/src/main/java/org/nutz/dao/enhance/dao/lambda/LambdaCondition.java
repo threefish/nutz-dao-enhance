@@ -3,6 +3,7 @@ package org.nutz.dao.enhance.dao.lambda;
 import org.nutz.dao.FieldFilter;
 import org.nutz.dao.enhance.dao.condition.QueryCondition;
 import org.nutz.dao.enhance.method.provider.ProviderContext;
+import org.nutz.dao.entity.Entity;
 import org.nutz.dao.util.cri.IsNull;
 import org.nutz.dao.util.cri.NoParamsSqlExpression;
 import org.nutz.dao.util.cri.SqlExpression;
@@ -12,6 +13,7 @@ import org.nutz.dao.util.lambda.PFun;
 import org.nutz.lang.Lang;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Function;
@@ -234,7 +236,7 @@ public abstract class LambdaCondition<Children extends LambdaCondition, T> {
 
     public Children ne(String name, Object value) {
         checkValueForNull(name, value);
-        this.addConditionItem(name, "=", value);
+        this.addConditionItem(name, "!=", value);
         return this.thisType;
     }
 
@@ -244,7 +246,7 @@ public abstract class LambdaCondition<Children extends LambdaCondition, T> {
             return this.thisType;
         }
         checkValueForNull(name, value);
-        this.addConditionItem(name, "=", value);
+        this.addConditionItem(name, "!=", value);
         return this.thisType;
     }
 
@@ -756,6 +758,64 @@ public abstract class LambdaCondition<Children extends LambdaCondition, T> {
         return this.thisType;
     }
 
+    public Children in(PFun<T, ?> name, Object... values) {
+        return in(name, Arrays.asList(values));
+    }
+
+    public Children in(String name, Object... values) {
+        return in(name, Arrays.asList(values));
+    }
+
+    public Children in(boolean condition, PFun<T, ?> name, Object... values) {
+        return in(condition, name, Arrays.asList(values));
+    }
+
+    public Children in(boolean condition, String name, Object... values) {
+        return in(condition, name, Arrays.asList(values));
+    }
+
+    public Children notIn(PFun<T, ?> name, Object... values) {
+        return notIn(name, Arrays.asList(values));
+    }
+
+    public Children notIn(String name, Object... values) {
+        return notIn(name, Arrays.asList(values));
+    }
+
+    public Children notIn(boolean condition, PFun<T, ?> name, Object... values) {
+        return notIn(condition, name, Arrays.asList(values));
+    }
+
+    public Children notIn(boolean condition, String name, Object... values) {
+        return notIn(condition, name, Arrays.asList(values));
+    }
+
+    public Children exists(String subSql) {
+        this.addConditionItemNotOp(new ExistsSqlExpression(subSql, false));
+        return this.thisType;
+    }
+
+    public Children exists(boolean condition, String subSql) {
+        if (!condition) {
+            this.orStatus = false;
+            return this.thisType;
+        }
+        return exists(subSql);
+    }
+
+    public Children notExists(String subSql) {
+        this.addConditionItemNotOp(new ExistsSqlExpression(subSql, true));
+        return this.thisType;
+    }
+
+    public Children notExists(boolean condition, String subSql) {
+        if (!condition) {
+            this.orStatus = false;
+            return this.thisType;
+        }
+        return notExists(subSql);
+    }
+
 
     public Children or() {
         this.orStatus = true;
@@ -904,6 +964,30 @@ public abstract class LambdaCondition<Children extends LambdaCondition, T> {
             }
         }
 
+    }
+
+    /**
+     * EXISTS / NOT EXISTS 子查询表达式
+     */
+    private static class ExistsSqlExpression extends NoParamsSqlExpression {
+
+        private final String subSql;
+        private final boolean not;
+
+        ExistsSqlExpression(String subSql, boolean not) {
+            super("EXISTS");
+            this.subSql = subSql;
+            this.not = not;
+        }
+
+        @Override
+        public void joinSql(Entity<?> entity, StringBuilder sb) {
+            if (not) {
+                sb.append(" NOT EXISTS (").append(subSql).append(')');
+            } else {
+                sb.append(" EXISTS (").append(subSql).append(')');
+            }
+        }
     }
 
 }

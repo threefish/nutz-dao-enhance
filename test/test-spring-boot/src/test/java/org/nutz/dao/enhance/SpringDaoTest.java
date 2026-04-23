@@ -400,4 +400,332 @@ public class SpringDaoTest {
 
 
     }
+
+    // ===================== 新增功能测试 =====================
+
+    /**
+     * 验证 ne 操作符 bug 修复：ne 应生成 != 而不是 =
+     */
+    @Test
+    public void test_ne_bug_fix() {
+        List<UserDO> list = userDao.lambdaQuery().ne(UserDO::getAge, 15).list();
+        assert list.size() == 2;
+        assert list.stream().allMatch(u -> u.getAge() != 15);
+    }
+
+    /**
+     * 验证 ne(String, Object) 操作符 bug 修复
+     */
+    @Test
+    public void test_ne_string_bug_fix() {
+        List<UserDO> list = userDao.lambdaQuery().ne("age", 15).list();
+        assert list.size() == 2;
+        assert list.stream().allMatch(u -> u.getAge() != 15);
+    }
+
+    /**
+     * 验证 ne(boolean, PFun, Object) 操作符 bug 修复
+     */
+    @Test
+    public void test_ne_condition_bug_fix() {
+        List<UserDO> list = userDao.lambdaQuery().ne(true, UserDO::getAge, 15).list();
+        assert list.size() == 2;
+        List<UserDO> listAll = userDao.lambdaQuery().ne(false, UserDO::getAge, 15).list();
+        assert listAll.size() == 3;
+    }
+
+    /**
+     * in varargs 便捷方法
+     */
+    @Test
+    public void test_in_varargs() {
+        List<UserDO> list = userDao.lambdaQuery().in(UserDO::getAge, 15, 16).list();
+        assert list.size() == 2;
+    }
+
+    /**
+     * in varargs 带 condition
+     */
+    @Test
+    public void test_in_varargs_condition() {
+        List<UserDO> listFalse = userDao.lambdaQuery().in(false, UserDO::getAge, 15, 16).list();
+        assert listFalse.size() == 3;
+        List<UserDO> listTrue = userDao.lambdaQuery().in(true, UserDO::getAge, 15, 16).list();
+        assert listTrue.size() == 2;
+    }
+
+    /**
+     * notIn varargs 便捷方法
+     */
+    @Test
+    public void test_not_in_varargs() {
+        List<UserDO> list = userDao.lambdaQuery().notIn(UserDO::getAge, 15, 16).list();
+        assert list.size() == 1 && list.get(0).getAge() == 17;
+    }
+
+    /**
+     * notIn varargs 带 condition
+     */
+    @Test
+    public void test_not_in_varargs_condition() {
+        List<UserDO> listFalse = userDao.lambdaQuery().notIn(false, UserDO::getAge, 15, 16).list();
+        assert listFalse.size() == 3;
+        List<UserDO> listTrue = userDao.lambdaQuery().notIn(true, UserDO::getAge, 15, 16).list();
+        assert listTrue.size() == 1;
+    }
+
+    /**
+     * exists 子查询
+     */
+    @Test
+    public void test_exists_subquery() {
+        // 自关联 exists：有 age=15 的用户存在
+        List<UserDO> list = userDao.lambdaQuery()
+                .exists("select 1 from user as u2 where u2.id = user.id and u2.age = 15")
+                .list();
+        assert list.size() == 1;
+        // 不存在的条件
+        List<UserDO> listNone = userDao.lambdaQuery()
+                .exists("select 1 from user as u2 where u2.id = user.id and u2.age = 999")
+                .list();
+        assert listNone.size() == 0;
+    }
+
+    /**
+     * notExists 子查询
+     */
+    @Test
+    public void test_not_exists_subquery() {
+        List<UserDO> list = userDao.lambdaQuery()
+                .notExists("select 1 from user as u2 where u2.id = user.id and u2.age = 999")
+                .list();
+        assert list.size() == 3;
+    }
+
+    /**
+     * exists 带条件
+     */
+    @Test
+    public void test_exists_condition() {
+        // exists(false, ...) 不应用条件
+        List<UserDO> listFalse = userDao.lambdaQuery()
+                .exists(false, "select 1 from user as u2 where u2.id = user.id and u2.age = 999")
+                .list();
+        assert listFalse.size() == 3;
+        // exists(true, ...) 应用条件
+        List<UserDO> listTrue = userDao.lambdaQuery()
+                .exists(true, "select 1 from user as u2 where u2.id = user.id and u2.age = 15")
+                .list();
+        assert listTrue.size() == 1;
+    }
+
+    /**
+     * 条件 asc 排序
+     */
+    @Test
+    public void test_conditional_asc() {
+        List<UserDO> list = userDao.lambdaQuery().asc(true, UserDO::getAge).list();
+        assert list.get(0).getAge() == 15;
+        List<UserDO> listNoOrder = userDao.lambdaQuery().asc(false, UserDO::getAge).list();
+        assert listNoOrder.size() == 3;
+    }
+
+    /**
+     * 条件 desc 排序
+     */
+    @Test
+    public void test_conditional_desc() {
+        List<UserDO> list = userDao.lambdaQuery().desc(true, UserDO::getAge).list();
+        assert list.get(0).getAge() == 17;
+    }
+
+    /**
+     * 条件 limit 分页
+     */
+    @Test
+    public void test_conditional_limit() {
+        PageRecord<UserDO> page = userDao.lambdaQuery().limit(true, 1, 2).listPage();
+        assert page.getRecords().size() == 2;
+        assert page.getTotal() == 3;
+    }
+
+    /**
+     * select(String...) 便捷方法
+     */
+    @Test
+    public void test_select_string_names() {
+        UserDO one = userDao.lambdaQuery().select("id", "age").eq(UserDO::getAge, 15).one();
+        assert one != null && one.getAge() == 15;
+    }
+
+    /**
+     * distinct 去重查询
+     */
+    @Test
+    public void test_distinct_query() {
+        List<UserDO> list = userDao.lambdaQuery().distinct().list();
+        assert list.size() == 3;
+    }
+
+    /**
+     * 条件 set 方法
+     */
+    @Test
+    public void test_conditional_set() {
+        String newName = "newName";
+        int updateCount = userDao.lambdaUpdate()
+                .set(newName != null, UserDO::getRealName, newName)
+                .set(false, UserDO::getAge, 999)
+                .eq(UserDO::getId, u1.getId())
+                .update();
+        assert updateCount == 1;
+        UserDO updated = userDao.fetch(u1.getId());
+        assert "newName".equals(updated.getRealName());
+        assert updated.getAge() == 15;
+    }
+
+    /**
+     * 条件 setEx 方法
+     */
+    @Test
+    public void test_conditional_setEx() {
+        int updateCount = userDao.lambdaUpdate()
+                .setEx(true, UserDO::getRealName, null)
+                .setEx(true, UserDO::getAge, 20)
+                .eq(UserDO::getId, u1.getId())
+                .update();
+        UserDO updated = userDao.fetch(u1.getId());
+        assert updated.getAge() == 20;
+    }
+
+    /**
+     * increment 原子递增
+     */
+    @Test
+    public void test_increment() {
+        int updateCount = userDao.lambdaUpdate()
+                .increment(UserDO::getAge, 1)
+                .eq(UserDO::getId, u1.getId())
+                .update();
+        assert updateCount == 1;
+        UserDO updated = userDao.fetch(u1.getId());
+        assert updated.getAge() == 16;
+    }
+
+    /**
+     * decrement 原子递减
+     */
+    @Test
+    public void test_decrement() {
+        int updateCount = userDao.lambdaUpdate()
+                .decrement(UserDO::getAge, 2)
+                .eq(UserDO::getId, u1.getId())
+                .update();
+        assert updateCount == 1;
+        UserDO updated = userDao.fetch(u1.getId());
+        assert updated.getAge() == 13;
+    }
+
+    /**
+     * increment 与 set 混合使用
+     */
+    @Test
+    public void test_increment_with_set() {
+        int updateCount = userDao.lambdaUpdate()
+                .set(UserDO::getRealName, "递增测试")
+                .increment(UserDO::getAge, 5)
+                .eq(UserDO::getId, u1.getId())
+                .update();
+        assert updateCount == 1;
+        UserDO updated = userDao.fetch(u1.getId());
+        assert "递增测试".equals(updated.getRealName());
+        assert updated.getAge() == 20;
+    }
+
+    /**
+     * JOIN 实体 notLike 方法（job 表无数据时 LEFT JOIN 结果中 job.real_name 为 NULL，
+     * NULL NOT LIKE 'x' 不是 TRUE，所以行被排除）
+     */
+    @Test
+    public void test_join_notLike() {
+        List<UserDO> list = userDao.lambdaQuery()
+                .leftJoin(JobDO.class, UserDO::getId, JobDO::getUserId)
+                .notLike(JobDO.class, JobDO::getRealName, "不存在")
+                .list();
+        // job 表无数据，LEFT JOIN 后 job.real_name 为 NULL，NOT LIKE 过滤掉 NULL
+        assert list.size() == 0;
+    }
+
+    /**
+     * JOIN 实体 isNull（job 表无数据时 LEFT JOIN 结果中 job.real_name 为 NULL）
+     */
+    @Test
+    public void test_join_isNull_condition() {
+        List<UserDO> list = userDao.lambdaQuery()
+                .leftJoin(JobDO.class, UserDO::getId, JobDO::getUserId)
+                .isNull(JobDO.class, JobDO::getRealName)
+                .list();
+        // job 表无数据，所有 user 的 job.real_name IS NULL
+        assert list.size() == 3;
+    }
+
+    /**
+     * JOIN 实体 isNotNull
+     */
+    @Test
+    public void test_join_isNotNull_condition() {
+        List<UserDO> list = userDao.lambdaQuery()
+                .leftJoin(JobDO.class, UserDO::getId, JobDO::getUserId)
+                .isNotNull(JobDO.class, JobDO::getRealName)
+                .list();
+        // job 表无数据，无 user 的 job.real_name IS NOT NULL
+        assert list.size() == 0;
+    }
+
+    /**
+     * JOIN 实体 in varargs
+     */
+    @Test
+    public void test_join_in_varargs() {
+        // 在 user 表上使用 JOIN 风格的 in varargs
+        List<UserDO> list = userDao.lambdaQuery()
+                .leftJoin(JobDO.class, UserDO::getId, JobDO::getUserId)
+                .in(UserDO.class, UserDO::getRealName, "测试1", "测试2")
+                .list();
+        assert list.size() == 2;
+    }
+
+    /**
+     * GroupBy having 条件
+     */
+    @Test
+    public void test_groupBy_having() {
+        userDao.insert(UserDO.builder().age(15).realName("测试4").build());
+        List<UserDO> list = userDao.lambdaQuery()
+                .select(UserDO::getAge)
+                .groupBy(UserDO::getAge)
+                .having(Cnd.where("age", ">", 15))
+                .list();
+        assert list.size() >= 1;
+    }
+
+    /**
+     * GroupBy count 统计
+     */
+    @Test
+    public void test_groupBy_count() {
+        int count = userDao.lambdaQuery().groupBy(UserDO::getAge).count();
+        assert count >= 1;
+    }
+
+    /**
+     * GroupBy listPage 分页
+     */
+    @Test
+    public void test_groupBy_listPage() {
+        PageRecord<UserDO> page = userDao.lambdaQuery()
+                .groupBy(UserDO::getAge)
+                .listPage(1, 10);
+        assert page.getRecords().size() >= 1;
+    }
 }

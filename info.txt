@@ -1,0 +1,238 @@
+================================================================================
+                   nutz-dao-enhance 项目源码深度分析文档
+================================================================================
+
+一、核心设计原理
+================================================================================
+
+1. Lambda 流式查询
+   核心思想：利用 Java 方法引用（如 UserDO::getAge）替代字符串字段名，在编译期保证类型安全。
+   LambdaQuery<T> 继承 LambdaCondition，通过泛型 SELF 返回模式实现链式调用：
+     userDao.lambdaQuery().eq(UserDO::getAge, 15).list()
+   PFun<T, ?> 函数式接口经 LambdaQuery.resolve() 解析为 Java 属性名，再结合 Nutz Entity
+   元数据映射为数据库列名。所有条件方法均提供 (PFun)、(String)、(boolean, PFun)、
+   (boolean, String) 四种重载，其中 boolean condition 参数实现条件式拼接，
+   当 condition=false 时直接返回 this，不修改任何状态。
+
+2. 动态条件构建
+   基于 QueryCondition（继承 Nutz Cnd）构建 WHERE 子句。LambdaCondition 内部维护
+   orStatus 标志位，or() 方法将其置为 true，后续条件方法调用 addConditionItem() 时
+   根据 orStatus 决定走 cnd.and() 还是 cnd.or() 分支，调用完毕后重置 orStatus。
+   嵌套 OR/AND 通过 or(Function<LambdaConditionWapper>) / and(Function) 实现，
+   内部创建独立的 LambdaConditionWapper 收集子条件，提取 SqlExpressionGroup 后
+   合并到主 QueryCondition 中。动态 SQL 模板使用 #[...] 语法，Nutz 在运行时
+   根据参数是否为 null 决定是否包含该 SQL 片段。
+
+3. 连表查询
+   通过 leftJoin/rightJoin/innerJoin 方法在 QueryCondition 中注册 QueryJoin 对象
+   （包含 JoinType、关联实体 Class、主表字段、关联表字段）。selectAs 方法注册
+   SelectAsColumn 对象实现字段别名映射。在 SQL 执行阶段，QueryCondition 被传递
+   到 BaseDaoProvider，由 Nutz Dao 的增强查询引擎识别 queryJoins 和 selectAsColumns，
+   拼装 JOIN SQL。JOIN 实体的条件方法（如 eq(Class<?>, PFun, value)）通过
+   getEntityFieldName() 将跨实体的方法引用解析为 "表名.列名" 格式。
+
+4. 动态代理 DAO
+   使用 JDK 动态代理（DaoProxy implements InvocationHandler）为 @Dao 标注的接口
+   生成代理实例。DaoMethodInvoke 负责解析方法签名（MethodSignature）、注解
+   （@Query/@Insert/@Update/@Delete/@CustomProvider/@CallStoredProcedure），
+   并路由到对应的执行策略（SingleQueryExecute、MultipleQueryExecute、
+   PaginationQueryExecute、UpdateQueryExecute、InsertQueryExecute、
+   CallStoredProcedureExecute）。方法调用结果被缓存到 DaoProxy 的 methodCache 中，
+   避免重复解析。
+
+5. 注解驱动 SQL
+   @Query/@Insert/@Update/@Delete 注解直接在接口方法上声明 SQL 模板，支持
+   #{} 占位符绑定参数、#[...] 条件片段。@CustomProvider 将方法实现委托给
+   指定的 Provider 类（如 BaseDaoProvider、LambdaQueryProvider），Provider 的
+   静态方法接收 ProviderContext 执行实际的数据库操作。@CallStoredProcedure
+   支持 IN/OUT 参数的存储过程调用。
+
+6. 字段计算
+   @FieldCalculation 注解标记需要自动计算的字段，支持 SpEL 表达式
+   （$this.age + $this.id）和 Spring Bean 引用（$ioc:beanName.method($this)）。
+   FieldCalcUtil 在运行时扫描实体注解，缓存到 FieldCalculationHolder，
+   按 group 分组执行计算并通过 Mirror 反射设置字段值。
+
+
+二、整体架构分层
+================================================================================
+
+1. 模块划分
+   nutz-dao-enhance-annotation  -- 注解定义层
+     自定义注解：@Dao, @Query, @Insert, @Update, @Delete, @CustomProvider,
+     @AutoID, @CreatedDate, @EntityListener, @FieldCalculation,
+     @CallStoredProcedure, @Param, @DaoScan 等
+
+   nutz-dao-enhance-core       -- 核心实现层
+     dao/           -- BaseDao<T> 接口、LambdaQuery/LambdaUpdate/LambdaCondition
+     condition/     -- QueryCondition（扩展 Cnd，增加 JOIN 支持）
+     join/          -- QueryJoin、SelectAsColumn、JoinType
+     method/        -- 代理/调用/执行/解析/Provider 完整链路
+       proxy/       -- DaoProxy（JDK 动态代理）
+       signature/   -- MethodSignature（方法签名解析）
+       execute/     -- 六种执行策略
+       parser/      -- SQL 模板解析
+       provider/    -- BaseDaoProvider、LambdaQueryProvider 等
+       holder/      -- 运行时数据持有
+
+   nutz-dao-enhance-spring-starter -- Spring Boot 集成
+     自动配置：NutzDaoAutoConfig
+     DAO 扫描：ClassPathDaoScanner → DaoScannerRegistrar → DaoProxyFactory
+     运行器：SpringDaoRunner（事务与连接管理）
+     注解：@DaoScan
+
+   nutz-dao-enhance-nutz-starter   -- Nutz Boot 集成
+
+   test-common                  -- 测试实体与 DAO 接口
+     UserDO, JobDO, BaseDO, UserVO, UserDao
+
+   test-spring-boot             -- Spring Boot 测试
+   test-nutz-boot               -- Nutz Boot 测试
+
+2. 核心类职责与依赖关系
+
+   BaseDao<T> (接口)
+     └─ 所有 DAO 继承此接口，方法通过 @CustomProvider 委托给 Provider
+     └─ 依赖：LambdaQueryProvider → LambdaQuery
+     └─ 依赖：LambdaUpdateProvider → LambdaUpdate
+     └─ 依赖：BaseDaoProvider → Nutz Dao 实例
+
+   LambdaQuery<T> extends LambdaCondition<LambdaQuery<T>, T>
+     └─ 流式查询构建器，持有 BaseDao<T> 引用
+     └─ 终端方法：one(), list(), listPage(), count(), eachRow()
+     └─ 条件方法继承自 LambdaCondition
+
+   LambdaUpdate<T> extends LambdaCondition<LambdaUpdate<T>, T>
+     └─ 流式更新构建器，持有 Map<String, Object> data
+     └─ 终端方法：update(), insert(), delete()
+
+   LambdaCondition<Children, T> (抽象基类)
+     └─ 所有条件方法的实现：eq, ne, gt, gte, lt, lte, between, like, in, isNull 等
+     └─ 维护 orStatus 标志位实现 AND/OR 切换
+     └─ 维护 activeds/excludes 列表实现字段过滤
+     └─ _invoke() 方法包裹 FieldFilter 执行
+
+   QueryCondition extends Cnd
+     └─ 扩展 Nutz Cnd，增加 queryJoins、selectAsColumns
+     └─ 所有 Lambda 条件最终写入此对象的 WHERE 子句
+
+   DaoProxy implements InvocationHandler
+     └─ JDK 动态代理，拦截 DAO 接口方法调用
+     └─ 委托给 DaoMethodInvoke 处理
+
+   DaoMethodInvoke
+     └─ 解析方法签名 → 匹配执行策略 → 执行 SQL → 返回结果
+
+
+三、关键调用链路
+================================================================================
+
+1. lambdaQuery() 调用链
+
+   userDao.lambdaQuery()
+     ↓ BaseDao 接口方法，@CustomProvider(type=LambdaQueryProvider)
+   DaoProxy.invoke()
+     ↓ 解析 @CustomProvider 注解
+   DaoMethodInvoke
+     ↓ 找到 LambdaQueryProvider.lambdaQuery(providerContext)
+   LambdaQueryProvider.lambdaQuery()
+     ↓ new LambdaQuery<>(providerContext, true, true)
+   LambdaQuery 实例创建
+     ↓ 持有 BaseDao<T> baseDao = (BaseDao) providerContext.proxy
+     ↓ 持有 QueryCondition cnd = QueryCondition.NEW()
+
+2. 条件构建链路
+
+   lambdaQuery.eq(UserDO::getAge, 15)
+     ↓ LambdaCondition.eq(PFun, Object)
+   checkValueForNull(name, value)       -- notNull 模式下校验
+     ↓ addConditionItem(PFun, "=", value)
+   LambdaQuery.resolve(name)            -- 方法引用 → "age"
+     ↓ orStatus ? cnd.or("age", "=", 15) : cnd.and("age", "=", 15)
+   QueryCondition (Cnd) 的 WHERE 子句添加条件
+
+3. 终端执行链路
+
+   lambdaQuery.list()
+     ↓ _invoke(() -> baseDao.list(cnd))
+   FieldFilter 检查
+     ↓ 若有 activeds/excludes，包裹 FieldFilterMolecule 执行
+   baseDao.list(cnd)
+     ↓ BaseDao 接口方法，@CustomProvider(type=BaseDaoProvider)
+   DaoProxy.invoke() → DaoMethodInvoke
+     ↓ BaseDaoProvider.list(providerContext, cnd)
+   providerContext.dao.query(entityClass, cnd)
+     ↓ Nutz Dao 核心 SQL 执行
+   数据库 → ResultSet → 实体映射 → 返回 List<T>
+
+4. lambdaUpdate().set().eq().update() 调用链
+
+   userDao.lambdaUpdate()
+     ↓ LambdaUpdateProvider.lambdaUpdate(providerContext)
+   lambdaUpdate.set(UserDO::getAge, 123)
+     ↓ data.put("age", 123)
+   lambdaUpdate.eq(UserDO::getAge, 15)
+     ↓ cnd.and("age", "=", 15)
+   lambdaUpdate.update()
+     ↓ convertData() -- 处理 ignoreNull
+     ↓ _invoke(() -> dao.update(entity, Chain.from(data), cnd))
+   Nutz Dao 执行 UPDATE user SET age=123 WHERE age=15
+
+
+四、核心实现细节
+================================================================================
+
+1. selectAs 机制
+   selectAs(PFun<T,?> mainName, PFun<JOIN,?> joinName)：
+   - mainName 经 LambdaQuery.resolve() 得到主实体的 Java 属性名
+   - joinName 经 LambdaQueryUtil.resolve() + getEntityFieldName() 得到
+     "关联表名.关联列名" 格式
+   - 两者打包成 SelectAsColumn.of(mainFieldName, joinFieldName) 存入
+     QueryCondition.selectAsColumns
+   - SQL 生成时转化为 SELECT mainTable.column AS join_field_alias
+
+2. leftJoin 机制
+   leftJoin(Class<?> clazz, PFun<T,?> mainName, PFun<JOIN,?> joinName)：
+   - getEntityFieldName() 将两个方法引用分别解析为 "表名.列名" 格式
+   - 打包成 QueryJoin.of(JoinType.LEFT, clazz, mainField, joinField)
+   - 存入 QueryCondition.queryJoins
+   - SQL 生成时拼装 LEFT JOIN job ON user.id = job.user_id
+
+3. like 方法族
+   like(name, value)   → 自动包裹为 %value%  → WHERE name LIKE '%value%'
+   likeLeft(name, value) → 自动包裹为 %value  → WHERE name LIKE '%value'
+   likeRight(name, value) → 自动包裹为 value% → WHERE name LIKE 'value%'
+   notLike 通过 addConditionItemAndSetNot() 走 andNot/orNot 分支生成 NOT LIKE
+
+4. listPage 机制
+   LambdaQuery.listPage()：
+   - 校验 Pager 已设置
+   - 调用 baseDao.listPage(cnd, pager)
+   - BaseDaoProvider.listPage()：
+     (1) dao.count(entity, cnd) 获取总记录数
+     (2) 创建 PageRecord，设置 total、pager
+     (3) pager.setRecordCount(count) 让 Nutz 计算总页数
+     (4) 若 count > 0，dao.query(entityClass, cnd, pager) 获取当前页数据
+     (5) 返回 PageRecord{records, total, pager}
+
+5. or/and 嵌套条件
+   or(q -> q.eq(A::getName, "1").or().eq(A::getName, "2"))：
+   - 创建独立 LambdaConditionWapper，内部条件用 OR 连接
+   - 提取 SqlExpressionGroup
+   - 调用 cnd.or(sqlExpressionGroup) 将整个分组作为 OR 条件加入主查询
+
+6. FieldFilter 字段过滤
+   _invoke() 方法检查 activeds/excludes：
+   - 若有设置，创建 FieldFilterMolecule 包裹执行
+   - FieldFilter.create(entityClass, actived, locked, ignoreNull).run(molecule)
+   - actived 正则："^id|age$" 只查询/更新指定字段
+   - locked 正则："^createBy$" 排除指定字段
+   - ignoreNull：更新时忽略 null 值字段
+
+7. LambdaUpdate.setEx 条件设置
+   setEx(name, value) 内部调用 Cnd._ex(value) 判断值是否应被排除
+   （null、空字符串、0 等），若排除则跳过 set 操作，避免误更新。
+
+8. 分页查询条件式 limit
+   limit(pageNumber, pageSize) 在 QueryCondition 上设置 Pager，
+   listPage() 校验 Pager 非空后执行分页查询。

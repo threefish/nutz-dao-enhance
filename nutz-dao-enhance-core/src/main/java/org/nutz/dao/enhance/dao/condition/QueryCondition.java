@@ -19,6 +19,7 @@ public class QueryCondition extends Cnd {
 
     private List<QueryJoin> queryJoins = new ArrayList<>();
     private List<SelectAsColumn> selectAsColumns = new ArrayList<>();
+    private boolean distinct;
 
     public QueryCondition() {
         this.cri = new SimpleCriteria();
@@ -57,5 +58,13 @@ public class QueryCondition extends Cnd {
 
     public void selectAs(String mainFieldName, String entityFieldName) {
         selectAsColumns.add(SelectAsColumn.of(mainFieldName, entityFieldName));
+    }
+
+    public boolean isDistinct() {
+        return distinct;
+    }
+
+    public void setDistinct(boolean distinct) {
+        this.distinct = distinct;
     }
 }

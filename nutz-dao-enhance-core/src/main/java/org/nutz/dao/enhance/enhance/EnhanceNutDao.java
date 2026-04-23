@@ -87,9 +87,11 @@ public class EnhanceNutDao extends NutDao {
     public <T> List<T> query(Entity<T> entity, Condition cnd, Pager pager) {
         if (cnd instanceof QueryCondition) {
             QueryCondition queryCondition = ((QueryCondition) cnd);
-            if (queryCondition.hasJoin()) {
-                Pojo pojo = makeQuery(entity, queryCondition.getSelectAsColumns());
-                appendJoin(pojo, queryCondition);
+            if (queryCondition.hasJoin() || queryCondition.isDistinct()) {
+                Pojo pojo = makeQuery(entity, queryCondition.getSelectAsColumns(), queryCondition.isDistinct());
+                if (queryCondition.hasJoin()) {
+                    appendJoin(pojo, queryCondition);
+                }
                 pojo.append(Pojos.Items.cnd(cnd))
                         .addParamsBy("*")
                         .setPager(pager)
@@ -111,9 +113,12 @@ public class EnhanceNutDao extends NutDao {
         }
     }
 
-    private Pojo makeQuery(Entity<?> en, List<SelectAsColumn> selectAsColumns) {
+    private Pojo makeQuery(Entity<?> en, List<SelectAsColumn> selectAsColumns, boolean distinct) {
         Pojo pojo = Pojos.pojo(expert, en, SqlType.SELECT);
         pojo.setEntity(en);
+        if (distinct) {
+            pojo.append(Pojos.Items.wrap("DISTINCT"));
+        }
         pojo.append(new QueryEntityFieldsAndSelectAsPItem(selectAsColumns));
         pojo.append(Pojos.Items.wrap("FROM"));
         pojo.append(Pojos.Items.entityViewName());
