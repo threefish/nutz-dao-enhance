@@ -22,7 +22,8 @@ public class TestAuditHandler implements AuditHandler {
 
     @Override
     public void preUpdate(Object object, Entity entity) {
-
+        setField(object, entity, "gmtModify", LocalDateTime.now());
+        setField(object, entity, "modifyBy", "spring-test");
     }
 
     @Override

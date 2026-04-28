@@ -209,6 +209,15 @@ public interface BaseDao<T> {
     @CustomProvider(type = BaseDaoProvider.class)
     int updateIgnoreNull(T obj);
 
+    /**
+     * 更新一个对象，包括null值字段（将未设值字段置为NULL）
+     *
+     * @param obj 要被更新的对象
+     * @return 返回实际被更新的记录条数，一般的情况下，如果是单一Pojo,更新成功，返回 1，否则，返回 0
+     */
+    @CustomProvider(type = BaseDaoProvider.class)
+    int updateWithNull(T obj);
+
 
     /**
      * 将对象更新的同时，也将符合一个正则表达式的所有关联字段关联的对象统统更新

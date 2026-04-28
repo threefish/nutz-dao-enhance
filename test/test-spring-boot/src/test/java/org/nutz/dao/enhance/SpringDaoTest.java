@@ -728,4 +728,23 @@ public class SpringDaoTest {
                 .listPage(1, 10);
         assert page.getRecords().size() >= 1;
     }
+
+    @Test
+    public void test_update_ignore_null() {
+        UserDO userDO = userDao.save(UserDO.builder().age(15).realName("测试4").build());
+        assert userDO.getGmtCreate() != null;
+        userDao.update(UserDO.builder().id(userDO.getId()).age(16).build());
+        UserDO fetch = userDao.fetch(userDO.getId());
+        assert fetch.getGmtCreate() != null;
+    }
+
+    @Test
+    public void test_update_with_null() {
+        UserDO userDO = userDao.save(UserDO.builder().age(15).realName("测试4").build());
+        assert userDO.getRealName() != null;
+        userDao.updateWithNull(UserDO.builder().id(userDO.getId()).age(16).build());
+        UserDO fetch = userDao.fetch(userDO.getId());
+        assert fetch.getAge() == 16;
+        assert fetch.getRealName() == null;
+    }
 }

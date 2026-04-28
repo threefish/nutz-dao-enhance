@@ -62,7 +62,7 @@ public class BaseDaoProvider {
 
     public static <T> T insertOrUpdate(ProviderContext providerContext, T obj) {
         AssertUtil.notNull(obj);
-        return providerContext.dao.insertOrUpdate(obj);
+        return providerContext.dao.insertOrUpdate(obj, null, FieldFilter.create(providerContext.entityClass, true));
     }
 
     public static <T> T saveOrUpdate(ProviderContext providerContext, T obj) {
@@ -84,7 +84,7 @@ public class BaseDaoProvider {
 
     public static <T> int updateWithVersion(ProviderContext providerContext, T obj) {
         AssertUtil.notNull(obj);
-        return providerContext.dao.updateWithVersion(obj);
+        return providerContext.dao.updateWithVersion(obj, FieldFilter.create(providerContext.entityClass, true));
     }
 
 
@@ -96,7 +96,7 @@ public class BaseDaoProvider {
 
     public static <T> int update(ProviderContext providerContext, T obj) {
         AssertUtil.notNull(obj);
-        return providerContext.dao.update(obj);
+        return providerContext.dao.updateIgnoreNull(obj);
     }
 
 
@@ -126,13 +126,18 @@ public class BaseDaoProvider {
 
     public static <T> int update(ProviderContext providerContext, T obj, Condition cnd) {
         AssertUtil.notNull(obj);
-        return providerContext.dao.update(obj, cnd);
+        return providerContext.dao.update(obj, FieldFilter.create(providerContext.entityClass, true), cnd);
     }
 
 
     public static <T> int updateIgnoreNull(ProviderContext providerContext, T obj) {
         AssertUtil.notNull(obj);
         return providerContext.dao.updateIgnoreNull(obj);
+    }
+
+    public static <T> int updateWithNull(ProviderContext providerContext, T obj) {
+        AssertUtil.notNull(obj);
+        return providerContext.dao.update(obj);
     }
 
 
@@ -288,7 +293,10 @@ public class BaseDaoProvider {
         if (objList == null || objList.isEmpty()) {
             return false;
         }
-        return providerContext.dao.update(objList) > 0;
+        for (T obj : objList) {
+            providerContext.dao.updateIgnoreNull(obj);
+        }
+        return true;
     }
 
     /**
